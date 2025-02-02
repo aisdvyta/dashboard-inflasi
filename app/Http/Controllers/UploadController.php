@@ -10,6 +10,17 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class UploadController extends Controller
 {
+    public function index()
+    {
+        $uploads = data_inflasi::orderBy('created_at', 'desc')->get();
+        return view('import.index', compact('uploads'));
+    }
+
+    public function create()
+    {
+        return view('import.create');
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -39,5 +50,27 @@ class UploadController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'File berhasil diupload dan dikonversi!');
+    }
+
+    public function show($data_name)
+    {
+        // Cari data berdasarkan nama file
+        $upload = data_inflasi::where('data_name', $data_name)->first();
+
+        // Jika tidak ditemukan, kembalikan error 404
+        if (!$upload) {
+            return abort(404, 'Data tidak ditemukan');
+        }
+
+        // Baca isi file CSV
+        $filePath = storage_path('app/public/csv/' . basename($upload->file_path));
+        if (!file_exists($filePath)) {
+            return abort(404, 'File tidak ditemukan');
+        }
+
+        // Ambil isi file CSV
+        $csvData = array_map('str_getcsv', file($filePath));
+
+        return view('import.show', compact('upload', 'csvData'));
     }
 }
