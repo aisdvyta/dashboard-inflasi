@@ -1,53 +1,47 @@
 @extends('layouts.main')
+
 @section('body')
-    <h1>Ini Dashboard Bulanan Jatim</h1>
-    <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptas quidem est modi quo illo ab nobis, voluptatum porro, fuga consequuntur vel autem earum quia, dignissimos accusamus ut nesciunt! Dolore, fuga. Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptas quidem est modi quo illo ab nobis, voluptatum porro, fuga consequuntur vel autem earum quia, dignissimos accusamus ut nesciunt! Dolore, fuga.  </p>
-    <div id="main" class="w-auto h-96"></div>
-    <div id="main2" class="w-auto h-96"></div>
+<div class="container mx-auto p-6">
+    <h2 class="text-2xl font-semibold mb-4">Dashboard Data Inflasi</h2>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var chartDom = document.getElementById("main"); //ini itu inject ke id main
-            var myChart = echarts.init(chartDom);
-            var option = {
-                title: {
-                    text: "ECharts example",
-                },
-                tooltip: {},
-                xAxis: {
-                    data: ["A", "B", "C", "D", "E", "F"],
-                },
-                yAxis: {},
-                series: [{
-                    name: "Sales",
-                    type: "bar",
-                    data: [5, 20, 36, 10, 10, 20],
-                }, ],
-            };
+    @foreach ($chartsData as $index => $chart)
+        <div class="bg-white shadow-md rounded-lg p-4 mb-6">
+            <h3 class="text-lg font-semibold">{{ $chart['data_name'] }}</h3>
+            <canvas id="chart-{{ $index }}" class="mt-4"></canvas>
+        </div>
 
-            // Menggunakan opsi yang sudah ditentukan untuk membuat chart
-            myChart.setOption(option);
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                var ctx = document.getElementById("chart-{{ $index }}").getContext("2d");
 
-            var chartDom = document.getElementById("main2");
-            var myChart = echarts.init(chartDom);
-            var option = {
-                title: {
-                    text: "ECharts example",
-                },
-                tooltip: {},
-                xAxis: {
-                    data: ["A", "B", "C", "D", "E", "F"],
-                },
-                yAxis: {},
-                series: [{
-                    name: "Sales",
-                    type: "bar",
-                    data: [5, 20, 36, 10, 10, 20],
-                }, ],
-            };
+                var labels = {!! json_encode(array_column($chart['data'], 'nama_kota')) !!};
+                var data = {!! json_encode(array_column($chart['data'], 'ihk')) !!};
 
-            // Menggunakan opsi yang sudah ditentukan untuk membuat chart
-            myChart.setOption(option);
-        });
-    </script>
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: "IHK by Kota (Flag = 0)",
+                            data: data,
+                            backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            });
+        </script>
+    @endforeach
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 @endsection
