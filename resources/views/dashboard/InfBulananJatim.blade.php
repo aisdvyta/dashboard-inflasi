@@ -1,4 +1,4 @@
-@extends('layouts.main')
+@extends('layouts.dashboard')
 @section('body')
     <h1>Ini Dashboard Bulanan Jatim</h1>
     <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptas quidem est modi quo illo ab nobis, voluptatum porro, fuga consequuntur vel autem earum quia, dignissimos accusamus ut nesciunt! Dolore, fuga. Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptas quidem est modi quo illo ab nobis, voluptatum porro, fuga consequuntur vel autem earum quia, dignissimos accusamus ut nesciunt! Dolore, fuga.  </p>

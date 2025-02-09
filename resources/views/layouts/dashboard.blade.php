@@ -19,7 +19,7 @@
 </head>
 
 <body class="transition-all duration-100 ease-in-out">
-    @include('partials.navbar')
+    @include('partials.sidebar')
 
     <div id="main-content" class="ml-0 transition-all duration-100 ease-in-out mt-16">
         @yield('body')

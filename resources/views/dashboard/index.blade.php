@@ -1,4 +1,4 @@
-@extends('layouts.main')
+@extends('layouts.dashboad')
 
 @section('body')
 <div class="container">
