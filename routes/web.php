@@ -1,10 +1,14 @@
 <?php
 
 use App\Http\Controllers\UploadController;
-use App\Http\Controllers\ChartController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [ChartController::class, 'index'])->name('dashboard.index');
+
+
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
+Route::get('/dashboard/filter', [DashboardController::class, 'filter'])->name('dashboard.filter');
+
 
 Route::get('/TabelDataInflasi', [UploadController::class, 'index'])->name('upload.index');
 Route::get('/TabelDataInflasi/import', [UploadController::class, 'create'])->name('upload.create');
