@@ -18,9 +18,11 @@
     </script>
 </head>
 
+@include('partials.navbar')
 <body>
-    @include('partials.navbar')
-    @yield('body')
+    <div>
+        @yield('body')
+    </div>
 </body>
 
 </html>
