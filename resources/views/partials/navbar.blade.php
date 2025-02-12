@@ -1,4 +1,4 @@
-<nav class="bg-white shadow-lg fixed top-0 left-0 w-full z-10">
+<nav class="bg-white bg-opacity-80 shadow-lg fixed top-0 left-0 w-full z-10">
     <div class="container mx-auto px-4 flex items-center justify-between py-2">
         <!-- Logo dan Judul -->
         <div class="flex items-center space-x-3">
