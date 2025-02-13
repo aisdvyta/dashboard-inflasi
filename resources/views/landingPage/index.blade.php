@@ -2,7 +2,7 @@
 
 @section('body')
     <!-- Ini Main 1 -->
-    <div class="min-h-screen flex items-center justify-center relative ">
+    <div id="main1" class="min-h-screen flex items-center justify-center relative ">
         <!-- Batik Kiri -->
         <div class="absolute top-10 left-0">
             <img src="{{ asset('images/batikMain1Atas.svg') }}" alt="Batik Left" class="h-85">
@@ -19,8 +19,7 @@
                     <span class="text-biru1">!</span>
                 </h1>
                 <p class="text-gray-600 text-base">
-                    <span class="font-bold text-biru2">Dashboard Inflasi</span> menyajikan data inflasi terkini
-                    di wilayah Provinsi Jawa Timur melalui visualisasi yang interaktif dan informatif
+                    <span class="font-bold text-biru2">Dashboard Inflasi</span> menyajikan data inflasi terkini di wilayah Provinsi Jawa Timur melalui visualisasi yang interaktif dan informatif
                 </p>
                 <a href="#"
                     class="inline-block mt-4 px-6 py-1 bg-biru4 text-white font-semibold rounded-xl hover:bg-biru1">
@@ -35,108 +34,10 @@
 
     <!-- Ini Main 2 -->
     <!-- Section Dashboard -->
-    <div class="min-h-[110vh] bg-biru4 py-12 relative">
-        <!-- Elemen Batik -->
-        <div class="absolute top-20 left-10">
-            <img src="{{ asset('images/batikKawung.svg') }}" alt="Batik Left" class="h-32">
-        </div>
-        <div class="absolute top-20 right-10">
-            <img src="{{ asset('images/batikKawung.svg') }}" alt="Batik Right" class="h-32 transform scale-x-[-1]">
-        </div>
-        <div class="absolute bottom-8 left-10">
-            <img src="{{ asset('images/batikKawung.svg') }}" alt="Batik Left" class="h-32 transform scale-y-[-1]">
-        </div>
-        <div class="absolute bottom-8 right-10">
-            <img src="{{ asset('images/batikKawung.svg') }}" alt="Batik Right" class="h-32 transform scale-x-[-1] scale-y-[-1]">
-        </div>
-
-        <div class="container mx-auto text-center mt-8">
-            <h2 class="text-4xl font-bold text-white">
-                Yuk kenali <span class="text-kuning1">Dashboard</span> yang ada!
-            </h2>
-            <div class="mt-10 grid grid-cols-1 md:grid-cols-4 gap-8 px-48">
-                <!-- Card 1 -->
-                <div class="bg-white shadow-lg rounded-3xl overflow-hidden h-fit w-64 -rotate-10 translate-x-4 translate-y-2">
-                    <div class="p-3 text-center">
-                        <h3 class="text-sm text-biru1">
-                            <span class="font-bold">Dashboard</span><br>
-                            <span class="font-semibold">Inflasi Bulanan Jawa Timur</span>
-                        </h3>
-                    </div>
-                    <img src="{{ asset('images/dashInflasiBulanan.svg') }}" alt="Dashboard Inflasi Bulanan" class="h-48 mx-auto">
-                    <div class="p-3 text-left">
-                        <p class="text-[0.8rem] text-gray-600">
-                            Dashboard Inflasi Bulanan di Provinsi Jawa Timur.
-                        </p>
-                        <a href="{}" class="block mt-1 text-biru4 text-sm hover:underline">
-                            Pelajari selengkapnya →
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Card 2 -->
-                <div class="bg-white shadow-lg rounded-3xl overflow-hidden h-fit w-[18rem] rotate-10 -translate-x-2 translate-y-10">
-                    <div class="p-3 text-center">
-                        <h3 class="text-sm text-biru1">
-                            <span class="font-bold">Dashboard</span><br>
-                            <span class="font-semibold">Inflasi Spasial Jawa Timur</span>
-                        </h3>
-                    </div>
-                    <img src="{{ asset('images/dashInflasiSpasial.svg') }}" alt="Dashboard Inflasi Spasial" class="h-80 mx-auto">
-                    <div class="p-3 text-left">
-                        <p class="text-[0.8rem] text-gray-600">
-                            Dashboard Inflasi Bulanan di Jawa Timur yang menampilkan visualisasi berdasarkan Kab/Kota IHK.
-                        </p>
-                        <a href="{}" class="block mt-1 text-biru4 text-sm hover:underline">
-                            Pelajari selengkapnya →
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Card 3 -->
-                <div class="bg-white shadow-lg rounded-3xl overflow-hidden h-fit w-[18rem] -rotate-10 translate-y-2">
-                    <div class="p-3 text-center">
-                        <h3 class="text-sm text-biru1">
-                            <span class="font-bold">Dashboard</span><br>
-                            <span class="font-semibold">Inflasi Menurut Kelompok Pengeluaran</span>
-                        </h3>
-                    </div>
-                    <img src="{{ asset('images/dashInflasiKelompok.svg') }}" alt="Dashboard Inflasi Menurut Kelompok Pengeluaran" class="h-80 mx-auto">
-                    <div class="p-3 text-left">
-                        <p class="text-[0.8rem] text-gray-600">
-                            Dashboard Inflasi Bulanan di Jawa Timur yang menampilkan visualisasi berdasarkan kelompok
-                            pengeluaran.
-                        </p>
-                        <a href="#" class="block mt-1 text-biru3 text-sm hover:underline">
-                            Pelajari selengkapnya →
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Card 4 -->
-                <div class="bg-white rounded-3xl overflow-hidden h-fit w-64 rotate-10 translate-x-2 translate-y-10">
-                    <div class="p-3 text-center">
-                        <h3 class="text-sm text-biru1">
-                            <span class="font-bold">Dashboard</span><br>
-                            <span class="font-semibold">Series Inflasi Jawa Timur</span>
-                        </h3>
-                    </div>
-                    <img src="{{ asset('images/dashSeriesInflasi.svg') }}" alt="Dashboard Inflasi Bulanan" class="h-48 mx-auto">
-                    <div class="p-3 text-left">
-                        <p class="text-[0.8rem] text-gray-600">
-                            Dashboard Series Inflasi yang menampilkan visualisasi perkembangan inflasi dari waktu ke waktu.
-                        </p>
-                        <a href="#" class="block mt-1 text-biru3 text-sm hover:underline">
-                            Pelajari selengkapnya →
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    @include('components.dashboardcard')
 
     <!-- Ini Main 3 -->
-    <div class="bg-gray-100  shadow-xl min-h-[93vh]">
+    <div id="main3" class="bg-gray-100  shadow-xl min-h-[93vh]">
         <!-- Banner Pattern -->
         <div class="relative w-full">
             <img src="{{ asset('images/batasMain3.svg') }}" alt="Pattern Batas Main 3" class="w-full h-fit object-cover">
@@ -166,7 +67,7 @@
     </div>
 
     <!-- Ini Main 4 -->
-    <div class="bg-white py-16 px-5 min-h-[93vh]">
+    <div id="main4" class="bg-white py-16 px-5 min-h-[93vh]">
         <div class="max-w-7xl mx-auto h-fit bg-gray-100 rounded-3xl shadow-lg p-8 relative">
             <!-- Elemen Batik -->
             <div class="absolute top-10 left-10">
@@ -188,74 +89,87 @@
             </h2>
 
             <!-- Grid Social Media -->
-            <div class="grid grid-cols-3 gap-20 mx-60 mt-8 mb-5 ">
+            <div class="grid grid-cols-3 gap-8 mx-60 mt-10 mb-5 ">
                 <!-- Instagram -->
-                <div class="bg-white p-4 rounded-xl shadow-lg text-center overflow-hidden">
+                <div class="h-[13rem] w-[12rem] bg-white p-4 rounded-3xl shadow-lg text-center overflow-hidden">
                     <div class="flex justify-center">
                         <img src="{{ asset('images/instagramIcon.svg') }}" alt="Instagram Logo" class="w-8 h-8">
                     </div>
-                    <h3 class="mt-4 font-semibold text-biru1">Instagram</h3>
-                    <a href="https://www.instagram.com/bpsjatim?igsh=MWE1cHA1NG9rdWhpbg==" target="_blank" class="text-biru4 font-normal block mt-2 hover:underline">Lihat Profil →</a>
-                    <div class="mt-2 flex space-x-0 items-center justify-center">
-                        <img src="{{ asset('images/kontIGKiri.svg') }}" class="rounded-lg translate-x-5 ">
-                        <img src="{{ asset('images/kontIGMid.svg') }}" class="rounded-lg z-10>
-                        <img src="{{ asset('images/kontIGKanan.svg') }}" class="rounded-lg -translate-x-5 ">
+                    <h3 class="mt-4 font-bold text-biru1">Instagram</h3>
+                    <a href="https://www.instagram.com/bpsjatim?igsh=MWE1cHA1NG9rdWhpbg==" target="_blank" class="text-biru4 text-sm font-normal hover:underline">Lihat Profil →</a>
+                    <div class="mt-4 flex space-x-0 items-center justify-center">
+                        <img src="{{ asset('images/kontIGKiri.svg') }}" class="rounded-xl translate-x-4 translate-y-2">
+                        <img src="{{ asset('images/kontIGMid.svg') }}" class="rounded-xl z-10 -translate-x-1">
+                        <img src="{{ asset('images/kontIGKanan.svg') }}" class="rounded-xl -translate-x-5 translate-y-2">
                     </div>
                 </div>
 
                 <!-- Website -->
-                <div class="bg-white p-4 rounded-xl shadow-lg text-center">
+                <div class="h-[13rem] w-[12rem] bg-white p-4 rounded-3xl shadow-lg text-center overflow-hidden">
                     <div class="flex justify-center">
                         <img src="{{ asset('images/websiteIcon.svg') }}" alt="Website Logo" class="w-8 h-8">
                     </div>
-                    <h3 class="mt-4 font-semibold text-biru1">Website</h3>
-                    <a href="#" class="text-biru4 font-normal block mt-2 hover:underline">Lihat Profil →</a>
-                    <img src="{{ asset('images/website-preview.png') }}" class="mt-2 rounded-lg">
+                    <h3 class="mt-4 font-bold text-biru1">Website</h3>
+                    <a href="https://jatim.bps.go.id/id" target="_blank" class="text-biru4 text-sm font-normal hover:underline">Lihat Profil →</a>
+                    <div class="mt-4 flex space-x-0 items-center justify-center">
+                        <img src="{{ asset('images/kontWebsite.svg') }}" class="mt-2 rounded-lg w-full translate-y-2">
+
+                    </div>
                 </div>
 
+
                 <!-- X (Twitter) -->
-                <div class="bg-white p-4 rounded-xl shadow-lg text-center">
+                <div class="h-[13rem] w-[12rem] bg-white p-4 rounded-3xl shadow-lg text-center overflow-hidden">
                     <div class="flex justify-center">
                         <img src="{{ asset('images/xIcon.svg') }}" alt="X Logo" class="w-8 h-8">
                     </div>
-                    <h3 class="mt-4 font-semibold text-biru1">Twitter</h3>
-                    <a href="#" class="text-biru4 font-normal block mt-2 hover:underline">Lihat Profil →</a>
-                    <div class="mt-2 grid grid-cols-2 gap-2">
-                        <img src="{{ asset('images/twitter-post1.jpg') }}" class="rounded-lg">
-                        <img src="{{ asset('images/twitter-post2.jpg') }}" class="rounded-lg">
+                    <h3 class="mt-4 font-bold text-biru1">Twitter</h3>
+                    <a href="https://x.com/bpsjatim" target="_blank" class="text-biru4 text-sm font-normal hover:underline">Lihat Profil →</a>
+                    <div class="mt-4 flex space-x-0 items-center justify-center">
+                        <img src="{{ asset('images/kontXKiri.svg') }}" class="rounded-xl translate-x-5 translate-y-2">
+                        <img src="{{ asset('images/kontXMid.svg') }}" class="rounded-xl z-10 -translate-x-1">
+                        <img src="{{ asset('images/kontXKanan.svg') }}" class="rounded-xl -translate-x-6 translate-y-2">
                     </div>
                 </div>
 
                 <!-- Facebook -->
-                <div class="bg-white p-4 rounded-xl shadow-lg text-center">
+                <div class="h-[13rem] w-[12rem] bg-white p-4 rounded-3xl shadow-lg text-center overflow-hidden">
                     <div class="flex justify-center">
                         <img src="{{ asset('images/facebookIcon.svg') }}" alt="Facebook Logo" class="w-8 h-8">
                     </div>
-                    <h3 class="mt-4 font-semibold text-biru1">Facebook</h3>
-                    <a href="#" class="text-biru4 font-normal block mt-2 hover:underline">Lihat Profil →</a>
-                    <img src="{{ asset('images/facebook-preview.png') }}" class="mt-2 rounded-lg">
+                    <h3 class="mt-4 font-bold text-biru1">Facebook</h3>
+                    <a href="https://www.facebook.com/bpsjatim" target="_blank" class="text-biru4 text-sm font-normal hover:underline">Lihat Profil →</a>
+                    <div class="mt-4 flex space-x-0 items-center justify-center">
+                        <img src="{{ asset('images/kontFBKiri.svg') }}" class="rounded-xl translate-x-5 translate-y-3">
+                        <img src="{{ asset('images/kontFBMid.svg') }}" class="rounded-xl z-10 -translate-x-1 translate-y-1">
+                        <img src="{{ asset('images/kontFBKanan.svg') }}" class="rounded-xl -translate-x-6 translate-y-3">
+                    </div>
                 </div>
 
                 <!-- YouTube -->
-                <div class="bg-white p-4 rounded-xl shadow-lg text-center">
+                <div class="h-[13rem] w-[12rem] bg-white p-4 rounded-3xl shadow-lg text-center overflow-hidden">
                     <div class="flex justify-center">
                         <img src="{{ asset('images/youtubeIcon.svg') }}" alt="YouTube Logo" class="w-8 h-8">
                     </div>
-                    <h3 class="mt-4 font-semibold text-biru1">YouTube</h3>
-                    <a href="#" class="text-biru4 font-normal block mt-2 hover:underline">Lihat Profil →</a>
-                    <img src="{{ asset('images/youtube-preview.png') }}" class="mt-2 rounded-lg">
+                    <h3 class="mt-4 font-bold text-biru1">YouTube</h3>
+                    <a href="https://www.youtube.com/@bpsprovjatim" target="_blank" class="text-biru4 text-sm font-normal hover:underline">Lihat Profil →</a>
+                    <div class="mt-4 flex space-x-0 items-center justify-center">
+                        <img src="{{ asset('images/kontYtKiri.svg') }}" class="rounded-xl translate-x-5 translate-y-3">
+                        <img src="{{ asset('images/kontYtKanan.svg') }}" class="rounded-xl -translate-x-6 -translate-y-3">
+                    </div>
                 </div>
 
                 <!-- TikTok -->
-                <div class="bg-white p-4 rounded-xl shadow-lg text-center">
+                <div class="h-[13rem] w-[12rem] bg-white p-4 rounded-3xl shadow-lg text-center overflow-hidden">
                     <div class="flex justify-center">
                         <img src="{{ asset('images/tiktokIcon.svg') }}" alt="TikTok Logo" class="w-8 h-8">
                     </div>
-                    <h3 class="mt-4 font-semibold text-biru1">TikTok</h3>
-                    <a href="#" class="text-biru4 font-normal block mt-2 hover:underline">Lihat Profil →</a>
-                    <div class="mt-2 grid grid-cols-2 gap-2">
-                        <img src="{{ asset('images/tiktok-post1.jpg') }}" class="rounded-lg">
-                        <img src="{{ asset('images/tiktok-post2.jpg') }}" class="rounded-lg">
+                    <h3 class="mt-4 font-bold text-biru1">TikTok</h3>
+                    <a href="https://www.tiktok.com/@bpsjatim" target="_blank" class="text-biru4 text-sm font-normal hover:underline">Lihat Profil →</a>
+                    <div class="mt-4 flex space-x-0 items-center justify-center">
+                        <img src="{{ asset('images/kontTtKiri.svg') }}" class="rounded-xl translate-x-5 translate-y-2">
+                        <img src="{{ asset('images/kontTtMid.svg') }}" class="rounded-xl z-10 -translate-x-1">
+                        <img src="{{ asset('images/kontTtKanan.svg') }}" class="rounded-xl -translate-x-6 translate-y-2">
                     </div>
                 </div>
             </div>
@@ -263,3 +177,17 @@
     </div>
 
 @endsection
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelector("a[href='#']").addEventListener("click", function (event) {
+        event.preventDefault();
+
+        let target = document.getElementById("main2");
+        if (target) {
+            target.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+    });
+});
+
+</script>

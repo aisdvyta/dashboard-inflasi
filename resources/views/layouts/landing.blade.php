@@ -23,6 +23,7 @@
     <div>
         @yield('body')
     </div>
+    @stack('scripts')
 </body>
-
+@include('partials.footer')
 </html>
