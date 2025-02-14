@@ -37,7 +37,7 @@
     @include('components.dashboardcard')
 
     <!-- Ini Main 3 -->
-    <div id="main3" class="bg-gray-100  shadow-xl min-h-[93vh]">
+    <div id="main3" class="min-h-[93vh]">
         <!-- Banner Pattern -->
         <div class="relative w-full">
             <img src="{{ asset('images/batasMain3.svg') }}" alt="Pattern Batas Main 3" class="w-full h-fit object-cover">
