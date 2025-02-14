@@ -71,16 +71,16 @@
         <div class="max-w-7xl mx-auto h-fit bg-gray-100 rounded-3xl shadow-lg p-8 relative">
             <!-- Elemen Batik -->
             <div class="absolute top-10 left-10">
-                <img src="{{ asset('images/batikKawung2.svg') }}" alt="Batik Left" class="h-32">
+                <img src="{{ asset('images/batikKawung2.webp') }}" alt="Batik Left" class="h-32">
             </div>
             <div class="absolute top-10 right-10">
-                <img src="{{ asset('images/batikKawung2.svg') }}" alt="Batik Right" class="h-32 transform scale-x-[-1]">
+                <img src="{{ asset('images/batikKawung2.webp') }}" alt="Batik Right" class="h-32 transform scale-x-[-1]">
             </div>
             <div class="absolute bottom-10 left-10">
-                <img src="{{ asset('images/batikKawung2.svg') }}" alt="Batik Left" class="h-32 transform scale-y-[-1]">
+                <img src="{{ asset('images/batikKawung2.webp') }}" alt="Batik Left" class="h-32 transform scale-y-[-1]">
             </div>
             <div class="absolute bottom-10 right-10">
-                <img src="{{ asset('images/batikKawung2.svg') }}" alt="Batik Right" class="h-32 transform scale-x-[-1] scale-y-[-1]">
+                <img src="{{ asset('images/batikKawung2.webp') }}" alt="Batik Right" class="h-32 transform scale-x-[-1] scale-y-[-1]">
             </div>
 
             <!-- Judul -->

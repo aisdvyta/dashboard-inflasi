@@ -1,16 +1,16 @@
 <div id="main2" class="min-h-[110vh] bg-biru4 py-12 relative">
     <!-- Elemen Batik -->
     <div class="absolute top-20 left-10 transform transition-transform hover:scale-105 hover:shadow-2xl">
-        <img src="{{ asset('images/batikKawung.svg') }}" alt="Batik Left" class="h-32">
+        <img src="{{ asset('images/batikKawung.webp') }}" alt="Batik Left" class="h-32">
     </div>
     <div class="absolute top-20 right-10">
-        <img src="{{ asset('images/batikKawung.svg') }}" alt="Batik Right" class="h-32 transform scale-x-[-1]">
+        <img src="{{ asset('images/batikKawung.webp') }}" alt="Batik Right" class="h-32 transform scale-x-[-1]">
     </div>
     <div class="absolute bottom-8 left-10">
-        <img src="{{ asset('images/batikKawung.svg') }}" alt="Batik Left" class="h-32 transform scale-y-[-1]">
+        <img src="{{ asset('images/batikKawung.webp') }}" alt="Batik Left" class="h-32 transform scale-y-[-1]">
     </div>
     <div class="absolute bottom-8 right-10">
-        <img src="{{ asset('images/batikKawung.svg') }}" alt="Batik Right" class="h-32 transform scale-x-[-1] scale-y-[-1]">
+        <img src="{{ asset('images/batikKawung.webp') }}" alt="Batik Right" class="h-32 transform scale-x-[-1] scale-y-[-1]">
     </div>
 
     <div class="container mx-auto text-center mt-8">
