@@ -27,6 +27,7 @@ export default {
                 'biru4'     : '#4C84B0',
                 'biru5'     : '#C7D9E5',
                 'hijau'     : '#388E3C',
+                'abubiru'   : '#E3E9ED',
             }
         },
     },

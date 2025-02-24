@@ -18,30 +18,70 @@
     </script>
 </head>
 
-<body class="transition-all duration-100 ease-in-out">
-    @include('partials.sidebar')
+<body>
+    <!-- Sidebar Container -->
+    <div class="flex">
+        <!-- Sidebar -->
+        @include('partials.sidebar')
 
-    <div id="main-content" class="ml-0 transition-all duration-100 ease-in-out mt-16">
-        @yield('body')
+        <!-- Konten Utama -->
+        <div class="flex-grow p-5">
+            @yield('body')
+        </div>
     </div>
+    @include('partials.footerKecil')
 
+
+    <!-- Script -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const sidebarToggleBtn = document.querySelector('[data-drawer-toggle]');
-            const mainContent = document.getElementById('main-content');
-            const sidebar = document.getElementById('logo-sidebar');
+        const sidebar = document.getElementById('sidebar');
+        const toggleButton = document.getElementById('toggleButton');
+        const dashboardText = document.getElementById('dashboardText');
+        const dropdownToggle = document.getElementById('dropdownToggle');
+        const dropdownMenu = document.getElementById('dropdownMenu');
 
-            sidebarToggleBtn.addEventListener('click', function() {
-                // Toggle the sidebar's visibility
-                sidebar.classList.toggle('-translate-x-full');
+        // Toggle Sidebar
+        toggleButton.addEventListener('click', () => {
+            if (sidebar.classList.contains('w-64')) {
+                sidebar.classList.remove('w-64');
+                sidebar.classList.add('w-24');
 
-                // Adjust the margin of main content when sidebar is visible
-                if (sidebar.classList.contains('-translate-x-full')) {
-                    mainContent.style.marginLeft = '0'; // No margin when sidebar is hidden
-                } else {
-                    mainContent.style.marginLeft = '16rem'; // Sidebar width (64px * 4 = 16rem)
-                }
-            });
+                // Fade-out dashboardText sebelum disembunyikan
+                dashboardText.style.opacity = "0";
+                dashboardText.style.transform = "translateX(10px)";
+
+                setTimeout(() => {
+                    dashboardText.classList.add('hidden');
+                }, 50); // Tunggu sampai animasi selesai sebelum disembunyikan
+            } else {
+                sidebar.classList.remove('w-24');
+                sidebar.classList.add('w-64');
+
+                // Tampilkan teks dengan transisi smooth
+                dashboardText.classList.remove('hidden');
+
+                requestAnimationFrame(() => {
+                    dashboardText.style.opacity = "0";
+                    dashboardText.style.transform = "translateX(10px)";
+
+                    setTimeout(() => {
+                        dashboardText.style.opacity = "1";
+                        dashboardText.style.transform = "translateX(0)";
+                    }, 100); // Sedikit delay supaya transisi terlihat
+                });
+            }
+        });
+
+        // Toggle Dropdown
+        dropdownToggle.addEventListener('click', () => {
+            dropdownMenu.classList.toggle('hidden');
+        });
+
+        // Close Dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!dropdownToggle.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                dropdownMenu.classList.add('hidden');
+            }
         });
     </script>
 </body>

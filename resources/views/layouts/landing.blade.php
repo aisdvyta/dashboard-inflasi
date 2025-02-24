@@ -18,12 +18,14 @@
     </script>
 </head>
 
-@include('partials.navbar')
+
 <body>
-    <div>
+    @include('partials.navbar')
+    <div class="">
         @yield('body')
     </div>
+    @include('partials.footer')
     @stack('scripts')
 </body>
-@include('partials.footer')
+
 </html>

@@ -4,8 +4,8 @@
 <div class="container mx-auto p-6">
     <div class="flex justify-between items-center mb-4">
         <h2 class="text-2xl font-semibold">Tabel Data Inflasi</h2>
-        <a href="{{ route('upload.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
-            + Tambah Data
+        <a href="{{ route('upload.create') }}" class="bg-kuning1 text-biru1 px-4 py-2 rounded-lg hover:bg-blue-600">
+            Unduh Data
         </a>
     </div>
 
