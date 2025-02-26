@@ -2,8 +2,8 @@
     <div class="container flex flex-col md:flex-row justify-between items-start px-32">
         <!-- Kiri: Logo & BerAKHLAK -->
         <div class="flex flex-col self-center items-center justify-center space-y-8">
-            <img src="{{ asset('images/logoBPSJatim.svg') }}" alt="Logo BPS Provinsi Jawa Timur" class="h-12">
-            <img src="{{ asset('images/logoBerakhlak.svg') }}" alt="Logo ASN BerAKHLAK" class="h-16">
+            <img src="{{ asset('images/footer/logoBPSJatim.svg') }}" alt="Logo BPS Provinsi Jawa Timur" class="h-12">
+            <img src="{{ asset('images/footer/logoBerakhlak.svg') }}" alt="Logo ASN BerAKHLAK" class="h-16">
         </div>
 
         <!-- Tengah: Kontak Info -->

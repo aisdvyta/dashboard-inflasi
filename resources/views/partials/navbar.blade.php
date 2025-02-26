@@ -2,7 +2,7 @@
     <div class="container mx-auto px-4 flex items-center justify-between py-2">
         <!-- Logo dan Judul -->
         <div class="flex items-center space-x-3">
-            <img src="{{ asset('images/logoBPS.svg') }}" alt="logo BPS" class="h-10">
+            <img src="{{ asset('images/navbar/logoBPS.svg') }}" alt="logo BPS" class="h-10">
             <h1 class="text-xl font-bold text-biru1 leading-none">
                 Dashboard <span class="block leading-none">Inflasi</span>
             </h1>
@@ -16,7 +16,7 @@
                 <li><a href="#main3"  class="hover:text-biru4 text-base font-semibold">Tentang Kami</a></li>
             </ul>
             <a href="{}" class="flex items-center px-3 py-1 bg-biru1 text-white rounded-lg hover:bg-biru4 font-jakarta text-base font-semibold">
-                <img src="{{ asset('images/loginIcon.svg') }}" alt="login icon" class="mr-2">
+                <img src="{{ asset('images/navbar/loginIcon.svg') }}" alt="login icon" class="mr-2">
                 Login
             </a>
         </div>

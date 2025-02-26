@@ -33,7 +33,7 @@
                         <td class="border border-gray-300 px-4 py-2">{{ $upload->created_at->format('d-m-Y H:i') }}</td>
                         <td class="border border-gray-300 px-4 py-2">
                             <a href="{{ route('upload.show', $upload->data_name) }}"
-                               class="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600">
+                                class="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600">
                                 Lihat Data
                             </a>
                         </td>
