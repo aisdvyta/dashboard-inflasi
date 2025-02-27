@@ -4,7 +4,7 @@
 <div class="max-w-lg mx-auto bg-white shadow-md rounded-lg p-6 mt-10">
     <h2 class="text-2xl font-semibold text-center text-gray-700 mb-6">Upload Data</h2>
 
-    <form action="{{ route('upload.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+    <form action="{{ route('manajemen-data-inflasi.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
         @csrf
 
         <div>

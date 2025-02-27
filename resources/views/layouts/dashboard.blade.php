@@ -18,19 +18,28 @@
     </script>
 </head>
 
-<body>
+<body class="min-h-screen bg-abubiru flex flex-col">
     <!-- Sidebar Container -->
-    <div class="flex">
+    <div class="flex flex-grow relative">
         <!-- Sidebar -->
         @include('partials.sidebar')
 
         <!-- Konten Utama -->
-        <div class="flex-grow p-5">
-            @yield('body')
+        <div class="flex-grow p-5  relative z-10">
+            <div class="z-20">
+                @yield('body')
+            </div>
+        </div>
+
+        <!-- Gambar Batik Kawung -->
+        <div class="absolute -top-20 right-44 z-15">
+            <img src="{{ asset('images/kawung.svg') }}" alt="Batik Kawung" class="h-[27rem]">
+        </div>
+        <div class="absolute bottom-0 left-60 z-15">
+            <img src="{{ asset('images/kawung.svg') }}" alt="Batik Kawung" class="h-[15rem] rotate-45">
         </div>
     </div>
     @include('partials.footerKecil')
-
 
     <!-- Script -->
     <script>
@@ -85,6 +94,5 @@
         });
     </script>
 </body>
-
 
 </html>

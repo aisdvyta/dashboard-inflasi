@@ -13,12 +13,12 @@ class UploadController extends Controller
     public function index()
     {
         $uploads = data_inflasi::orderBy('created_at', 'desc')->get();
-        return view('import.index', compact('uploads'));
+        return view('prov.manajemen-data-inflasi.index', compact('uploads'));
     }
 
     public function create()
     {
-        return view('import.create');
+        return view('prov.manajemen-data-inflasi.create');
     }
 
     public function store(Request $request)
