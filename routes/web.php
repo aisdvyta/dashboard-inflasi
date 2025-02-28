@@ -7,10 +7,14 @@ use Illuminate\Support\Facades\Route;
 Route::get('/login',function(){
     return view('formLogin');
 })->name('login');
+
 Route::get('/', function () {
     return view('user.index');
 })->name('landingPage');
 
+Route::get('/adminprov', function () {
+    return view('prov.index');
+})->name('landingPageProv');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
 Route::get('/dashboard/filter', [DashboardController::class, 'filter'])->name('dashboard.filter');
