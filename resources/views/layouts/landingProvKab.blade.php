@@ -20,11 +20,11 @@
 
 
 <body>
-    @include('partials.navbarProvKab')
+    @include('components.navbarProvKab')
     <div class="">
         @yield('body')
     </div>
-    @include('partials.footer')
+    @include('components.footer')
     @stack('scripts')
 </body>
 

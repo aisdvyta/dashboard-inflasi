@@ -22,7 +22,7 @@
     <!-- Sidebar Container -->
     <div class="flex flex-grow relative">
         <!-- Sidebar -->
-        @include('partials.sidebar')
+        @include('components.sidebar')
 
         <!-- Konten Utama -->
         <div class="flex-grow p-5  relative z-10">
@@ -39,7 +39,7 @@
             <img src="{{ asset('images/kawung.svg') }}" alt="Batik Kawung" class="h-[15rem] rotate-45">
         </div>
     </div>
-    @include('partials.footerKecil')
+    @include('components.footerKecil')
 
     <!-- Script -->
     <script>

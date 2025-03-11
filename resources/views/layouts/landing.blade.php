@@ -20,11 +20,11 @@
 
 
 <body>
-    @include('partials.navbar')
+    @include('components.navbar')
     <div class="">
         @yield('body')
     </div>
-    @include('partials.footer')
+    @include('components.footer')
     @stack('scripts')
 </body>
 

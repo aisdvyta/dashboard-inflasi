@@ -8,14 +8,8 @@
         @csrf
 
         <div>
-            <label class="block text-gray-600 font-medium mb-1">Username Upload:</label>
-            <input type="text" name="username" required
-                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400">
-        </div>
-
-        <div>
             <label class="block text-gray-600 font-medium mb-1">Periode Data (MM/YYYY):</label>
-            <input type="text" name="period" required placeholder="MM/YYYY"
+            <input type="month" name="periode" required
                 class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400">
         </div>
 
@@ -23,19 +17,11 @@
             <label class="block text-gray-600 font-medium mb-1">Pilih Kategori:</label>
             <div class="space-y-2">
                 <label class="flex items-center space-x-2">
-                    <input type="radio" name="category" value="ASEM 1" required class="form-radio text-blue-500">
-                    <span>ASEM 1</span>
+                    <input type="radio" name="jenis_data_inflasi" value="ASEM" required class="form-radio text-blue-500">
+                    <span>ASEM</span>
                 </label>
                 <label class="flex items-center space-x-2">
-                    <input type="radio" name="category" value="ASEM 2" class="form-radio text-blue-500">
-                    <span>ASEM 2</span>
-                </label>
-                <label class="flex items-center space-x-2">
-                    <input type="radio" name="category" value="ASEM 3" class="form-radio text-blue-500">
-                    <span>ASEM 3</span>
-                </label>
-                <label class="flex items-center space-x-2">
-                    <input type="radio" name="category" value="ATAP" class="form-radio text-blue-500">
+                    <input type="radio" name="jenis_data_inflasi" value="ATAP" class="form-radio text-blue-500">
                     <span>ATAP</span>
                 </label>
             </div>

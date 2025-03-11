@@ -11,17 +11,18 @@ return new class extends Migration {
     public function up()
     {
         Schema::create('data_inflasis', function (Blueprint $table) {
-            $table->id();
-            $table->string('username');
-            $table->string('data_name');
-            $table->string('period'); // format MM/YYYY
-            $table->string('category');
-            $table->string('file_path'); // link to stored CSV file
-            $table->timestamps();
+            $table->bigInteger('id')->primary();
+            $table->uuid('id_pengguna');
+            $table->string('nama', 64);
+            $table->date('periode');
+            $table->string('jenis_data_inflasi', 4);
+            $table->date('upload_at');
+            $table->foreign('id_pengguna')->references('id')->on('penggunas')->onDelete('cascade');
         });
     }
+
     public function down()
     {
-        Schema::dropIfExists('uploads');
+        Schema::dropIfExists('data_inflasis');
     }
 };

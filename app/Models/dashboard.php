@@ -1,0 +1,37 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Dashboard extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'id_inflasi', 'id_satker', 'id_kom', 'id_flag',
+        'inflasi_MtM', 'inflasi_YtD', 'inflasi_YoY',
+        'andil_MtM', 'andil_YtD', 'andil_YoY', 'created_at'
+    ];
+
+    public function inflasi()
+    {
+        return $this->belongsTo(data_inflasi::class, 'id_inflasi');
+    }
+
+    public function satker()
+    {
+        return $this->belongsTo(master_satker::class, 'id_satker');
+    }
+
+    public function komoditas()
+    {
+        return $this->belongsTo(master_komoditas::class, 'id_kom');
+    }
+
+    public function flag()
+    {
+        return $this->belongsTo(master_flag::class, 'id_flag');
+    }
+}

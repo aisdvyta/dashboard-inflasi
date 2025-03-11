@@ -2,9 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use App\Models\master_flag;
+use App\Models\role;
 
 class DatabaseSeeder extends Seeder
 {
@@ -13,11 +14,16 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        master_flag::insert([
+            ['id' => 0, 'desk_flag' => 'Kelompok'],
+            ['id' => 1, 'desk_flag' => 'Subkelompok'],
+            ['id' => 2, 'desk_flag' => 'Sub-subkelompok'],
+            ['id' => 3, 'desk_flag' => 'Entitas'],
+        ]);
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        role::insert([
+            ['nama_role' => 'Admin Provinsi'],
+            ['nama_role' => 'Admin Kabkot'],
         ]);
     }
 }
