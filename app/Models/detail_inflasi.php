@@ -5,19 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Dashboard extends Model
+class detail_inflasi extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'id_inflasi', 'id_satker', 'id_kom', 'id_flag',
+        'id_inflasi', 'id_satker', 'id_wil', 'id_flag',
         'inflasi_MtM', 'inflasi_YtD', 'inflasi_YoY',
         'andil_MtM', 'andil_YtD', 'andil_YoY', 'created_at'
     ];
 
     public function inflasi()
     {
-        return $this->belongsTo(data_inflasi::class, 'id_inflasi');
+        return $this->belongsTo(master_inflasi::class, 'id_inflasi');
     }
 
     public function satker()
@@ -32,6 +32,6 @@ class Dashboard extends Model
 
     public function flag()
     {
-        return $this->belongsTo(master_flag::class, 'id_flag');
+        return $this->belongsTo(master_komoditas::class, 'id_flag');
     }
 }

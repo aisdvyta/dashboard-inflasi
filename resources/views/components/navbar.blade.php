@@ -28,7 +28,7 @@
                 </li>
                 <li><a href="#main3"  class="hover:text-biru4 text-base font-semibold">Tentang Kami</a></li>
             </ul>
-            <a href="{}" class="flex items-center px-3 py-1 bg-biru1 text-white rounded-lg hover:bg-biru4 font-jakarta text-base font-semibold">
+            <a href="{{ route('login') }}" class="flex items-center px-3 py-1 bg-biru1 text-white rounded-lg hover:bg-biru4 font-jakarta text-base font-semibold">
                 <img src="{{ asset('images/navbar/loginIcon.svg') }}" alt="login icon" class="mr-2">
                 Login
             </a>

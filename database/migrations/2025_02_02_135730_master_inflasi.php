@@ -10,7 +10,7 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::create('data_inflasis', function (Blueprint $table) {
+        Schema::create('master_inflasis', function (Blueprint $table) {
             $table->bigInteger('id')->primary();
             $table->uuid('id_pengguna');
             $table->string('nama', 64);
@@ -23,6 +23,6 @@ return new class extends Migration {
 
     public function down()
     {
-        Schema::dropIfExists('data_inflasis');
+        Schema::dropIfExists('master_inflasis');
     }
 };

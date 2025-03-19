@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\data_inflasi;
-use App\Models\Dashboard;
+use App\Models\master_inflasi;
+use App\Models\detail_inflasi;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Carbon\Carbon;
 
@@ -12,7 +12,7 @@ class UploadController extends Controller
 {
     public function index()
     {
-        $uploads = data_inflasi::orderBy('created_at', 'desc')->get();
+        $uploads = master_inflasi::orderBy('created_at', 'desc')->get();
         return view('prov.manajemen-data-inflasi.index', compact('uploads'));
     }
 
@@ -25,24 +25,24 @@ class UploadController extends Controller
     {
         $request->validate([
             'periode' => 'required|date_format:Y-m',
-            'jenis_data_inflasi' => 'required',
+            'jenis_master_inflasi' => 'required',
             'file' => 'required|mimes:xlsx'
         ]);
 
         // Generate nama otomatis
         $periode = Carbon::createFromFormat('Y-m', $request->periode);
-        $nama = 'data inflasi ' . $request->jenis_data_inflasi . ' ' . $periode->translatedFormat('F Y');
+        $nama = 'data inflasi ' . $request->jenis_master_inflasi . ' ' . $periode->translatedFormat('F Y');
 
-        // Simpan ke data_inflasi terlebih dahulu
-        $dataInflasi = data_inflasi::create([
+        // Simpan ke master_inflasi terlebih dahulu
+        $dataInflasi = master_inflasi::create([
             'id_pengguna' => '01', // Tambahkan ini
             'nama' => $nama,
             'periode' => $periode->startOfMonth()->toDateString(), // Ubah ke format YYYY-MM-01
-            'jenis_data_inflasi' => $request->jenis_data_inflasi,
+            'jenis_master_inflasi' => $request->jenis_master_inflasi,
             'upload_at' => now(),
         ]);
 
-        // Ambil ID data_inflasi yang baru saja dibuat
+        // Ambil ID master_inflasi yang baru saja dibuat
         $idInflasi = $dataInflasi->id;
 
         // Proses file Excel
@@ -65,10 +65,10 @@ class UploadController extends Controller
         $indexAndilYtD = array_search('Andil YtD', $header);
         $indexAndilYoY = array_search('Andil YoY', $header);
 
-        // Loop setiap baris data di Excel dan simpan ke tabel dashboard
+        // Loop setiap baris data di Excel dan simpan ke tabel detail_inflasi
         foreach ($rows as $row) {
-            Dashboard::create([
-                'id_inflasi' => $idInflasi, // Masukkan ID dari data_inflasi
+            detail_inflasi::create([
+                'id_inflasi' => $idInflasi, // Masukkan ID dari master_inflasi
                 'id_satker' => $row[$indexKodeKota] ?? null,
                 'id_kom' => $row[$indexKodeKomoditas] ?? null,
                 'id_flag' => $row[$indexFlag] ?? null,
@@ -89,16 +89,16 @@ class UploadController extends Controller
     public function show($data_name)
     {
         // Cari data berdasarkan nama file
-        $upload = data_inflasi::where('nama', $data_name)->first();
+        $upload = master_inflasi::where('nama', $data_name)->first();
 
         // Jika tidak ditemukan, kembalikan error 404
         if (!$upload) {
             return abort(404, 'Data tidak ditemukan');
         }
 
-        // Ambil data dari tabel dashboard
-        $dashboardData = Dashboard::where('id_inflasi', $upload->id)->get();
+        // Ambil data dari tabel detail_inflasi
+        $detail_inflasiData = detail_inflasi::where('id_inflasi', $upload->id)->get();
 
-        return view('import.show', compact('upload', 'dashboardData'));
+        return view('import.show', compact('upload', 'detail_inflasiData'));
     }
 }

@@ -10,11 +10,23 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'penggunas';
+
     protected $fillable = [
         'name',
         'email',
         'password',
     ];
+
+    public function getAuthIdentifierName()
+    {
+        return 'name';
+    }
 
     public function satker()
     {

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\UploadController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\LoginController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\View;
 
@@ -26,9 +27,8 @@ Route::get('/dashboard/infbulanan',function(){return view('dashboard.infBulananJ
 
 
 
-Route::get('/login',function(){
-    return view('formLogin');
-})->name('login');
-
+Route::get('/login', [LoginController::class, 'index'])->name('login');
+Route::post('/login', [LoginController::class, 'login']);
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 // PROV //
 Route::get('/adminprov', function () {return view('prov.index');})->name('landingPageProv');

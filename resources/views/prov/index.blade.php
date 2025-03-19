@@ -12,7 +12,6 @@
                 Selamat Datang,
                 <span class="text-kuning1">Admin</span>
                 <br><span class="text-biru4 text-2xl pt-5">di Manajemen Dashboard Inflasi BPS Provinsi Jawa Timur</span>
-
             </h1>
             <p class="text-gray-700 text-base mt-5">
                 <span class="font-bold text-biru2">Manajemen Dashboard Inflasi</span> berfungsi untuk membantu manajemen data

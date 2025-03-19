@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class master_flag extends Model
+class master_wilayah extends Model
 {
-    /** @use HasFactory<\Database\Factories\MasterFlagFactory> */
+    /** @use HasFactory<\Database\Factories\MasterWilayahFactory> */
     use HasFactory;
 
-    protected $fillable = ['id', 'desk_flag'];
+    protected $fillable = ['nama_wilayah'];
 }

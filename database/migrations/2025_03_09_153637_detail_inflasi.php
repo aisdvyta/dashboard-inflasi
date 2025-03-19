@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('dashboards', function (Blueprint $table) {
+        Schema::create('detail_inflasis', function (Blueprint $table) {
             $table->bigInteger('id')->primary();
             $table->bigInteger('id_inflasi');
-            $table->unsignedSmallInteger('id_satker');
+            $table->unsignedSmallInteger('id_wil');
             $table->unsignedInteger('id_kom')->nullable();
             $table->unsignedTinyInteger('id_flag')->nullable();
             $table->decimal('inflasi_MtM', 5, 2);
@@ -24,15 +24,15 @@ return new class extends Migration
             $table->decimal('andil_YtD', 5, 2);
             $table->decimal('andil_YoY', 5, 2);
             $table->date('created_at');
-            $table->foreign('id_inflasi')->references('id')->on('data_inflasis')->onDelete('cascade');
-            $table->foreign('id_satker')->references('id')->on('master_satkers')->onDelete('cascade');
-            $table->foreign('id_kom')->references('id')->on('master_komoditas')->onDelete('cascade');
-            $table->foreign('id_flag')->references('id')->on('master_flags')->onDelete('cascade');
+            $table->foreign('id_inflasi')->references('id')->on('master_inflasis')->onDelete('cascade');
+            $table->foreign('id_wil')->references('kode_wil')->on('master_wilayahs')->onDelete('cascade');
+            $table->foreign('id_kom')->references('kode_kom')->on('master_komoditas')->onDelete('cascade');
+            $table->foreign('id_flag')->references('flag')->on('master_komoditas')->onDelete('cascade');
         });
     }
 
     public function down()
     {
-        Schema::dropIfExists('dashboards');
+        Schema::dropIfExists('detail_inflasis');
     }
 };

@@ -16,19 +16,24 @@ return new class extends Migration
             $table->string('nama_role', 24);
         });
 
-        Schema::create('master_flags', function (Blueprint $table) {
-            $table->unsignedTinyInteger('id')->primary();
-            $table->string('desk_flag',24);
+        Schema::create('master_satkers', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedSmallInteger('kode_satker')->unique();
+            $table->string('nama_satker', 24);
+        });
+
+        Schema::create('master_wilayahs', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedSmallInteger('kode_wil')->unique();
+            $table->string('nama_wil', 24);
         });
 
         Schema::create('master_komoditas', function (Blueprint $table) {
-            $table->unsignedInteger('id')->primary();
-            $table->string('nama_kom',24);
-        });
-
-        Schema::create('master_satkers', function (Blueprint $table) {
-            $table->unsignedSmallInteger('id')->primary();
-            $table->string('nama_satker', 24);
+            $table->id();
+            $table->unsignedTinyInteger('flag')->index();
+            $table->text('nama_kom');
+            $table->unsignedInteger('kode_kom')->unique();
+            $table->string('kode_kom_path')->unique()->nullable();
         });
     }
 
@@ -38,8 +43,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('roles');
-        Schema::dropIfExists('master_flags');
-        Schema::dropIfExists('master_komoditas');
         Schema::dropIfExists('master_satkers');
+        Schema::dropIfExists('master_wilayahs');
+        Schema::dropIfExists('master_komoditas');
     }
 };

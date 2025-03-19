@@ -18,11 +18,16 @@
     <h2 class="text-4xl font-bold text-biru1">Silahkan <span class="text-kuning1">Login</span> Terlebih Dahulu!</h2>
 
     <div class="w-full max-w-sm bg-white p-4 rounded-lg shadow-md text-center">
+        @if ($errors->has('login'))
+            <div class="mb-4 text-red-500">
+                {{ $errors->first('login') }}
+            </div>
+        @endif
         <form action="{{ route('login') }}" method="POST">
             @csrf
             <div class="mb-4 text-left">
-                <label for="username" class="block text-biru1 font-normal">Username</label>
-                <input type="text" id="username" name="username" required
+                <label for="nama" class="block text-biru1 font-normal">Nama atau Email</label>
+                <input type="text" id="nama" name="nama" required
                     class="w-full mt-1 p-2 rounded-2xl border border-biru5 focus:ring focus:ring-biru5">
             </div>
 

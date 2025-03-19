@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('nama', 64);
             $table->string('email', 64);
             $table->string('password', 64);
-            $table->foreign('id_satker')->references('id')->on('master_satkers')->onDelete('cascade');
+            $table->foreign('id_satker')->references('kode_satker')->on('master_satkers')->onDelete('cascade');
             $table->foreign('id_role')->references('id')->on('roles')->onDelete('cascade');
         });
     }
