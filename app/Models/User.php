@@ -37,4 +37,8 @@ class User extends Authenticatable
     {
         return $this->belongsTo(role::class, 'id_role');
     }
+    public function masterInflasis()
+    {
+        return $this->hasMany(master_inflasi::class, 'id_pengguna');
+    }
 }

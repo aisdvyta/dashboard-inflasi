@@ -12,7 +12,7 @@ class UploadController extends Controller
 {
     public function index()
     {
-        $uploads = master_inflasi::orderBy('created_at', 'desc')->get();
+        $uploads = master_inflasi::orderBy('upload_at', 'desc')->get();
         return view('prov.manajemen-data-inflasi.index', compact('uploads'));
     }
 
@@ -69,7 +69,7 @@ class UploadController extends Controller
         foreach ($rows as $row) {
             detail_inflasi::create([
                 'id_inflasi' => $idInflasi, // Masukkan ID dari master_inflasi
-                'id_satker' => $row[$indexKodeKota] ?? null,
+                'id_wil' => $row[$indexKodeKota] ?? null,
                 'id_kom' => $row[$indexKodeKomoditas] ?? null,
                 'id_flag' => $row[$indexFlag] ?? null,
                 'inflasi_MtM' => isset($row[$indexInflasiMtM]) ? round(floatval($row[$indexInflasiMtM]), 2) : null,

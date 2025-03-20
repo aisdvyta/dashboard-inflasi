@@ -9,30 +9,15 @@ class master_komoditas extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['flag', 'nama_kom', 'kode_kom', 'kode_kom_path'];
+    protected $table = 'master_komoditas';
+    protected $fillable = ['kode_kom', 'nama_kom', 'flag', 'flag_2'];
 
-    protected static function boot()
+    public function parent()
     {
-        parent::boot();
-
-        static::creating(function ($komoditas) {
-            if (empty($komoditas->kode_kom_path)) {
-                $komoditas->kode_kom_path = self::generateKodeKomPath($komoditas);
-            }
-        });
-
-        static::updating(function ($komoditas) {
-            $komoditas->kode_kom_path = self::generateKodeKomPath($komoditas);
-        });
+        return $this->belongsTo(master_komoditas::class, 'flag_2', 'flag');
     }
-
-    private static function generateKodeKomPath($komoditas)
+    public function children()
     {
-        $previousPath = self::where('flag', '<', $komoditas->flag)
-            ->orderBy('flag', 'desc')
-            ->pluck('kode_kom_path')
-            ->first();
-
-        return $previousPath ? $previousPath . '.' . $komoditas->kode_kom : $komoditas->kode_kom;
+        return $this->hasMany(master_komoditas::class, 'flag_2', 'flag');
     }
 }

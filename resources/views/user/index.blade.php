@@ -31,20 +31,14 @@
     @include('components.dashboardcard')
 
     <!-- Ini Main 3 -->
-    <div id="main3" class="min-h-[93vh]">
-        <!-- Banner Pattern -->
-        <div class="relative w-full">
-            <img src="{{ asset('images/landingMain3/batasMain3.svg') }}" alt="Pattern Batas Main 3"
-                class="w-full h-fit object-cover">
-        </div>
-
+    <div id="main3" class="min-h-[90vh]">
         <div class="container mx-auto px-6 md:px-12 lg:px-24 flex flex-col md:flex-row items-center mt-8">
             <!-- Image -->
             <div class="w-full md:w-1/3 flex flex-col items-center -translate-y-8">
                 <img src="{{ asset('images/landingMain3/pakZulKartun.svg') }}" alt="Kepala BPS Provinsi Jawa Timur"
                     class="w-80 h-auto object-cover">
-                <p class="mt-2 text-biru1 text-center font-semibold">Bapak Dr. Zulkipli, M.Si.</p>
-                <p class="text-biru1 text-center">Kepala BPS Provinsi Jawa Timur</p>
+                <p class="mt-2 text-biru1 text-center">Bapak Dr. Zulkipli, M.Si.</p>
+                <p class="text-biru1 text-center  font-semibold">Kepala BPS Provinsi Jawa Timur</p>
             </div>
 
             <!-- Text -->

@@ -17,23 +17,21 @@ return new class extends Migration
         });
 
         Schema::create('master_satkers', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedSmallInteger('kode_satker')->unique();
+            $table->unsignedSmallInteger('kode_satker')->primary();
             $table->string('nama_satker', 24);
         });
 
         Schema::create('master_wilayahs', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedSmallInteger('kode_wil')->unique();
+            $table->unsignedSmallInteger('kode_wil')->primary();
             $table->string('nama_wil', 24);
         });
 
         Schema::create('master_komoditas', function (Blueprint $table) {
             $table->id();
+            $table->string('kode_kom')->unique();
             $table->unsignedTinyInteger('flag')->index();
             $table->text('nama_kom');
-            $table->unsignedInteger('kode_kom')->unique();
-            $table->string('kode_kom_path')->unique()->nullable();
+            $table->unsignedTinyInteger('flag_2')->nullable()->index();
         });
     }
 
