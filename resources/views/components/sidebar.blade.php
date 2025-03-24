@@ -56,7 +56,7 @@
         <div class="border-b-2 my-2 shadow-lg"></div>
 
         <!-- Menu Items -->
-        <ul>
+        <ul class="space-y-3">
             <li>
                 <a href="{{ route('landingPage') }}"
                     class="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-biru4 hover:text-white group">
@@ -105,16 +105,6 @@
                         class="h-6 w-6 icon" data-hover="{{ asset('images/sidebar/pdataInflasiIcon.svg') }}"
                         data-default="{{ asset('images/sidebar/bdataInflasiIcon.svg') }}">
                     <span class="menu-text font-medium text-[15px]">Daftar Tabel Data Inflasi</span>
-                </a>
-            </li>
-
-            <li>
-                <a href="{{ route('landingPage') }}#main3"
-                    class="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-biru4 hover:text-white group">
-                    <img src="{{ asset('images/sidebar/btentangIcon.svg') }}" alt="Ikon Tentang" class="h-6 w-6 icon"
-                        data-hover="{{ asset('images/sidebar/ptentangIcon.svg') }}"
-                        data-default="{{ asset('images/sidebar/btentangIcon.svg') }}">
-                    <span class="menu-text font-medium text-[15px]">Tentang</span>
                 </a>
             </li>
         </ul>

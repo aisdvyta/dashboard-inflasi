@@ -2,8 +2,6 @@
 
 @section('body')
     <div class="container mx-auto p-6 relative">
-        <!-- Elemen Batik -->
-
         <div class="flex justify-between items-center mb-4">
             <h2 class="text-3xl font-bold text-biru4"><span class="font-bold text-biru1">Tabel</span> Data Inflasi</h2>
             <div class="flex items-center gap-2 px-4 py-1 bg-white rounded-xl shadow-lg">

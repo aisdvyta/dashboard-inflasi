@@ -68,7 +68,7 @@ class UploadController extends Controller
         // Loop setiap baris data di Excel dan simpan ke tabel detail_inflasi
         foreach ($rows as $row) {
             detail_inflasi::create([
-                'id_inflasi' => $idInflasi, // Masukkan ID dari master_inflasi
+                'id_inflasi' => $idInflasi, 
                 'id_wil' => $row[$indexKodeKota] ?? null,
                 'id_kom' => $row[$indexKodeKomoditas] ?? null,
                 'id_flag' => $row[$indexFlag] ?? null,

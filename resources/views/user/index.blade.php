@@ -18,7 +18,7 @@
                 Provinsi Jawa Timur melalui visualisasi yang interaktif dan informatif.
             </p>
             <a href="#"
-                class="inline-flex items-center rounded-2xl gap-4 mt-5 pr-2 pl-4 py-1 bg-biru4 text-white font-semibold rounded-lg transition-all hover:bg-biru1 hover:translate-x-1">
+                class="inline-flex items-center rounded-2xl gap-4 mt-5 pr-2 pl-4 py-1 bg-biru4 text-white font-semibold rounded-lg transition-all duration-300 hover:bg-biru1 hover:translate-x-2">
                 Cari tau lebih lanjut
                 <img src="{{ asset('images/landingMain1/arrowRight.svg') }}" alt="panah kanan icon">
                 <span class="text-lg"></span>
@@ -97,7 +97,7 @@
                     </div>
                     <h3 class="mt-4 font-bold text-biru1">Instagram</h3>
                     <a href="https://www.instagram.com/bpsjatim?igsh=MWE1cHA1NG9rdWhpbg==" target="_blank"
-                        class="text-biru4 text-sm font-normal transition-transform duration-200 hover:text-biru2 hover:translate-x-1 inline-block">
+                        class="text-biru4 text-sm font-normal transition-transform duration-200 hover:text-biru2 hover:translate-x-2 inline-block">
                         Lihat Profil →
                     </a>
                     <div class="mt-4 flex space-x-0 items-center justify-center">
@@ -116,7 +116,7 @@
                     </div>
                     <h3 class="mt-4 font-bold text-biru1">Website</h3>
                     <a href="https://jatim.bps.go.id/id" target="_blank"
-                        class="text-biru4 text-sm font-normal transition-all hover:text-biru2 hover:translate-x-1 inline-block">Lihat
+                        class="text-biru4 text-sm font-normal transition-all hover:text-biru2 hover:translate-x-2 inline-block">Lihat
                         Profil →</a>
                     <div class="mt-4 flex space-x-0 items-center justify-center">
                         <img src="{{ asset('images/landingMain4/kontWebsite.svg') }}"
@@ -133,7 +133,7 @@
                     </div>
                     <h3 class="mt-4 font-bold text-biru1">Twitter</h3>
                     <a href="https://x.com/bpsjatim" target="_blank"
-                        class="text-biru4 text-sm font-normal transition-all hover:text-biru2 hover:translate-x-1 inline-block">Lihat
+                        class="text-biru4 text-sm font-normal transition-all hover:text-biru2 hover:translate-x-2 inline-block">Lihat
                         Profil →</a>
                     <div class="mt-4 flex space-x-0 items-center justify-center">
                         <img src="{{ asset('images/landingMain4/kontXKiri.svg') }}"
@@ -147,12 +147,11 @@
                 <!-- Facebook -->
                 <div class="h-[13rem] w-[12rem] bg-white p-4 rounded-3xl shadow-lg text-center overflow-hidden">
                     <div class="flex justify-center">
-                        <img src="{{ asset('images/landingMain4/facebookIcon.svg') }}" alt="Facebook Logo"
-                            class="w-8 h-8">
+                        <img src="{{ asset('images/landingMain4/facebookIcon.svg') }}" alt="Facebook Logo" class="w-8 h-8">
                     </div>
                     <h3 class="mt-4 font-bold text-biru1">Facebook</h3>
                     <a href="https://www.facebook.com/bpsjatim" target="_blank"
-                        class="text-biru4 text-sm font-normal transition-all hover:text-biru2 hover:translate-x-1 inline-block">Lihat
+                        class="text-biru4 text-sm font-normal transition-all hover:text-biru2 hover:translate-x-2 inline-block">Lihat
                         Profil →</a>
                     <div class="mt-4 flex space-x-0 items-center justify-center">
                         <img src="{{ asset('images/landingMain4/kontFBKiri.svg') }}"
@@ -172,7 +171,7 @@
                     </div>
                     <h3 class="mt-4 font-bold text-biru1">YouTube</h3>
                     <a href="https://www.youtube.com/@bpsprovjatim" target="_blank"
-                        class="text-biru4 text-sm font-normal transition-all hover:text-biru2 hover:translate-x-1 inline-block">Lihat
+                        class="text-biru4 text-sm font-normal transition-all hover:text-biru2 hover:translate-x-2 inline-block">Lihat
                         Profil →</a>
                     <div class="mt-4 flex space-x-0 items-center justify-center">
                         <img src="{{ asset('images/landingMain4/kontYtKiri.svg') }}"
@@ -189,7 +188,7 @@
                     </div>
                     <h3 class="mt-4 font-bold text-biru1">TikTok</h3>
                     <a href="https://www.tiktok.com/@bpsjatim" target="_blank"
-                        class="text-biru4 text-sm font-normal transition-all hover:text-biru2 hover:translate-x-1 inline-block">Lihat
+                        class="text-biru4 text-sm font-normal transition-all hover:text-biru2 hover:translate-x-2 inline-block">Lihat
                         Profil →</a>
                     <div class="mt-4 flex space-x-0 items-center justify-center">
                         <img src="{{ asset('images/landingMain4/kontTtKiri.svg') }}"

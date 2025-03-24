@@ -32,10 +32,10 @@
         </div>
 
         <!-- Gambar Batik Kawung -->
-        <div class="absolute -top-20 right-44 z-15">
-            <img src="{{ asset('images/kawung.svg') }}" alt="Batik Kawung" class="h-[27rem]">
+        <div class="absolute -top-20 right-14 z-15">
+            <img src="{{ asset('images/kawung.svg') }}" alt="Batik Kawung" class="h-[25rem]">
         </div>
-        <div class="absolute bottom-0 left-60 z-15">
+        <div class="absolute bottom-4 left-60 z-15">
             <img src="{{ asset('images/kawung.svg') }}" alt="Batik Kawung" class="h-[15rem] rotate-45">
         </div>
     </div>
