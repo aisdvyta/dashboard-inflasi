@@ -12,8 +12,8 @@
             @csrf
             <div class="mb-4 text-left">
                 <label for="nama" class="block text-biru1 font-semibold">Username Upload</label>
-                <input type="text" id="nama" name="nama" required
-                    class="w-full mt-1 p-2 rounded-2xl border border-biru5 focus:ring-biru5">
+                <input type="text" id="nama" name="nama" value="{{ Auth::user()->nama }}" readonly
+                    class="w-full mt-1 p-2 rounded-2xl border border-biru5 bg-gray-100 focus:ring-biru5">
             </div>
 
             <div class="mb-4 text-left">

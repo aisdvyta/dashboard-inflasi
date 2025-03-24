@@ -15,6 +15,8 @@ class detail_inflasi extends Model
         'andil_MtM', 'andil_YtD', 'andil_YoY', 'created_at'
     ];
 
+    public $timestamps = false;
+
     public function inflasi()
     {
         return $this->belongsTo(master_inflasi::class, 'id_inflasi');

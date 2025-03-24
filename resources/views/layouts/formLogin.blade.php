@@ -46,12 +46,11 @@
                         </button>
                     </div>
 
-                    <div class="flex justify-end gap-2 mb-2">
-                        <a href="{{ url()->previous() }}"
-                            class="w-32 bg-biru4 rounded-lg text-white font-base py-1 text-center hover:bg-biru5 hover:text-biru1 transition">
-                            Cancel</a>
+                    <div class="flex justify-center mb-2">
                         <button type="submit"
-                            class="w-32 bg-kuning1 rounded-lg text-biru1 font-semibold py-1 hover:bg-kuning2 transition">Login</button>
+                            class="w-full bg-biru4 rounded-lg text-white font-semibold py-2 hover:bg-biru5 hover:text-biru1 transition">
+                            Login
+                        </button>
                     </div>
                 </form>
             </div>

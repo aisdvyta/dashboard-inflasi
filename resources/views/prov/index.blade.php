@@ -51,33 +51,36 @@
 
         <div class="flex flex-wrap justify-center gap-12 mt-24">
             <!-- Manajemen Akun -->
-            <div class="bg-white p-6 rounded-2xl shadow-lg w-80 flex flex-col items-start text-start">
+            <div class="bg-white p-6 rounded-2xl shadow-lg w-80 flex flex-col items-stretch text-start">
                 <img src="{{ asset('images/adminProv/manajemenAkun.svg') }}" alt="Manajemen Akun"
                     class="self-center w-40 h-fit mb-4">
                 <h2 class="text-biru1 text-lg font-semibold">Manajemen Akun</h2>
-                <p class="text-biru1 text-sm mt-2">Melakukan penambahan, pengeditan, atau penghapusan akun Tim Harga BPS
+                <p class="text-biru1 text-sm mt-2 flex-grow">Melakukan penambahan, pengeditan, atau penghapusan akun Tim Harga BPS
                     Kab/Kota IHK</p>
-                <a href="#" class="text-biru4 mt-3 transition-transform duration-200 hover:translate-x-2 inline-block">Lakukan →</a>
+                <a href="#"
+                    class="text-biru4 mt-3 transition-transform duration-200 hover:translate-x-2 inline-block">Lakukan →</a>
             </div>
 
             <!-- Manajemen Data Inflasi -->
-            <div class="bg-white p-6 rounded-2xl shadow-lg w-80 flex flex-col items-start text-start">
+            <div class="bg-white p-6 rounded-2xl shadow-lg w-80 flex flex-col items-stretch text-start">
                 <img src="{{ asset('images/adminProv/manajemenDataInflasi.svg') }}" alt="Manajemen Data Inflasi"
                     class="self-center w-40 h-fit mb-4">
                 <h2 class="text-biru1 text-lg font-semibold">Manajemen Data Inflasi</h2>
-                <p class="text-biru1 text-sm mt-2">Melakukan penambahan, pengeditan, atau penghapusan data inflasi
+                <p class="text-biru1 text-sm mt-2 flex-grow">Melakukan penambahan, pengeditan, atau penghapusan data inflasi
                     sementara (ASEM) atau tetap (ATAP)</p>
-                <a href="#" class="text-biru4 mt-3 transition-transform duration-200 hover:translate-x-2 inline-block">Lakukan →</a>
+                <a href="#"
+                    class="text-biru4 mt-3 transition-transform duration-200 hover:translate-x-2 inline-block">Lakukan →</a>
             </div>
 
             <!-- Dashboard Inflasi -->
-            <div class="bg-white p-6 rounded-2xl shadow-lg w-80 flex flex-col items-start text-start">
+            <div class="bg-white p-6 rounded-2xl shadow-lg w-80 flex flex-col items-stretch text-start">
                 <img src="{{ asset('images/adminProv/dashInflasi.svg') }}" alt="Dashboard Inflasi"
                     class="self-center w-40 h-fit mb-4">
                 <h2 class="text-biru1 text-lg font-semibold">Dashboard Inflasi</h2>
-                <p class="text-biru1 text-sm mt-2">Melihat tampilan visualisasi data inflasi di dashboard Provinsi Jawa
+                <p class="text-biru1 text-sm mt-2 flex-grow">Melihat tampilan visualisasi data inflasi di dashboard Provinsi Jawa
                     Timur</p>
-                <a href="#" class="text-biru4 mt-3 transition-transform duration-200 hover:translate-x-2 inline-block">Lakukan →</a>
+                <a href="#"
+                    class="text-biru4 mt-3 transition-transform duration-200 hover:translate-x-2 inline-block">Lakukan →</a>
             </div>
         </div>
     </div>

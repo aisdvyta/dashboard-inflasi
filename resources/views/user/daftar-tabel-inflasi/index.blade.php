@@ -28,13 +28,13 @@
                                 <div class="flex place-content-center gap-3">
                                     <a href="#"
                                         class="flex items-center gap-1 bg-biru4 text-white px-3 py-1 rounded-lg shadow-lg hover:-translate-y-1">
-                                        <img src="{{ asset('images/sidebar/eyeIcon.svg') }}" alt="View Icon"
+                                        <img src="{{ asset('images/eyeIcon.svg') }}" alt="View Icon"
                                             class="h-5 w-5">
                                         Lihat Data
                                     </a>
                                     <a href="#"
-                                        class="flex items-center gap-1 bg-kuning1 text-biru1 px-3 py-1 rounded-lg shadow-lg hover:-translate-y-1">
-                                        <img src="{{ asset('images/sidebar/downloadIcon.svg') }}" alt="Download Icon"
+                                        class="flex items-center gap-1 bg-hijaumuda text-white px-3 py-1 rounded-lg shadow-lg hover:-translate-y-1">
+                                        <img src="{{ asset('images/excelIcon.svg') }}" alt="Download Icon"
                                             class="h-5 w-5">
                                         Unduh Data
                                     </a>

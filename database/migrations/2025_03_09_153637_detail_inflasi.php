@@ -12,8 +12,8 @@ return new class extends Migration
     public function up()
     {
         Schema::create('detail_inflasis', function (Blueprint $table) {
-            $table->bigInteger('id')->primary();
-            $table->bigInteger('id_inflasi');
+            $table->id();
+            $table->unsignedBigInteger('id_inflasi');
             $table->unsignedSmallInteger('id_wil');
             $table->string('id_kom',10)->nullable();
             $table->unsignedTinyInteger('id_flag')->nullable();

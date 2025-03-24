@@ -11,11 +11,11 @@ return new class extends Migration {
     public function up()
     {
         Schema::create('master_inflasis', function (Blueprint $table) {
-            $table->bigInteger('id')->primary();
+            $table->id();
             $table->uuid('id_pengguna');
             $table->string('nama', 64);
             $table->date('periode');
-            $table->string('jenis_data_inflasi', 4);
+            $table->string('jenis_data_inflasi', 6);
             $table->date('upload_at');
             $table->foreign('id_pengguna')->references('id')->on('penggunas')->onDelete('cascade');
         });

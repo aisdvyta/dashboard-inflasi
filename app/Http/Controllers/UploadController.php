@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\master_inflasi;
 use App\Models\detail_inflasi;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -25,20 +26,20 @@ class UploadController extends Controller
     {
         $request->validate([
             'periode' => 'required|date_format:Y-m',
-            'jenis_master_inflasi' => 'required',
+            'jenis_data_inflasi' => 'required',
             'file' => 'required|mimes:xlsx'
         ]);
 
         // Generate nama otomatis
         $periode = Carbon::createFromFormat('Y-m', $request->periode);
-        $nama = 'data inflasi ' . $request->jenis_master_inflasi . ' ' . $periode->translatedFormat('F Y');
+        $nama = 'data inflasi ' . $request->jenis_data_inflasi . ' ' . $periode->translatedFormat('F Y');
 
         // Simpan ke master_inflasi terlebih dahulu
         $dataInflasi = master_inflasi::create([
-            'id_pengguna' => '01', // Tambahkan ini
+            'id_pengguna' => Auth::user()->id, // Ambil ID pengguna yang sedang login
             'nama' => $nama,
-            'periode' => $periode->startOfMonth()->toDateString(), // Ubah ke format YYYY-MM-01
-            'jenis_master_inflasi' => $request->jenis_master_inflasi,
+            'periode' => $periode->startOfMonth()->toDateString(),
+            'jenis_data_inflasi' => $request->jenis_data_inflasi,
             'upload_at' => now(),
         ]);
 
@@ -68,7 +69,7 @@ class UploadController extends Controller
         // Loop setiap baris data di Excel dan simpan ke tabel detail_inflasi
         foreach ($rows as $row) {
             detail_inflasi::create([
-                'id_inflasi' => $idInflasi, 
+                'id_inflasi' => $idInflasi,
                 'id_wil' => $row[$indexKodeKota] ?? null,
                 'id_kom' => $row[$indexKodeKomoditas] ?? null,
                 'id_flag' => $row[$indexFlag] ?? null,

@@ -24,13 +24,17 @@
                     </a>
                     <ul class="absolute left-0 p-2 mt-2 w-64 font-[450] font-normal bg-white shadow-lg rounded-b-lg hidden"
                         id="dashboardMenu">
-                        <li><a href="#submenu1" class="block px-4 py-2 rounded-lg hover:bg-biru4 hover:text-white">Dashboard
+                        <li><a href="#submenu1"
+                                class="block px-4 py-2 rounded-b-lg hover:bg-biru4 hover:text-white">Dashboard
                                 Inflasi Bulanan</a></li>
-                        <li><a href="#submenu2" class="block px-4 py-2 rounded-lg hover:bg-biru4 hover:text-white">Dashboard
+                        <li><a href="#submenu2"
+                                class="block px-4 py-2 rounded-b-lg hover:bg-biru4 hover:text-white">Dashboard
                                 Inflasi Spasial</a></li>
-                        <li><a href="#submenu3" class="block px-4 py-2 rounded-lg hover:bg-biru4 hover:text-white">Dashboard
-                                Inflasi Bulanan Menurut Kelompok Pengeluaran</a></li>
-                        <li><a href="#submenu4" class="block px-4 py-2 rounded-lg hover:bg-biru4 hover:text-white">Dashboard Series
+                        <li><a href="#submenu3"
+                                class="block px-4 py-2 rounded-b-lg hover:bg-biru4 hover:text-white">Dashboard
+                                Inflasi Menurut Kelompok Pengeluaran</a></li>
+                        <li><a href="#submenu4"
+                                class="block px-4 py-2 rounded-b-lg hover:bg-biru4 hover:text-white">Dashboard Series
                                 Inflasi</a></li>
                     </ul>
                 </li>
@@ -45,23 +49,39 @@
                     </a>
                     <ul class="absolute left-0 p-2 mt-2 w-52 font-normal bg-white shadow-lg rounded-b-lg hidden"
                         id="dropdownMenu">
-                        <li><a href="#submenu1" class="block px-4 py-2 rounded-lg hover:bg-biru4 hover:text-white">Manajemen
+                        <li><a href="#submenu1"
+                                class="block px-4 py-2 rounded-b-lg hover:bg-biru4 hover:text-white">Manajemen
                                 Akun</a></li>
-                        <li><a href="#submenu2" class="block px-4 py-2 rounded-lg hover:bg-biru4 hover:text-white">Manajemen Data
+                        <li><a href="#submenu2"
+                                class="block px-4 py-2 rounded-b-lg hover:bg-biru4 hover:text-white">Manajemen Data
                                 Inflasi</a></li>
-                        <li><a href="#submenu3" class="block px-4 py-2 rounded-lg hover:bg-biru4 hover:text-white">Dashboard Data
+                        <li><a href="#submenu3"
+                                class="block px-4 py-2 rounded-b-lg hover:bg-biru4 hover:text-white">Dashboard Data
                                 Inflasi</a></li>
                     </ul>
                 </li>
             </ul>
-            <form action="{{ route('logout') }}" method="POST" class="inline">
-                @csrf
-                <button type="submit"
-                    class="flex items-center px-3 py-1 bg-biru1 text-white rounded-lg hover:bg-biru4 font-jakarta text-base font-semibold">
-                    <img src="{{ asset('images/navbarProvKab/logoutIcon.svg') }}" alt="logout icon" class="mr-2">
-                    Logout
+            <div class="relative group">
+                <button id="userDropdownToggle"
+                    class="flex items-center px-3 py-1 bg-biru1 text-white rounded-lg hover:bg-biru4 font-jakarta text-base font-normal">
+                    <img src="{{ asset('images/sidebar/puserIcon.svg') }}" alt="user icon" class="w-6 h-6 mr-1">
+                    {{-- {{ Auth::user()->name }} <!-- Menampilkan nama pengguna --> --}}
                 </button>
-            </form>
+                <ul id="userDropdownMenu"
+                    class="hidden absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg border border-gray-200">
+                    <li class="px-4 py-2 text-white font-medium">
+                        {{-- {{ Auth::user()->name }}</li> --}}
+                    <li>
+                        <form action="{{ route('logout') }}" method="POST" class="block w-full text-left">
+                            @csrf
+                            <button type="submit"
+                                class="w-full px-4 py-2 text-left text-biru1 hover:bg-biru4 hover:text-white rounded-b-lg">
+                                Logout
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
 </nav>
@@ -116,7 +136,7 @@
             const section = document.querySelector(id);
             if (section) {
                 const offset = section.getBoundingClientRect().top + window.scrollY -
-                50; // Tambahkan offset jika perlu
+                    50; // Tambahkan offset jika perlu
                 window.scrollTo({
                     top: offset,
                     behavior: "smooth"
@@ -133,6 +153,24 @@
                     scrollToSection(target);
                 }
             });
+        });
+    });
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const userDropdownToggle = document.getElementById("userDropdownToggle");
+        const userDropdownMenu = document.getElementById("userDropdownMenu");
+
+        userDropdownToggle.addEventListener("click", function(event) {
+            event.preventDefault();
+            userDropdownMenu.classList.toggle("hidden");
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener("click", function(event) {
+            if (!userDropdownToggle.contains(event.target) && !userDropdownMenu.contains(event
+                .target)) {
+                userDropdownMenu.classList.add("hidden");
+            }
         });
     });
 </script>

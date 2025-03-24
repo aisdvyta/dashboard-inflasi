@@ -30,13 +30,18 @@
         }
 
         .dropdown-arrow {
-            fill: #063051;
+            fill: biru1;
             /* Warna default panah */
         }
 
-        .group:hover .dropdown-arrow,
+        .group:hover {
+            fill: #ffffff;
+            /* Warna panah saat di-hover atau diklik */
+        }
+
+        .dropdown-arrow,
         .dropdown-arrow.rotate-180 {
-            fill: white;
+            fill: biru1;
             /* Warna panah saat di-hover atau diklik */
         }
     </style>
@@ -81,18 +86,18 @@
                             d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
                     </svg>
                 </a>
-                <ul id="dropdownMenu" class="hidden mt-2 space-y-2 bg-white rounded">
+                <ul id="dropdownMenu" class="hidden mt-2 space-y-2 bg-white ml-4 border-l-2 border-biru5">
                     <li><a href="{{ route('dashboard.bulanan') }}"
-                            class="flex items-center px-3 py-2 ml-8 font-normal text-[15px] hover:bg-biru5 rounded-lg menu-text"
+                            class="flex items-center px-2 py-2 ml-8 font-normal text-[15px] hover:bg-biru5 rounded-lg menu-text"
                             data-page="inflasi-bulanan">Inflasi Bulanan</a></li>
                     <li><a href="{{ route('dashboard.spasial') }}"
-                            class="flex items-center px-3 py-2 ml-8 font-normal text-[15px] hover:bg-biru5 rounded-lg menu-text"
+                            class="flex items-center px-2 py-2 ml-8 font-normal text-[15px] hover:bg-biru5 rounded-lg menu-text"
                             data-page="inflasi-spasial">Inflasi Spasial</a></li>
                     <li><a href="{{ route('dashboard.kelompok') }}"
-                            class="flex items-center px-3 py-2 ml-8 font-normal text-[15px] hover:bg-biru5 rounded-lg menu-text"
+                            class="flex items-center px-2 py-2 ml-8 font-normal text-[15px] hover:bg-biru5 rounded-lg menu-text"
                             data-page="inflasi-kelompok">Kelompok Pengeluaran</a></li>
                     <li><a href="{{ route('dashboard.series') }}"
-                            class="flex items-center px-3 py-2 ml-8 font-normal text-[15px] hover:bg-biru5 rounded-lg menu-text"
+                            class="flex items-center px-2 py-2 ml-8 font-normal text-[15px] hover:bg-biru5 rounded-lg menu-text"
                             data-page="inflasi-series">Series Inflasi</a></li>
                 </ul>
             </li>

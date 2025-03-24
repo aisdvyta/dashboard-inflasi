@@ -14,18 +14,22 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
+        $request->validate([
+            'nama' => 'required|string',
+            'password' => 'required|min:4',
+        ]);
+
+        // Pastikan kolom login sesuai dengan database
         $loginType = filter_var($request->input('nama'), FILTER_VALIDATE_EMAIL) ? 'email' : 'nama';
 
-        $credentials = [
+        if (Auth::attempt([
             $loginType => $request->input('nama'),
             'password' => $request->input('password')
-        ];
-
-        if (Auth::attempt($credentials)) {
+        ])) {
             return redirect()->intended('/adminprov');
         }
 
-        return redirect()->back()->withErrors(['login' => 'Gagal login, silakan coba lagi.']);
+        return redirect()->back()->withErrors(['login' => 'Gagal login, periksa kembali username/email dan password Anda!']);
     }
 
     public function logout()

@@ -17,16 +17,17 @@ class User extends Authenticatable
      */
     protected $table = 'penggunas';
 
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-    ];
+    protected $primaryKey = 'id'; // Pastikan primary key benar
+    protected $keyType = 'string'; // Karena UUID adalah string
+    public $incrementing = false; // UUID bukan auto-increment
 
-    public function getAuthIdentifierName()
-    {
-        return 'name';
-    }
+    protected $casts = [
+        'id' => 'string', // Pastikan ID diperlakukan sebagai string
+    ];
+    // public function getAuthIdentifierName()
+    // {
+    //     return 'nama';
+    // }
 
     public function satker()
     {
