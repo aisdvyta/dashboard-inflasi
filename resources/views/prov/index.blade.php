@@ -18,7 +18,7 @@
                 inflasi secara efisien.
             </p>
             <a href="#"
-                class="inline-flex items-center rounded-2xl gap-4 mt-5 pr-2 pl-4 py-1 bg-biru4 text-white font-semibold rounded-lg transition-all hover:bg-biru1 hover:translate-x-1">
+                class="inline-flex items-center rounded-2xl gap-4 mt-5 pr-2 pl-4 py-1 bg-biru4 text-white font-semibold rounded-lg transition-all hover:bg-biru1 hover:translate-x-2">
                 Cari tau lebih lanjut
                 <img src="{{ asset('images/landingMain1/arrowRight.svg') }}" alt="panah kanan icon">
                 <span class="text-lg"></span>
@@ -27,60 +27,58 @@
     </div>
 
     <!-- Ini Main 2 -->
-    <div id="main2" class="min-h-[110vh] bg-biru4 py-12 relative">
+    <div id="main2" class="min-h-[110vh] bg-putihbg py-12 relative">
         <!-- Elemen Batik -->
         <div class="absolute pt-10 top-30 left-10 ">
-            <img src="{{ asset('images/landingMain2/batikKawung.svg') }}" alt="Batik Left" class="h-32 ">
+            <img src="{{ asset('images/landingMain4/batikKawung2.svg') }}" alt="Batik Left" class="h-32 ">
         </div>
         <div class="absolute pt-10 top-30 right-10">
-            <img src="{{ asset('images/landingMain2/batikKawung.svg') }}" alt="Batik Right"
+            <img src="{{ asset('images/landingMain4/batikKawung2.svg') }}" alt="Batik Right"
                 class="h-32 transform scale-x-[-1]">
         </div>
 
         <div class="container mx-auto text-center mt-14">
-            <h2 class="text-4xl font-bold text-white">
+            <h2 class="text-4xl font-bold text-biru1">
                 Menu <span class="text-kuning1">Manajemen Dashboard</span> yang tersedia!
             </h2>
-            <p class="text-white text-base font-normal mt-10 mx-80">
-                <span class="font-semibold text-kuning2">Manajemen Dashboard</span> yang tersedia mencakup pengaturan akun
+            <p class="text-biru1 text-base font-normal mt-10 mx-80">
+                <span class="font-semibold">Manajemen Dashboard</span> yang tersedia mencakup pengaturan akun
                 BPS kabupaten/kota,
                 penginputan dan pembaruan data inflasi, hingga penyajian hasil visualisasi dalam bentuk grafik dan tabel
                 interaktif.
             </p>
         </div>
 
-        <div class="flex flex-wrap justify-center gap-12 mt-32">
+        <div class="flex flex-wrap justify-center gap-12 mt-24">
             <!-- Manajemen Akun -->
             <div class="bg-white p-6 rounded-2xl shadow-lg w-80 flex flex-col items-start text-start">
-                <img src="{{ asset('icons/account-management.png') }}" alt="Manajemen Akun" class="w-20 h-20 mb-4">
+                <img src="{{ asset('images/adminProv/manajemenAkun.svg') }}" alt="Manajemen Akun"
+                    class="self-center w-40 h-fit mb-4">
                 <h2 class="text-biru1 text-lg font-semibold">Manajemen Akun</h2>
-                <p class="text-gray-600 text-sm mt-2">Melakukan penambahan, pengeditan, atau penghapusan akun Tim Harga BPS
+                <p class="text-biru1 text-sm mt-2">Melakukan penambahan, pengeditan, atau penghapusan akun Tim Harga BPS
                     Kab/Kota IHK</p>
-                <a href="#" class="text-biru4 font-semibold mt-3">Lakukan →</a>
+                <a href="#" class="text-biru4 mt-3 transition-transform duration-200 hover:translate-x-2 inline-block">Lakukan →</a>
             </div>
 
             <!-- Manajemen Data Inflasi -->
             <div class="bg-white p-6 rounded-2xl shadow-lg w-80 flex flex-col items-start text-start">
-                <img src="{{ asset('icons/data-management.png') }}" alt="Manajemen Data Inflasi" class="w-20 h-20 mb-4">
+                <img src="{{ asset('images/adminProv/manajemenDataInflasi.svg') }}" alt="Manajemen Data Inflasi"
+                    class="self-center w-40 h-fit mb-4">
                 <h2 class="text-biru1 text-lg font-semibold">Manajemen Data Inflasi</h2>
-                <p class="text-gray-600 text-sm mt-2">Melakukan penambahan, pengeditan, atau penghapusan data inflasi
+                <p class="text-biru1 text-sm mt-2">Melakukan penambahan, pengeditan, atau penghapusan data inflasi
                     sementara (ASEM) atau tetap (ATAP)</p>
-                <a href="#" class="text-biru4 font-semibold mt-3">Lakukan →</a>
+                <a href="#" class="text-biru4 mt-3 transition-transform duration-200 hover:translate-x-2 inline-block">Lakukan →</a>
             </div>
 
             <!-- Dashboard Inflasi -->
             <div class="bg-white p-6 rounded-2xl shadow-lg w-80 flex flex-col items-start text-start">
-                <img src="{{ asset('icons/dashboard.png') }}" alt="Dashboard Inflasi" class="w-20 h-20 mb-4">
+                <img src="{{ asset('images/adminProv/dashInflasi.svg') }}" alt="Dashboard Inflasi"
+                    class="self-center w-40 h-fit mb-4">
                 <h2 class="text-biru1 text-lg font-semibold">Dashboard Inflasi</h2>
-                <p class="text-gray-600 text-sm mt-2">Melihat tampilan visualisasi data inflasi di dashboard Provinsi Jawa
+                <p class="text-biru1 text-sm mt-2">Melihat tampilan visualisasi data inflasi di dashboard Provinsi Jawa
                     Timur</p>
-                <a href="#" class="text-biru4 font-semibold mt-3">Lakukan →</a>
+                <a href="#" class="text-biru4 mt-3 transition-transform duration-200 hover:translate-x-2 inline-block">Lakukan →</a>
             </div>
         </div>
-    </div>
-
-    {{-- ini main 3 --}}
-    <div id="main2" class="min-h-[110vh] py-12 relative">
-        @include('components.prov.calender')
     </div>
 @endsection
