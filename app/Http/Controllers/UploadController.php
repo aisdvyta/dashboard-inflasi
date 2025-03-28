@@ -71,7 +71,7 @@ class UploadController extends Controller
             detail_inflasi::create([
                 'id_inflasi' => $idInflasi,
                 'id_wil' => $row[$indexKodeKota] ?? null,
-                'id_kom' => $row[$indexKodeKomoditas] ?? null,
+                'id_kom' => sprintf('%s', $row[$indexKodeKomoditas] ?? ''),
                 'id_flag' => $row[$indexFlag] ?? null,
                 'inflasi_MtM' => isset($row[$indexInflasiMtM]) ? round(floatval($row[$indexInflasiMtM]), 2) : null,
                 'inflasi_YtD' => isset($row[$indexInflasiYtD]) ? round(floatval($row[$indexInflasiYtD]), 2) : null,

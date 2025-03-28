@@ -20,7 +20,6 @@
 
 
 <body>
-    @include('components.navbar')
     <div class="">
         @yield('body')
     </div>

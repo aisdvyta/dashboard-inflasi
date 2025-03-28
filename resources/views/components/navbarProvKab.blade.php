@@ -13,11 +13,10 @@
             <ul class="flex items-center space-x-6 text-biru1 font-semibold">
                 <li><a href="#main1" class="hover:text-biru4 text-base font-semibold">Beranda</a></li>
                 <li class="relative group">
-                    <a href="#main2" class="hover:text-biru4 text-base font-semibold flex items-center"
-                        id="dashboardToggle">
+                    <a href="#main2" class="hover:text-biru4 text-base font-semibold flex items-center" id="dashboardToggle">
                         Dashboard
-                        <svg class="ml-1 w-4 h-4 transition-transform duration-300" id="dashboardArrow"
-                            viewBox="0 0 20 20">
+                        <svg class="ml-1 w-4 h-4 transition-transform duration-300 group-hover:text-biru4" id="dashboardArrow"
+                            viewBox="0 0 20 20" fill="currentColor">
                             <path
                                 d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
                         </svg>
@@ -39,10 +38,10 @@
                     </ul>
                 </li>
                 <li class="relative group">
-                    <a href="#main3" class="hover:text-biru4 text-base font-semibold flex items-center"
-                        id="menuToggle">
+                    <a href="#main3" class="hover:text-biru4 text-base font-semibold flex items-center" id="menuToggle">
                         Menu
-                        <svg class="ml-1 w-4 h-4 transition-transform duration-300" id="menuArrow" viewBox="0 0 20 20">
+                        <svg class="ml-1 w-4 h-4 transition-transform duration-300 group-hover:text-biru4" id="menuArrow"
+                            viewBox="0 0 20 20" fill="currentColor">
                             <path
                                 d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
                         </svg>
@@ -111,12 +110,14 @@
             event.preventDefault();
             dropdownMenu.classList.toggle('hidden');
             menuArrow.classList.toggle('rotate-180');
+            menuArrow.classList.toggle('text-biru4');
         });
 
         dashboardToggle.addEventListener('click', function(event) {
             event.preventDefault();
             dashboardMenu.classList.toggle('hidden');
             dashboardArrow.classList.toggle('rotate-180');
+            dashboardArrow.classList.toggle('text-biru4');
         });
 
         // Close dropdown when clicking outside
@@ -124,10 +125,12 @@
             if (!menuToggle.contains(event.target) && !dropdownMenu.contains(event.target)) {
                 dropdownMenu.classList.add('hidden');
                 menuArrow.classList.remove('rotate-180');
+                menuArrow.classList.remove('text-biru4');
             }
             if (!dashboardToggle.contains(event.target) && !dashboardMenu.contains(event.target)) {
                 dashboardMenu.classList.add('hidden');
                 dashboardArrow.classList.remove('rotate-180');
+                dashboardArrow.classList.remove('text-biru4');
             }
         });
 

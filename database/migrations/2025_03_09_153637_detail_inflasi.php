@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('id_inflasi');
             $table->unsignedSmallInteger('id_wil');
-            $table->string('id_kom',10)->nullable();
+            $table->string('id_kom',10);
             $table->unsignedTinyInteger('id_flag')->nullable();
             $table->decimal('inflasi_MtM', 5, 2);
             $table->decimal('inflasi_YtD', 5, 2);

@@ -16,7 +16,7 @@ class LoginController extends Controller
     {
         $request->validate([
             'nama' => 'required|string',
-            'password' => 'required|min:4',
+            'password' => 'required',
         ]);
 
         // Pastikan kolom login sesuai dengan database

@@ -27,8 +27,7 @@ return new class extends Migration
         });
 
         Schema::create('master_komoditas', function (Blueprint $table) {
-            $table->id();
-            $table->string('kode_kom')->unique();
+            $table->string('kode_kom',10)->primary();
             $table->unsignedTinyInteger('flag')->index();
             $table->text('nama_kom');
             $table->unsignedTinyInteger('flag_2')->nullable()->index();
