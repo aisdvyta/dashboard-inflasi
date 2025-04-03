@@ -1,19 +1,40 @@
-<div id="deleteModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
-    <div class="bg-white p-6 rounded-lg shadow-lg w-80 text-center">
-        <div class="flex justify-center">
-            <img src="{{ asset('images/warning.svg') }}" class="w-12 h-12" alt="Warning Icon">
+@php
+    // Pisahkan nama file berdasarkan tanda "-"
+    $parts = explode('-', $fileName);
+    // Ambil kata kedua jika ada, dan ubah huruf pertama menjadi kapital
+    $secondWord = isset($parts[1]) ? ucfirst($parts[1]) : '';
+@endphp
+
+<div id="modalKonfirmasiHapus" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 hidden">
+    <div class="bg-white p-6 rounded-xl shadow-lg w-fit">
+        <div class="flex justify-center mb-2">
+            <img src="{{ asset('images/moda/peringatanIcon.svg') }}" alt="Peringatan Icon" class="h-8 w-8">
         </div>
-        <h2 class="text-xl font-bold text-gray-800 mt-2">Hapus Data</h2>
-        <p class="text-gray-600 mt-2">Anda yakin <span class="text-red-600 font-semibold">menghapus</span> Data tersebut?
-        </p>
-        <div class="mt-4 flex justify-center gap-4">
-            <button onclick="closeModal()"
-                class="bg-yellow-200 text-gray-800 px-4 py-2 rounded-lg shadow-md">Cancel</button>
-            <form id="deleteForm" method="POST">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-lg shadow-md">Hapus</button>
-            </form>
+        <h2 class="text-2xl font-[650] text-merah1 text-center">Hapus {{ $secondWord }}</h2>
+        <div class="mt-2 mb-6">
+            <p class="text-biru1 mt-2 text-center text-base">Apakah Anda yakin ingin
+                <span class="text-merah1">menghapus</span> {{ $secondWord }} tersebut?
+            </p>
+            <p class="text-biru1 text-center text-base">{{ $secondWord }} yang dihapus tidak dapat dikembalikan.</p>
+        </div>
+        <div class="flex justify-center mt-4">
+            <button
+                class="bg-kuning2 font-normal text-biru1 px-8 py-2 rounded-lg shadow-lg mr-4 transition-all duration-200 hover:-translate-y-1"
+                onclick="closeModal()">Batal</button>
+            <button
+                class="bg-merah1 font-normal text-white px-8 py-2 rounded-lg shadow-lg transition-all duration-200 hover:-translate-y-1">
+                Hapus
+            </button>
         </div>
     </div>
 </div>
+
+<script>
+    function openModal() {
+        document.getElementById('modalKonfirmasiHapus').classList.remove('hidden');
+    }
+
+    function closeModal() {
+        document.getElementById('modalKonfirmasiHapus').classList.add('hidden');
+    }
+</script>
