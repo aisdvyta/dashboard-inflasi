@@ -13,14 +13,25 @@ Route::get('/', function () {return view('user.index');})->name('landingPage');
 Route::get('/DaftarTabelInflasi',function(){return view('user.daftar-tabel-inflasi.index');})->name('daftar-tabel-inlfasi.index');
 
 // PROV //
-Route::get('/adminprov', function () {return view('prov.index');})->name('landingPageProv');
+Route::get('/AdminProv', function () {return view('prov.index');})->name('landingPageProv');
 
 Route::get('/check-auth', function() {
     return dd(Auth::user());
 });
 
+Route::get('/ManajemenAkun',function(){return view('prov.manajemen-akun.index');})->name('manajemen-akun.index');
+Route::get('/MasterSatker',function(){return view('prov.master-satker.index');})->name('master-satker.index');
+
+Route::get('/ManajemenDataInflasi',function(){return view('prov.manajemen-data-inflasi.index');})->name('manajemen-data.index');
+Route::get('/MasterKomoditas',function(){return view('prov.master-komoditas.index');})->name('master-komoditas.index');
+
 // KABKOT //
-Route::get('/kabkot', function () {return view('kabkot.index');})->name('landingPageKabkot');
+Route::get('/Kabkot', function () {return view('kabkot.index');})->name('landingPageKabkot');
+
+// MANAJEMEN AKUN //
+Route::middleware(['auth'])->group(function () {
+    Route::get('/ManajemenAkun/import', [UploadController::class, 'create'])->name('manajemen-akun.create');
+});
 
 // MANAJEMEN DATA INFLASI //
 Route::middleware(['auth'])->group(function () {
