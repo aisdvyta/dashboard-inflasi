@@ -63,7 +63,7 @@
         <!-- Menu Items -->
         <ul class="space-y-3">
             <li>
-                <a href="{{ route('landingPage') }}"
+                <a href="{{ route(name: 'landingPage') }}"
                     class="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-biru4 hover:text-white group">
                     <img src="{{ asset('images/sidebar/bhomeIcon.svg') }}" alt="Ikon Beranda" class="h-6 w-6 icon"
                         data-hover="{{ asset('images/sidebar/phomeIcon.svg') }}"

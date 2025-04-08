@@ -5,7 +5,8 @@
     $secondWord = isset($parts[1]) ? ucfirst($parts[1]) : '';
 @endphp
 
-<div id="modalBerhasil" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 hidden">
+<div id="modalBerhasil" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[9999] hidden">
+
     <div class="bg-white p-6 rounded-xl shadow-lg w-fit">
         <div class="flex justify-center mb-2">
             <img src="{{ asset('images/moda/berhasilIcon.svg') }}" alt="Berhasil Icon" class="h-8 w-8">
@@ -19,17 +20,17 @@
         <div class="flex justify-center mt-4">
             <button
                 class="bg-hijau font-normal text-white px-8 py-2 rounded-lg shadow-lg transition-all duration-200 hover:-translate-y-1"
-                onclick="closeModal()">Oke</button>
+                onclick="closeBerhasilModal()">Oke</button>
         </div>
     </div>
 </div>
 
 <script>
-    function openModal() {
+    function openBerhasilModal() {
         document.getElementById('modalBerhasil').classList.remove('hidden');
     }
 
-    function closeModal() {
+    function closeBerhasilModal() {
         document.getElementById('modalBerhasil').classList.add('hidden');
     }
 </script>

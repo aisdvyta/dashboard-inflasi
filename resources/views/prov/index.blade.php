@@ -57,7 +57,7 @@
                 <h2 class="text-biru1 text-lg font-semibold">Manajemen Akun</h2>
                 <p class="text-biru1 text-sm mt-2 flex-grow">Melakukan penambahan, pengeditan, atau penghapusan akun Tim
                     Harga BPS Kab/Kota IHK</p>
-                <a href="#"
+                <a href="{{ route('manajemen-akun.index') }}"
                     class="text-biru4 mt-3 transition-transform duration-200 hover:translate-x-2 inline-block">Lakukan →</a>
             </div>
 
@@ -68,7 +68,7 @@
                 <h2 class="text-biru1 text-lg font-semibold">Manajemen Data Inflasi</h2>
                 <p class="text-biru1 text-sm mt-2 flex-grow">Melakukan penambahan, pengeditan, atau penghapusan data inflasi
                     sementara (ASEM) atau tetap (ATAP)</p>
-                <a href="#"
+                <a href="{{ route('manajemen-data-inflasi.index') }}"
                     class="text-biru4 mt-3 transition-transform duration-200 hover:translate-x-2 inline-block">Lakukan →</a>
             </div>
 

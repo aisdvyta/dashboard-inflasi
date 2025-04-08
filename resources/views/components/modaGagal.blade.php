@@ -19,17 +19,17 @@
         <div class="flex justify-center mt-4">
             <button
                 class="bg-merah1 font-normal text-white px-8 py-2 rounded-lg shadow-lg transition-all duration-200 hover:-translate-y-1"
-                onclick="closeModal()">Coba lagi</button>
+                onclick="closeGagalModal()">Coba lagi</button>
         </div>
     </div>
 </div>
 
 <script>
-    function openModal() {
+    function openGagalModal() {
         document.getElementById('modalGagal').classList.remove('hidden');
     }
 
-    function closeModal() {
+    function closeGagalModal() {
         document.getElementById('modalGagal').classList.add('hidden');
     }
 </script>

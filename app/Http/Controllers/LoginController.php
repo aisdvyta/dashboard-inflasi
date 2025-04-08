@@ -26,7 +26,7 @@ class LoginController extends Controller
             $loginType => $request->input('nama'),
             'password' => $request->input('password')
         ])) {
-            return redirect()->intended('/adminprov');
+            return redirect()->intended('/AdminProv');
         }
 
         return redirect()->back()->withErrors(['login' => 'Gagal login, periksa kembali username/email dan password Anda!']);

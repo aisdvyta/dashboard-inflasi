@@ -10,5 +10,6 @@ class master_satker extends Model
     /** @use HasFactory<\Database\Factories\MasterSatkerFactory> */
     use HasFactory;
 
-    protected $fillable = ['nama_satker'];
+    protected $primaryKey = 'kode_satker';
+    protected $fillable = ['kode_satker','nama_satker'];
 }

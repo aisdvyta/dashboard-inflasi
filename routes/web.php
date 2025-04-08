@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\ManajemenAkunController;
+use App\Http\Controllers\MasterSatkerController;
 use App\Http\Controllers\UploadController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LoginController;
@@ -19,9 +21,6 @@ Route::get('/check-auth', function() {
     return dd(Auth::user());
 });
 
-Route::get('/ManajemenAkun',function(){return view('prov.manajemen-akun.index');})->name('manajemen-akun.index');
-Route::get('/MasterSatker',function(){return view('prov.master-satker.index');})->name('master-satker.index');
-
 Route::get('/ManajemenDataInflasi',function(){return view('prov.manajemen-data-inflasi.index');})->name('manajemen-data.index');
 Route::get('/MasterKomoditas',function(){return view('prov.master-komoditas.index');})->name('master-komoditas.index');
 
@@ -30,7 +29,19 @@ Route::get('/Kabkot', function () {return view('kabkot.index');})->name('landing
 
 // MANAJEMEN AKUN //
 Route::middleware(['auth'])->group(function () {
-    Route::get('/ManajemenAkun/import', [UploadController::class, 'create'])->name('manajemen-akun.create');
+    Route::get('/ManajemenAkun', [ManajemenAkunController::class, 'index'])->name('manajemen-akun.index');
+    Route::get('/ManajemenAkun/tambah', [ManajemenAkunController::class, 'create'])->name('manajemen-akun.create');
+    Route::post('manajemen-akun', [ManajemenAkunController::class, 'store'])->name('manajemen-akun.store');
+    Route::get('/ManajemenAkun/{id}/edit', [ManajemenAkunController::class, 'edit'])->name('manajemen-akun.edit');
+    Route::put('manajemen-akun/{id}', [ManajemenAkunController::class, 'update'])->name('manajemen-akun.update');
+    Route::delete('manajemen-akun/{id}', [ManajemenAkunController::class, 'destroy'])->name('manajemen-akun.destroy');
+});
+
+// MASTER SATKER //
+Route::middleware(['auth'])->group(function () {
+    Route::get('/MasterSatker', [MasterSatkerController::class, 'index'])->name('master-satker.index');
+    Route::post('/MasterSatker', [MasterSatkerController::class, 'store'])->name('master-satker.store');
+    Route::delete('master-satker/{kode_satker}', [MasterSatkerController::class, 'destroy'])->name('master-satker.destroy');
 });
 
 // MANAJEMEN DATA INFLASI //

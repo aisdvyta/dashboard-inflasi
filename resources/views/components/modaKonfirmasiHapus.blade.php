@@ -1,11 +1,12 @@
 @php
-    // Pisahkan nama file berdasarkan tanda "-"
-    $parts = explode('-', $fileName);
+    // Pisahkan nama folder berdasarkan tanda "-"
+    $parts = explode('-', $folderName);
     // Ambil kata kedua jika ada, dan ubah huruf pertama menjadi kapital
     $secondWord = isset($parts[1]) ? ucfirst($parts[1]) : '';
 @endphp
 
-<div id="modalKonfirmasiHapus" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 hidden">
+<div id="modalKonfirmasiHapus{{ $id }}"
+    class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 hidden">
     <div class="bg-white p-6 rounded-xl shadow-lg w-fit">
         <div class="flex justify-center mb-2">
             <img src="{{ asset('images/moda/peringatanIcon.svg') }}" alt="Peringatan Icon" class="h-8 w-8">
@@ -20,21 +21,27 @@
         <div class="flex justify-center mt-4">
             <button
                 class="bg-kuning2 font-normal text-biru1 px-8 py-2 rounded-lg shadow-lg mr-4 transition-all duration-200 hover:-translate-y-1"
-                onclick="closeModal()">Batal</button>
-            <button
-                class="bg-merah1 font-normal text-white px-8 py-2 rounded-lg shadow-lg transition-all duration-200 hover:-translate-y-1">
-                Hapus
+                onclick="closeModal('{{ $id }}')">
+                Batal
             </button>
+            <form action="{{ $formAction }}" method="POST">
+                @csrf
+                @method('DELETE')
+                <button
+                    class="bg-merah1 font-normal text-white px-8 py-2 rounded-lg shadow-lg transition-all duration-200 hover:-translate-y-1">
+                    Hapus
+                </button>
+            </form>
         </div>
     </div>
 </div>
 
 <script>
-    function openModal() {
-        document.getElementById('modalKonfirmasiHapus').classList.remove('hidden');
+    function openModal(id) {
+        document.getElementById('modalKonfirmasiHapus' + id).classList.remove('hidden');
     }
 
-    function closeModal() {
-        document.getElementById('modalKonfirmasiHapus').classList.add('hidden');
+    function closeModal(id) {
+        document.getElementById('modalKonfirmasiHapus' + id).classList.add('hidden');
     }
 </script>

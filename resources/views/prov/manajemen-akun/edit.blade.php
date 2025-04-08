@@ -2,17 +2,19 @@
 
 @section('body')
     <h2 class="text-4xl font-bold text-biru1 p-10 pl-24">Silahkan
-        <span class="text-kuning1">isi form</span>
-        untuk menambahkan Akun!
+        <span class="text-kuning1">edit form</span>
+        untuk mengubah Akun!
     </h2>
 
     <div class="max-w-lg bg-white shadow-md rounded-lg p-6 ml-24">
-        <form action="{{ route('manajemen-akun.store') }}" method="POST" enctype="multipart/form-data"
+        <form action="{{ route('manajemen-akun.update', $user->id) }}" method="POST" enctype="multipart/form-data"
             class="space-y-4">
             @csrf
+            @method('PUT')
+
             <div class="mb-4 text-left">
                 <label for="nama" class="block text-biru1 font-semibold">Username</label>
-                <input type="text" id="nama" name="nama" required
+                <input type="text" id="nama" name="nama" value="{{ old('nama', $user->nama) }}" required
                     class="w-full mt-1 p-2 rounded-2xl border border-biru5 focus:ring-biru5">
                 @error('nama')
                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -21,7 +23,7 @@
 
             <div class="mb-4 text-left">
                 <label for="email" class="block text-biru1 font-semibold">Email</label>
-                <input type="email" id="email" name="email" required
+                <input type="email" id="email" name="email" value="{{ old('email', $user->email) }}" required
                     class="w-full mt-1 p-2 rounded-2xl border border-biru5 focus:ring-biru5"
                     pattern="[a-zA-Z0-9._!?%+-]+@bps\.go\.id$" title="Email harus menggunakan domain @bps.go.id">
                 <p class="text-biru1 text-sm font-thin">Contoh: xxxx@bps.go.id</p>
@@ -34,9 +36,10 @@
                 <label for="id_satker" class="block text-sm font-medium text-biru1">Pilih Satker</label>
                 <select id="id_satker" name="id_satker"
                     class="w-full mt-1 p-2 border border-biru5 rounded-lg focus:ring-biru1 focus:border-biru1" required>
-                    <option value="" disabled selected>Pilih satker disini</option>
+                    <option value="" disabled>Pilih satker disini</option>
                     @foreach ($satkers as $satker)
-                        <option value="{{ $satker->kode_satker }}">
+                        <option value="{{ $satker->kode_satker }}"
+                            {{ $user->id_satker == $satker->kode_satker ? 'selected' : '' }}>
                             {{ $satker->kode_satker }} - {{ $satker->nama_satker }}
                         </option>
                     @endforeach
@@ -48,9 +51,9 @@
 
             <div class="mb-6 text-left relative">
                 <label for="password" class="block text-biru1 font-semibold">Password</label>
-                <input type="password" id="password" name="password" required minlength="6"
+                <input type="password" id="password" name="password" minlength="6"
                     class="w-full mt-1 p-2 rounded-2xl border border-biru5 focus:ring-biru5 pr-10">
-                <p class="text-biru1 text-sm font-thin">Password minimal memiliki 6 karakter</p>
+                <p class="text-biru1 text-sm font-thin">Kosongkan jika tidak ingin mengubah password</p>
                 @error('password')
                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
@@ -62,7 +65,7 @@
 
             <button type="submit"
                 class="w-full bg-biru1 hover:bg-biru4 text-white font-semibold py-2 px-4 rounded-lg transition duration-300">
-                Tambah Akun
+                Update Akun
             </button>
         </form>
     </div>

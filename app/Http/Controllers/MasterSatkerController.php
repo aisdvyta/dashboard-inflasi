@@ -13,15 +13,12 @@ class MasterSatkerController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        // Ambil semua data master satker dari database
+        $satkers = master_satker::orderBy('kode_satker', 'asc')->get();
+        dd:
+        $satkers;
+        // Kirim data ke view
+        return view('prov.master-satker.index', compact('satkers'));
     }
 
     /**
@@ -29,7 +26,17 @@ class MasterSatkerController extends Controller
      */
     public function store(Storemaster_satkerRequest $request)
     {
-        //
+        $request->validate([
+            'kode_satker' => 'required|string|max:10|unique:master_satker,kode_satker',
+            'nama_satker' => 'required|string|max:255',
+        ]);
+
+        master_satker::create([
+            'kode_satker' => $request->kode_satker,
+            'nama_satker' => $request->nama_satker,
+        ]);
+
+        return redirect()->route('master-satker.index')->with('success', 'Satker berhasil ditambahkan.');
     }
 
     /**
@@ -61,6 +68,15 @@ class MasterSatkerController extends Controller
      */
     public function destroy(master_satker $master_satker)
     {
-        //
+        try {
+            // Menghapus data satker berdasarkan kode_satker
+            $master_satker->delete();
+
+            // Set flash message untuk berhasil
+            return redirect()->route('master-satker.index')->with('status', 'success');
+        } catch (\Exception $e) {
+            // Set flash message untuk gagal
+            return redirect()->route('master-satker.index')->with('status', 'error');
+        }
     }
 }

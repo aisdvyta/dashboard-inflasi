@@ -14,10 +14,10 @@
                 <a href="{{ route('manajemen-data-inflasi.create') }}"
                     class="flex items-center gap-2 px-2 py-2 rounded-lg bg-kuning1 text-biru1 hover:bg-biru4 hover:text-white group transition duration-300"
                     data-page="tabel">
-                    <img src="{{ asset('images/adminProv/baddDataIcon.svg') }}" alt="Ikon Data Inflasi"
+                    <img src="{{ asset('images/adminProv/manajemenData/baddDataIcon.svg') }}" alt="Ikon Data Inflasi"
                         class="h-6 w-6 icon group-hover:hidden transition duration-100"
-                        data-hover="{{ asset('images/adminProv/paddDataIcon.svg') }}"
-                        data-default="{{ asset('images/adminProv/baddDataIcon.svg') }}">
+                        data-hover="{{ asset('images/adminProv/manajemenData/paddDataIcon.svg') }}"
+                        data-default="{{ asset('images/adminProv/manajemenData/baddDataIcon.svg') }}">
                     <img src="{{ asset('images/adminProv/paddDataIcon.svg') }}" alt="Ikon Data Inflasi Hover"
                         class="h-6 w-6 hidden group-hover:block transition duration-100">
                     <span
