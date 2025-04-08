@@ -11,7 +11,7 @@ class ManajemenAkunController extends Controller
     public function index()
     {
         // Mengambil semua data pengguna dengan relasi satker dan role
-        $users = User::orderBy('id', 'asc')->get();
+        $users = User::orderBy('id_satker', 'asc')->get();
         dd:
         $users;
         return view('prov.manajemen-akun.index', compact('users'));

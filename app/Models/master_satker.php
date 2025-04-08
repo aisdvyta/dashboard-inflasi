@@ -11,5 +11,15 @@ class master_satker extends Model
     use HasFactory;
 
     protected $primaryKey = 'kode_satker';
-    protected $fillable = ['kode_satker','nama_satker'];
+    protected $fillable = [
+        'kode_satker',
+        'nama_satker'
+    ];
+
+    public $timestamps = false;
+
+    public function setNamaSatkerAttribute($value)
+    {
+        $this->attributes['nama_satker'] = strtoupper($value);
+    }
 }

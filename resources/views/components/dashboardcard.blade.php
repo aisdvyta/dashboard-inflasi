@@ -21,8 +21,8 @@
                 <img src="{{ asset('images/sidebar/pdashboardIcon.svg') }}" alt="Ikon Dashboard Inflasi Hover"
                     class="h-6 w-6 hidden group-hover:block transition duration-100">
                 <span
-                    class="menu-text text-biru1 font-semibold text-[15px] group-hover:text-white transition duration-100">Dashboard
-                    Inflasi</span>
+                    class="menu-text text-biru1 font-semibold text-[15px] group-hover:text-white transition duration-100">
+                    Dashboard Inflasi</span>
             </a>
             <a href="#"
                 class="flex items-center gap-2 px-4 py-2 rounded-t-xl hover:bg-biru4 group transition duration-300"
@@ -34,8 +34,8 @@
                 <img src="{{ asset('images/sidebar/pdataInflasiIcon.svg') }}" alt="Ikon Data Inflasi Hover"
                     class="h-6 w-6 hidden group-hover:block transition duration-100">
                 <span
-                    class="menu-text text-biru1 font-semibold text-[15px] group-hover:text-white transition duration-100">Daftar
-                    Tabel Data Inflasi</span>
+                    class="menu-text text-biru1 font-semibold text-[15px] group-hover:text-white transition duration-100">
+                    Daftar Tabel Data Inflasi</span>
             </a>
         </div>
 

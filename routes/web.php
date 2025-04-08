@@ -41,6 +41,8 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::get('/MasterSatker', [MasterSatkerController::class, 'index'])->name('master-satker.index');
     Route::post('/MasterSatker', [MasterSatkerController::class, 'store'])->name('master-satker.store');
+    Route::get('/MasterSatker/{kode_satker}/edit', [MasterSatkerController::class, 'edit'])->name('master-satker.edit');
+    Route::put('/MasterSatker/{kode_satker}', [MasterSatkerController::class, 'update'])->name('master-satker.update');
     Route::delete('master-satker/{kode_satker}', [MasterSatkerController::class, 'destroy'])->name('master-satker.destroy');
 });
 
@@ -56,10 +58,7 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/dashboard/infkelompok',function(){return view('dashboard.infKelompok');})->name('dashboard.kelompok');
 Route::get('/dashboard/infseries',function(){return view('dashboard.infSeries');})->name('dashboard.series');
 Route::get('/dashboard/infspasial',function(){return view('dashboard.infSpasial');})->name('dashboard.spasial');
-Route::get('/dashboard/infbulanan',function(){return view('dashboard.infBulananJatim');})->name('dashboard.bulanan');
-
-Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
-Route::get('/dashboard/filter', [DashboardController::class, 'filter'])->name('dashboard.filter');
+Route::get('/dashboard/infbulanan', [DashboardController::class, 'showInflasiBulanan'])->name('dashboard.bulanan');
 
 Route::get('/login', [LoginController::class, 'index'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
