@@ -21,7 +21,8 @@
                     <img src="{{ asset('images/adminProv/paddDataIcon.svg') }}" alt="Ikon Data Inflasi Hover"
                         class="h-6 w-6 hidden group-hover:block transition duration-100">
                     <span
-                        class="menu-text text-biru1 font-semibold text-[15px] group-hover:text-white transition duration-100">Tambah Data Inflasi</span>
+                        class="menu-text text-biru1 font-semibold text-[15px] group-hover:text-white transition duration-100">Tambah
+                        Data Inflasi</span>
                 </a>
             </div>
         </div>
@@ -42,30 +43,51 @@
                     @forelse ($uploads as $index => $upload)
                         <tr>
                             <td class="px-4 py-4 text-center">{{ $index + 1 }}</td>
-                            <td class="px-4 py-2 hover:underline hover:text-biru4">{{ $upload->nama }}</td>
-                            <td class="px-4 py-2 text-center">
+                            <td class="px-4 py-2 hover:underline hover:text-biru4">
+                                <a href="{{ route('manajemen-data-inflasi.show', $upload->nama) }}">
+                                    {{ $upload->nama }}
+                                </a>
+                            </td>
+                            <td class="px-6 py-2 text-center font-semibold">
                                 <span
-                                    class="px-2 py-1 rounded-full text-white {{ $upload->jenis_data_inflasi == 'ATAP' ? 'bg-yellow-500' : 'bg-green-500' }}">
+                                    class="px-6 py-1 rounded-full text-biru1 {{ $upload->jenis_data_inflasi == 'ATAP' ? 'bg-kuning2' : 'bg-hijau2' }}">
                                     {{ $upload->jenis_data_inflasi }}
                                 </span>
                             </td>
                             <td class="px-4 py-2 text-center">
                                 {{ \Carbon\Carbon::parse($upload->upload_at)->format('d/m/Y') }}</td>
-                            <td class="px-4 py-2 text-center">Fulan123</td>
+                            <td class="px-4 py-2 text-center">
+                                <div
+                                    class="inline-flex items-center gap-0.5 bg-gray-200 text-biru1 px-3 py-1 rounded-full w-fit mx-auto">
+                                    <img src="{{ asset('images/adminProv/manajemenData/usernameIcon.svg') }}" alt="User Icon" class="h-6 w-6">
+                                    <span class="text-sm font-semibold"></span>{{ $upload->pengguna->nama ?? 'Tidak Diketahui' }}</span>
+                                </div>
+                            </td>
+
+                            {{-- filepath: d:\Kuliah\New folder (2)\dashboard-inflasi\resources\views\prov\manajemen-data-inflasi\index.blade.php --}}
                             <td class="px-4 py-2">
                                 <div class="flex place-content-center gap-3">
-                                    <a href="{{ route('manajemen-data-inflasi.show', $upload->nama) }}"
-                                        class="flex items-center gap-1 bg-biru4 text-white px-3 py-1 rounded-lg shadow-lg hover:-translate-y-1">
-                                        <img src="{{ asset('images/sidebar/eyeIcon.svg') }}" alt="View Icon"
+                                    <!-- Tombol Edit -->
+                                    <a href="{{ route('manajemen-data-inflasi.edit', $upload->id) }}"
+                                        class="flex items-center gap-1 bg-biru1 text-white px-3 py-1 rounded-lg shadow-lg hover:-translate-y-1 text-sm font-normal">
+                                        <img src="{{ asset('images/adminProv/editIcon.svg') }}" alt="Edit Icon"
                                             class="h-5 w-5">
-                                        Lihat Data
+                                        Edit Data
                                     </a>
-                                    <a href="#"
-                                        class="flex items-center gap-1 bg-kuning1 text-biru1 px-3 py-1 rounded-lg shadow-lg hover:-translate-y-1">
-                                        <img src="{{ asset('images/sidebar/downloadIcon.svg') }}" alt="Download Icon"
+
+                                    <!-- Tombol Hapus -->
+                                    <button type="button" onclick="openModal('{{ $upload->id }}')"
+                                        class="flex items-center gap-1 bg-merah1 text-white px-3 py-1 rounded-lg shadow-lg hover:-translate-y-1 text-sm font-normal">
+                                        <img src="{{ asset('images/adminProv/deleteIcon.svg') }}" alt="Delete Icon"
                                             class="h-5 w-5">
-                                        Unduh Data
-                                    </a>
+                                        Hapus Data
+                                    </button>
+
+                                    @include('components.modaKonfirmasiHapus', [
+                                        'id' => $upload->id,
+                                        'folderName' => 'manajemen-data-inflasi',
+                                        'formAction' => route('manajemen-data-inflasi.destroy', $upload->id),
+                                    ])
                                 </div>
                             </td>
                         </tr>
@@ -80,24 +102,28 @@
     </div>
 @endsection
 
+
 <script>
-    document.querySelectorAll('.icon').forEach(icon => {
-        const defaultSrc = icon.getAttribute('data-default');
-        const hoverSrc = icon.getAttribute('data-hover');
-        const parentLink = icon.closest('a');
+    document.addEventListener('DOMContentLoaded', () => {
+        @if (session('status') === 'success')
+            document.getElementById('modalBerhasil').classList.remove('hidden'); // Tampilkan modal berhasil
+        @elseif (session('status') === 'error')
+            document.getElementById('modalGagal').classList.remove('hidden'); // Tampilkan modal gagal
+        @endif
+    });
 
-        parentLink.addEventListener('mouseenter', () => {
-            icon.setAttribute('src', hoverSrc);
-        });
+    parentLink.addEventListener('mouseenter', () => {
+        icon.setAttribute('src', hoverSrc);
+    });
 
-        parentLink.addEventListener('mouseleave', () => {
-            if (!parentLink.classList.contains('active')) {
-                icon.setAttribute('src', defaultSrc);
-            }
-        });
-
-        if (parentLink.classList.contains('active')) {
-            icon.setAttribute('src', hoverSrc);
+    parentLink.addEventListener('mouseleave', () => {
+        if (!parentLink.classList.contains('active')) {
+            icon.setAttribute('src', defaultSrc);
         }
     });
+
+    if (parentLink.classList.contains('active')) {
+        icon.setAttribute('src', hoverSrc);
+    }
 </script>
+

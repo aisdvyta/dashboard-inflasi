@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 type: "bar",
                 data: values,
                 itemStyle: {
-                    color: '#73C0DE' // Bisa diganti dinamis kalau mau beda warna untuk deflasi
+                    color: '#4C84B0' // Bisa diganti dinamis kalau mau beda warna untuk deflasi
                 }
             }],
         };

@@ -7,8 +7,7 @@
     </h2>
 
     <div class="max-w-lg bg-white shadow-md rounded-lg p-6 ml-24">
-        <form action="{{ route('manajemen-data-inflasi.store') }}" method="POST" enctype="multipart/form-data"
-            class="space-y-4">
+        <form id="uploadForm" enctype="multipart/form-data" class="space-y-4">
             @csrf
             <div class="mb-4 text-left">
                 <label for="nama" class="block text-biru1 font-semibold">Username Upload</label>
@@ -47,25 +46,119 @@
                         </label>
                         <label>
                             <input type="radio" name="jenis_data_inflasi" value="ATAP" required
-                            class="form-radio text-biru1 checked:text-biru1 focus:ring-biru1">
+                                class="form-radio text-biru1 checked:text-biru1 focus:ring-biru1">
                             <span class="text-biru1">ATAP</span>
                         </label>
                     </div>
                 </div>
             </div>
 
-            <div>
+            <div class="mb-4">
                 <label class="block text-biru1 font-medium mb-1">Upload Data</label>
-                <input type="file" name="file" accept=".xlsx" required
-                    class="w-full mt-1 p-2 rounded-2xl border border-biru5 focus:ring-biru5">
-                <label class="block text-xs text-biru1 font-light mb-1">Pastikan file data inflasi memiliki format excel
-                    (.xlsx)</label>
+                <input type="file" id="fileInput" name="file" accept=".xlsx" required
+                    class="w-full mt-1 p-2 rounded-2xl border border-biru5">
+                <label class="block text-xs text-biru1 mt-1">Pastikan file memiliki format excel (.xlsx)</label>
             </div>
 
-            <button type="submit"
+            <!-- Progress bar -->
+            <div id="progressContainer" class="hidden w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+                <div id="progressBar"
+                    class="bg-biru1 h-4 text-xs text-white text-center leading-4 transition-all duration-300 ease-in-out"
+                    style="width: 0%">0%</div>
+            </div>
+
+            <button type="submit" id="submitBtn"
                 class="w-full bg-biru1 hover:bg-biru4 text-white font-semibold py-2 px-4 rounded-lg transition duration-300">
                 Submit
             </button>
         </form>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const form = e.target;
+            const submitBtn = document.getElementById('submitBtn');
+            const progressContainer = document.getElementById('progressContainer');
+            const progressBar = document.getElementById('progressBar');
+
+            const formData = new FormData(form);
+            formData.append('_token', '{{ csrf_token() }}');
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '{{ route('upload.inflasi.ajax') }}', true);
+
+            let manualProgressInterval;
+
+            xhr.onloadstart = function() {
+                submitBtn.disabled = true;
+                progressContainer.classList.remove('hidden');
+                progressBar.style.width = '0%';
+                progressBar.textContent = '0%';
+                progressBar.style.backgroundColor = '#2563eb'; // biru
+            };
+
+            xhr.upload.addEventListener('progress', function(e) {
+                if (e.lengthComputable) {
+                    const percent = Math.round((e.loaded / e.total) * 80); // max sampai 80% untuk upload
+                    progressBar.style.width = percent + '%';
+                    progressBar.textContent = percent + '%';
+                }
+            });
+
+            xhr.upload.onloadend = function () {
+                // Setelah upload selesai, lanjut animasi manual progress dari 80 ke 99
+                let current = parseInt(progressBar.style.width) || 80;
+                manualProgressInterval = setInterval(() => {
+                    if (current < 99) {
+                        current += 1;
+                        progressBar.style.width = current + '%';
+                        progressBar.textContent = current + '%';
+                    } else {
+                        clearInterval(manualProgressInterval);
+                    }
+                }, 100); // kecepatan naiknya (semakin kecil = makin cepat)
+            };
+
+            xhr.onload = function () {
+                clearInterval(manualProgressInterval);
+                submitBtn.disabled = false;
+
+                if (xhr.status === 200) {
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        if (response.success) {
+                            progressBar.style.width = '100%';
+                            progressBar.textContent = '100%';
+                            alert('Upload berhasil! Jumlah data tersimpan: ' + (response.inserted_rows || 0));
+                            form.reset();
+                            progressContainer.classList.add('hidden');
+                        } else {
+                            progressBar.style.backgroundColor = '#e53e3e';
+                            alert('Upload gagal: ' + (response.message || 'Unknown error'));
+                        }
+                    } catch (err) {
+                        progressBar.style.backgroundColor = '#e53e3e';
+                        alert('Gagal parsing respon server!');
+                    }
+                } else {
+                    progressBar.style.backgroundColor = '#e53e3e';
+                    alert('Upload gagal. Status: ' + xhr.status);
+                }
+            };
+
+            xhr.onerror = function () {
+                submitBtn.disabled = false;
+                progressBar.style.backgroundColor = '#e53e3e';
+                clearInterval(manualProgressInterval);
+                alert('Terjadi kesalahan jaringan saat mengupload.');
+            };
+
+            xhr.send(formData);
+        });
+    </script>
+@endpush
+

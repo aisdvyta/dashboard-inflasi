@@ -18,7 +18,7 @@
                 <label for="editNamaSatker" class="block text-sm font-medium text-biru1">Nama Satker</label>
                 <input type="text" id="editNamaSatker" name="nama_satker" placeholder="Masukkan nama satker"
                     class="w-96 mt-2 mb-1 p-2 border border-biru5 rounded-xl focus:ring-biru4 focus:border-biru4" required>
-                <p class="text-light text-xs text-biru1">Contoh: BPS Kabupaten Pacitan</p>
+                <p class="text-light text-xs text-biru1">Contoh: KOTA SURABAYA</p>
             </div>
 
             <div class="flex justify-end mt-6">

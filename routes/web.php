@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ManajemenAkunController;
 use App\Http\Controllers\MasterSatkerController;
+use App\Http\Controllers\MasterKomoditasController;
 use App\Http\Controllers\UploadController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LoginController;
@@ -41,8 +42,6 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::get('/MasterSatker', [MasterSatkerController::class, 'index'])->name('master-satker.index');
     Route::post('/MasterSatker', [MasterSatkerController::class, 'store'])->name('master-satker.store');
-    Route::get('/MasterSatker/{kode_satker}/edit', [MasterSatkerController::class, 'edit'])->name('master-satker.edit');
-    Route::put('/MasterSatker/{kode_satker}', [MasterSatkerController::class, 'update'])->name('master-satker.update');
     Route::delete('master-satker/{kode_satker}', [MasterSatkerController::class, 'destroy'])->name('master-satker.destroy');
 });
 
@@ -52,6 +51,16 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/TabelDataInflasi/import', [UploadController::class, 'create'])->name('manajemen-data-inflasi.create');
     Route::post('/upload', [UploadController::class, 'store'])->name('manajemen-data-inflasi.store');
     Route::get('/TabelDataInflasi/{data_name}', [UploadController::class, 'show'])->name('manajemen-data-inflasi.show');
+    Route::delete('/TabelDataInflasi/{id}', [UploadController::class, 'destroy'])->name('manajemen-data-inflasi.destroy');
+    Route::get('/TabelDataInflasi/{id}/edit', [UploadController::class, 'edit'])->name('manajemen-data-inflasi.edit');
+    Route::put('/TabelDataInflasi/{id}', [UploadController::class, 'update'])->name('manajemen-data-inflasi.update');
+});
+
+// MASTER KOMODITAS //
+Route::middleware(['auth'])->group(function () {
+    Route::get('/MasterKomoditas', [MasterKomoditasController::class, 'index'])->name('master-komoditas.index');
+    Route::post('/MasterKomoditas', [MasterKomoditasController::class, 'store'])->name('master-komoditas.store');
+    Route::delete('master-komoditas/{kode_kom}', [MasterKomoditasController::class, 'destroy'])->name('master-komoditas.destroy');
 });
 
 // DASHBOARD //
@@ -63,6 +72,8 @@ Route::get('/dashboard/infbulanan', [DashboardController::class, 'showInflasiBul
 Route::get('/login', [LoginController::class, 'index'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+Route::post('/upload-inflasi', [UploadController::class, 'uploadInflasiAjax'])->name('upload.inflasi.ajax');
 
 // COBA //
 Route::get('/coba', function () {return view('cobabuat-moda');})->name('inicobabuatmoda');
