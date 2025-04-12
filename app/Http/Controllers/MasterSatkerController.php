@@ -12,13 +12,18 @@ class MasterSatkerController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         // Ambil semua data master satker dari database
-        $satkers = master_satker::orderBy('kode_satker', 'asc')->get();
-        dd:
-        $satkers;
-        // Kirim data ke view
+        $search = $request->input('search'); // Ambil input pencarian
+
+        $satkers = master_satker::query()
+            ->when($search, function ($query, $search) {
+                return $query->where('kode_satker', 'like', "%{$search}%")
+                    ->orWhere('nama_satker', 'like', "%{$search}%");
+            })
+            ->orderBy('kode_satker', 'asc')
+            ->paginate(10);
         return view('prov.master-satker.index', compact('satkers'));
     }
 

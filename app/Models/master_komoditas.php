@@ -10,7 +10,13 @@ class master_komoditas extends Model
     use HasFactory;
 
     protected $table = 'master_komoditas';
+    protected $primaryKey = 'kode_kom'; 
+    public $incrementing = false;
+    protected $keyType = 'string';
+
     protected $fillable = ['kode_kom', 'nama_kom', 'flag', 'flag_2'];
+
+    public $timestamps = false;
 
     public function parent()
     {

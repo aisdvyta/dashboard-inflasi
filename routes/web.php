@@ -12,21 +12,33 @@ use Illuminate\Support\Facades\Auth;
 
 
 // USER //
-Route::get('/', function () {return view('user.index');})->name('landingPage');
-Route::get('/DaftarTabelInflasi',function(){return view('user.daftar-tabel-inflasi.index');})->name('daftar-tabel-inlfasi.index');
+Route::get('/', function () {
+    return view('user.index');
+})->name('landingPage');
+Route::get('/DaftarTabelInflasi', function () {
+    return view('user.daftar-tabel-inflasi.index');
+})->name('daftar-tabel-inlfasi.index');
 
 // PROV //
-Route::get('/AdminProv', function () {return view('prov.index');})->name('landingPageProv');
+Route::get('/AdminProv', function () {
+    return view('prov.index');
+})->name('landingPageProv');
 
-Route::get('/check-auth', function() {
+Route::get('/check-auth', function () {
     return dd(Auth::user());
 });
 
-Route::get('/ManajemenDataInflasi',function(){return view('prov.manajemen-data-inflasi.index');})->name('manajemen-data.index');
-Route::get('/MasterKomoditas',function(){return view('prov.master-komoditas.index');})->name('master-komoditas.index');
+Route::get('/ManajemenDataInflasi', function () {
+    return view('prov.manajemen-data-inflasi.index');
+})->name('manajemen-data.index');
+Route::get('/MasterKomoditas', function () {
+    return view('prov.master-komoditas.index');
+})->name('master-komoditas.index');
 
 // KABKOT //
-Route::get('/Kabkot', function () {return view('kabkot.index');})->name('landingPageKabkot');
+Route::get('/Kabkot', function () {
+    return view('kabkot.index');
+})->name('landingPageKabkot');
 
 // MANAJEMEN AKUN //
 Route::middleware(['auth'])->group(function () {
@@ -42,7 +54,9 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::get('/MasterSatker', [MasterSatkerController::class, 'index'])->name('master-satker.index');
     Route::post('/MasterSatker', [MasterSatkerController::class, 'store'])->name('master-satker.store');
-    Route::delete('master-satker/{kode_satker}', [MasterSatkerController::class, 'destroy'])->name('master-satker.destroy');
+    Route::delete('/MasterSatker/{kode_satker}', [MasterSatkerController::class, 'destroy'])->name('master-satker.destroy');
+    Route::get('/MasterSatker/{kode_satker}/edit', [MasterSatkerController::class, 'edit'])->name('master-satker.edit');
+    Route::put('/MasterSatker/{kode_satker}', [MasterSatkerController::class, 'update'])->name('master-satker.update');
 });
 
 // MANAJEMEN DATA INFLASI //
@@ -60,13 +74,23 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::get('/MasterKomoditas', [MasterKomoditasController::class, 'index'])->name('master-komoditas.index');
     Route::post('/MasterKomoditas', [MasterKomoditasController::class, 'store'])->name('master-komoditas.store');
-    Route::delete('master-komoditas/{kode_kom}', [MasterKomoditasController::class, 'destroy'])->name('master-komoditas.destroy');
+    Route::delete('/MasterKomoditas/{kode_kom}', [MasterKomoditasController::class, 'destroy'])->name('master-komoditas.destroy');
+    Route::get('/MasterKomoditas/create', [MasterKomoditasController::class, 'create'])->name('master-komoditas.create');
+    Route::post('/MasterKomoditas/store', [MasterKomoditasController::class, 'store'])->name('master-komoditas.store');
+    Route::get('/MasterKomoditas/{kode_kom}/edit', [MasterKomoditasController::class, 'edit'])->name('master-komoditas.edit');
+    Route::put('/MasterKomoditas/{kode_kom}', [MasterKomoditasController::class, 'update'])->name('master-komoditas.update');
 });
 
 // DASHBOARD //
-Route::get('/dashboard/infkelompok',function(){return view('dashboard.infKelompok');})->name('dashboard.kelompok');
-Route::get('/dashboard/infseries',function(){return view('dashboard.infSeries');})->name('dashboard.series');
-Route::get('/dashboard/infspasial',function(){return view('dashboard.infSpasial');})->name('dashboard.spasial');
+Route::get('/dashboard/infkelompok', function () {
+    return view('dashboard.infKelompok');
+})->name('dashboard.kelompok');
+Route::get('/dashboard/infseries', function () {
+    return view('dashboard.infSeries');
+})->name('dashboard.series');
+Route::get('/dashboard/infspasial', function () {
+    return view('dashboard.infSpasial');
+})->name('dashboard.spasial');
 Route::get('/dashboard/infbulanan', [DashboardController::class, 'showInflasiBulanan'])->name('dashboard.bulanan');
 
 Route::get('/login', [LoginController::class, 'index'])->name('login');
@@ -76,4 +100,6 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::post('/upload-inflasi', [UploadController::class, 'uploadInflasiAjax'])->name('upload.inflasi.ajax');
 
 // COBA //
-Route::get('/coba', function () {return view('cobabuat-moda');})->name('inicobabuatmoda');
+Route::get('/coba', function () {
+    return view('cobabuat-moda');
+})->name('inicobabuatmoda');

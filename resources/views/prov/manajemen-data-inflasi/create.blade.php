@@ -19,8 +19,12 @@
                 <label for="periode" class="block text-biru1 font-semibold">
                     Pilih Periode Data <span class="text-gray-500 font-normal">(MM/YYYY)</span>
                 </label>
-                <input type="month" id="periode" name="periode" required
+                <input type="month" id="periode" name="periode" value="{{ old('periode') }}" required
                     class="w-full mt-1 p-2 rounded-2xl border border-biru5 focus:ring-biru5">
+                <span id="periodeError" class="text-red-500 text-sm hidden"></span> <!-- Error dari AJAX -->
+                @error('periode')
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                @enderror
             </div>
 
             <div class="mb-4 text-left">
@@ -84,6 +88,7 @@
             const submitBtn = document.getElementById('submitBtn');
             const progressContainer = document.getElementById('progressContainer');
             const progressBar = document.getElementById('progressBar');
+            const periodeError = document.getElementById('periodeError'); // Elemen untuk menampilkan error periode
 
             const formData = new FormData(form);
             formData.append('_token', '{{ csrf_token() }}');
@@ -99,6 +104,8 @@
                 progressBar.style.width = '0%';
                 progressBar.textContent = '0%';
                 progressBar.style.backgroundColor = '#2563eb'; // biru
+                periodeError.classList.add('hidden'); // Sembunyikan error periode sebelumnya
+                periodeError.textContent = ''; // Reset pesan error
             };
 
             xhr.upload.addEventListener('progress', function(e) {
@@ -133,9 +140,8 @@
                         if (response.success) {
                             progressBar.style.width = '100%';
                             progressBar.textContent = '100%';
-                            alert('Upload berhasil! Jumlah data tersimpan: ' + (response.inserted_rows || 0));
-                            form.reset();
-                            progressContainer.classList.add('hidden');
+                            alert(response.message || 'Upload berhasil!');
+                            window.location.href = response.redirect_url; // Redirect ke halaman index
                         } else {
                             progressBar.style.backgroundColor = '#e53e3e';
                             alert('Upload gagal: ' + (response.message || 'Unknown error'));
@@ -144,6 +150,17 @@
                         progressBar.style.backgroundColor = '#e53e3e';
                         alert('Gagal parsing respon server!');
                     }
+                } else if (xhr.status === 422) {
+                    const response = JSON.parse(xhr.responseText);
+                    progressBar.style.backgroundColor = '#e53e3e';
+
+                    // Tampilkan pesan error di bawah kolom periode
+                    if (response.errors && response.errors.periode) {
+                        periodeError.textContent = response.errors.periode;
+                        periodeError.classList.remove('hidden');
+                    }
+
+                    alert('Validasi gagal: ' + (response.errors.periode || 'Unknown error'));
                 } else {
                     progressBar.style.backgroundColor = '#e53e3e';
                     alert('Upload gagal. Status: ' + xhr.status);

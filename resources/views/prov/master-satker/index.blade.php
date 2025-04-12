@@ -9,11 +9,13 @@
 
             <div class="flex items-center justify-between gap-4">
                 <!-- Search Bar -->
-                <div class="flex items-center gap-2 px-4 py-2 bg-white rounded-lg shadow-lg w-80">
+                <form action="{{ route('master-satker.index') }}" method="GET"
+                    class="flex items-center gap-2 px-4 py-2 bg-white rounded-lg shadow-lg w-80">
                     <img src="{{ asset('images/sidebar/searchIcon.svg') }}" alt="Ikon Search" class="h-5 w-5">
-                    <input type="text" name="search" placeholder="Cari disini"
-                        class="text-sm w-full text-biru1 focus:outline-none">
-                </div>
+                    <input type="text" name="search" value="{{ $search ?? '' }}" placeholder="Cari disini"
+                        class="text-sm w-full text-biru1 focus:outline-none" />
+                    <button type="submit" class="hidden">Cari</button>
+                </form>
 
                 <!-- Tombol Tambah Satker -->
                 @include('components.modaTambahSatker', [
@@ -59,7 +61,6 @@
                                     @include('components.modaEditSatker', [
                                         'fileName' => 'master-satker',
                                     ])
-
                                     <button type="button" onclick="openModalEditSatker('{{ $satker->kode_satker }}')"
                                         class="flex items-center gap-1 bg-biru1 text-white px-3 py-1 rounded-lg shadow-lg hover:-translate-y-1 transition duration-100 text-sm font-normal">
                                         <img src="{{ asset('images/adminProv/editIcon.svg') }}" alt="Edit Icon"
@@ -74,7 +75,6 @@
                                             class="h-5 w-5">
                                         Hapus Satker
                                     </button>
-
                                     @include('components.modaKonfirmasiHapus', [
                                         'id' => $satker->kode_satker,
                                         'folderName' => 'master-satker',
@@ -85,11 +85,21 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="text-center py-4">Tidak ada data satker.</td>
-                        </tr>
+                            <td colspan="5" class="text-center py-4">
+                                @if ($search)
+                                    Tidak ada hasil untuk pencarian "{{ $search }}".
+                                @else
+                                    Tidak ada data komoditas.
+                                @endif
+                            </td>
+                        </tr>>
                     @endforelse
                 </tbody>
             </table>
+            <!-- Pagination -->
+            <div class="mt-4">
+                {{ $satkers->links('components.pagination') }}
+            </div>
         </div>
     </div>
 @endsection

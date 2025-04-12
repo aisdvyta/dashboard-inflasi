@@ -11,10 +11,19 @@ use Carbon\Carbon;
 
 class UploadController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $uploads = master_inflasi::with('pengguna')->orderBy('upload_at', 'desc')->get();
-        return view('prov.manajemen-data-inflasi.index', compact('uploads'));
+        $search = $request->input('search'); // Ambil input pencarian
+
+        $uploads = master_inflasi::with('pengguna')
+            ->when($search, function ($query, $search) {
+                return $query->where('nama', 'like', "%{$search}%")
+                    ->orWhere('jenis_data_inflasi', 'like', "%{$search}%");
+            })
+            ->orderBy('periode', 'asc')
+            ->paginate(10); // Gunakan pagination
+
+        return view('prov.manajemen-data-inflasi.index', compact('uploads', 'search'));
     }
 
     public function create()
@@ -30,21 +39,31 @@ class UploadController extends Controller
             'file' => 'required|mimes:xlsx'
         ]);
 
+        // Cek apakah data untuk periode dan jenis_data_inflasi sudah ada
+        $periode = Carbon::createFromFormat('Y-m', $request->periode)->startOfMonth()->toDateString();
+        $jenisDataInflasi = $request->jenis_data_inflasi;
+
+        $existingData = master_inflasi::where('periode', $periode)
+            ->where('jenis_data_inflasi', $jenisDataInflasi)
+            ->first();
+
+        if ($existingData) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['periode' => 'Data untuk periode dan jenis data inflasi terpilih sudah ada. Silakan pilih data lain.']);
+        }
+
         // Generate nama otomatis
-        $periode = Carbon::createFromFormat('Y-m', $request->periode);
-        $nama = 'data inflasi ' . $request->jenis_data_inflasi . ' ' . $periode->translatedFormat('F Y');
+        $nama = 'data inflasi ' . $jenisDataInflasi . ' ' . Carbon::createFromFormat('Y-m', $request->periode)->translatedFormat('F Y');
 
         // Simpan ke master_inflasi terlebih dahulu
         $dataInflasi = master_inflasi::create([
-            'id_pengguna' => Auth::user()->id, // Ambil ID pengguna yang sedang login
+            'id_pengguna' => Auth::user()->id,
             'nama' => $nama,
-            'periode' => $periode->startOfMonth()->toDateString(),
-            'jenis_data_inflasi' => $request->jenis_data_inflasi,
+            'periode' => $periode,
+            'jenis_data_inflasi' => $jenisDataInflasi,
             'upload_at' => now(),
         ]);
-
-        // Ambil ID master_inflasi yang baru saja dibuat
-        $idInflasi = $dataInflasi->id;
 
         // Proses file Excel
         $file = $request->file('file');
@@ -69,7 +88,7 @@ class UploadController extends Controller
         // Loop setiap baris data di Excel dan simpan ke tabel detail_inflasi
         foreach ($rows as $row) {
             detail_inflasi::create([
-                'id_inflasi' => $idInflasi,
+                'id_inflasi' => $dataInflasi->id,
                 'id_wil' => $row[$indexKodeKota] ?? null,
                 'id_kom' => sprintf('%s', $row[$indexKodeKomoditas] ?? ''),
                 'id_flag' => $row[$indexFlag] ?? null,
@@ -94,18 +113,34 @@ class UploadController extends Controller
             'file' => 'required|mimes:xlsx'
         ]);
 
-        $periode = Carbon::createFromFormat('Y-m', $request->periode);
-        $nama = 'data inflasi ' . $request->jenis_data_inflasi . ' ' . $periode->translatedFormat('F Y');
+        // Cek apakah data untuk periode dan jenis_data_inflasi sudah ada
+        $periode = Carbon::createFromFormat('Y-m', $request->periode)->startOfMonth()->toDateString();
+        $jenisDataInflasi = $request->jenis_data_inflasi;
 
+        $existingData = master_inflasi::where('periode', $periode)
+            ->where('jenis_data_inflasi', $jenisDataInflasi)
+            ->first();
+
+        if ($existingData) {
+            return response()->json([
+                'success' => false,
+                'errors' => [
+                    'periode' => 'Data untuk periode dan jenis data inflasi terpilih sudah ada. Silakan pilih data lain.'
+                ]
+            ], 422);
+        }
+
+        // Generate nama otomatis
+        $nama = 'data inflasi ' . $jenisDataInflasi . ' ' . Carbon::createFromFormat('Y-m', $request->periode)->translatedFormat('F Y');
+
+        // Simpan ke master_inflasi terlebih dahulu
         $dataInflasi = master_inflasi::create([
             'id_pengguna' => Auth::user()->id,
             'nama' => $nama,
-            'periode' => $periode->startOfMonth()->toDateString(),
-            'jenis_data_inflasi' => $request->jenis_data_inflasi,
+            'periode' => $periode,
+            'jenis_data_inflasi' => $jenisDataInflasi,
             'upload_at' => now(),
         ]);
-
-        $idInflasi = $dataInflasi->id;
 
         try {
             $file = $request->file('file');
@@ -130,7 +165,7 @@ class UploadController extends Controller
 
             foreach ($rows as $row) {
                 detail_inflasi::create([
-                    'id_inflasi' => $idInflasi,
+                    'id_inflasi' => $dataInflasi->id,
                     'id_wil' => $row[$indexKodeKota] ?? null,
                     'id_kom' => sprintf('%s', $row[$indexKodeKomoditas] ?? ''),
                     'id_flag' => $row[$indexFlag] ?? null,
@@ -149,7 +184,7 @@ class UploadController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Berhasil mengupload!',
-                'inserted_rows' => $insertedCount
+                'redirect_url' => route('manajemen-data-inflasi.index')
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -158,8 +193,6 @@ class UploadController extends Controller
             ], 500);
         }
     }
-
-
 
     public function edit($id)
     {

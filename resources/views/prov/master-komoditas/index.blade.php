@@ -1,5 +1,6 @@
+<!-- filepath: d:\Kuliah\New folder\coding\dashboard-inflasi\resources\views\prov\master-komoditas\index.blade.php -->
 @extends('layouts.dashboard')
-
+@include('components.modaEditKomoditas')
 @section('body')
     <div class="container mx-auto p-6 relative">
         <div class="flex-col justify-between items-center mb-4">
@@ -9,21 +10,18 @@
 
             <div class="flex items-center justify-between gap-4">
                 <!-- Search Bar -->
-                <div class="flex items-center gap-2 px-4 py-2 bg-white rounded-lg shadow-lg w-80">
+                <form action="{{ route('master-komoditas.index') }}" method="GET"
+                    class="flex items-center gap-2 px-4 py-2 bg-white rounded-lg shadow-lg w-80">
                     <img src="{{ asset('images/sidebar/searchIcon.svg') }}" alt="Ikon Search" class="h-5 w-5">
-                    <input type="text" name="search" placeholder="Cari disini"
-                        class="text-sm w-full text-biru1 focus:outline-none">
-                </div>
+                    <input type="text" name="search" value="{{ $search ?? '' }}" placeholder="Cari disini"
+                        class="text-sm w-full text-biru1 focus:outline-none" />
+                    <button type="submit" class="hidden">Cari</button>
+                </form>
 
-                <a href="javascript:void(0)"
-                    onclick="document.getElementById('modalTambahSatker').classList.remove('hidden')"
+                <a href="{{ route('master-komoditas.create') }}"
                     class="flex items-center gap-2 px-2 py-2 rounded-lg bg-kuning1 text-biru1 hover:bg-biru4 hover:text-white group transition duration-300">
                     <img src="{{ asset('images/adminProv/masterSatker/btambahIcon.svg') }}" alt="Ikon Tambah Komoditas"
-                        class="h-6 w-6 icon group-hover:hidden transition duration-100"
-                        data-hover="{{ asset('images/adminProv/masterSatker/ptambahIcon.svg') }}"
-                        data-default="{{ asset('images/adminProv/masterSatker/btambahIcon.svg') }}">
-                    <img src="{{ asset('images/adminProv/masterSatker/ptambahIcon.svg') }}"
-                        alt="Ikon Tambah Komoditas Hover" class="h-6 w-6 hidden group-hover:block transition duration-100">
+                        class="h-6 w-6">
                     <span
                         class="menu-text text-biru1 font-semibold text-[15px] group-hover:text-white transition duration-100">
                         Tambah Komoditas</span>
@@ -51,7 +49,7 @@
                             <td class="px-4 py-2 text-left">{{ $komoditasItem->nama_kom }}</td>
                             <td class="px-4 py-2 text-center">{{ $komoditasItem->flag }}</td>
                             <td class="px-8 py-2">
-                                <div class="flex place-content-center w-fit gap-3">
+                                <div class="flex place-content-center gap-3">
                                     <!-- Tombol Edit -->
                                     <button type="button" onclick="openModalEditSatker('{{ $komoditasItem->kode_kom }}')"
                                         class="flex items-center gap-1 bg-biru1 text-white px-5 py-1 rounded-lg shadow-lg hover:-translate-y-1 transition duration-100 text-sm font-normal">
@@ -67,20 +65,18 @@
                                             class="h-5 w-5">
                                         Hapus Komoditas
                                     </button>
-
-                                    @include('components.modaKonfirmasiHapus', [
-                                        'id' => $komoditasItem->kode_kom,
-                                        'folderName' => 'master-komoditas',
-                                        'formAction' => route(
-                                            'master-komoditas.destroy',
-                                            $komoditasItem->kode_kom),
-                                    ])
                                 </div>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="text-center py-4">Tidak ada data komoditas.</td>
+                            <td colspan="5" class="text-center py-4">
+                                @if ($search)
+                                    Tidak ada hasil untuk pencarian "{{ $search }}".
+                                @else
+                                    Tidak ada data komoditas.
+                                @endif
+                            </td>
                         </tr>
                     @endforelse
                 </tbody>

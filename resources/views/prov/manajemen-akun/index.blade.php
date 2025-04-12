@@ -8,11 +8,13 @@
 
             <div class="flex items-center justify-between gap-4">
                 <!-- Search Bar -->
-                <div class="flex items-center gap-2 px-4 py-2 bg-white rounded-lg shadow-lg w-80">
+                <form action="{{ route('manajemen-akun.index') }}" method="GET"
+                    class="flex items-center gap-2 px-4 py-2 bg-white rounded-lg shadow-lg w-80">
                     <img src="{{ asset('images/sidebar/searchIcon.svg') }}" alt="Ikon Search" class="h-5 w-5">
-                    <input type="text" name="search" placeholder="Cari disini"
-                        class="text-sm w-full text-biru1 focus:outline-none">
-                </div>
+                    <input type="text" name="search" value="{{ $search ?? '' }}" placeholder="Cari disini"
+                        class="text-sm w-full text-biru1 focus:outline-none" />
+                    <button type="submit" class="hidden">Cari</button>
+                </form>
 
                 <!-- Tombol Tambah Akun -->
                 <a href="{{ route('manajemen-akun.create') }}"
@@ -85,11 +87,20 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="text-center text-gray-500 py-4">Belum ada akun yang tersedia.</td>
+                            <td colspan="5" class="text-center py-4">
+                                @if ($search)
+                                    Tidak ada hasil untuk pencarian "{{ $search }}".
+                                @else
+                                    Tidak ada data komoditas.
+                                @endif
+                            </td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
+            <div class="mt-4">
+                {{ $users->links('components.pagination') }}
+            </div>
         </div>
     </div>
 @endsection

@@ -6,11 +6,13 @@
             <h2 class="text-3xl font-bold text-biru1 mb-4">Tabel <span class="font-bold text-kuning1">Manajemen Data</span>
                 Inflasi</h2>
             <div class="flex items-center justify-between gap-4">
-                <div class="flex items-center gap-2 px-4 py-2 bg-white rounded-lg shadow-lg w-80">
+                <form action="{{ route('manajemen-data-inflasi.index') }}" method="GET"
+                    class="flex items-center gap-2 px-4 py-2 bg-white rounded-lg shadow-lg w-80">
                     <img src="{{ asset('images/sidebar/searchIcon.svg') }}" alt="Ikon Search" class="h-5 w-5">
-                    <input type="text" name="search" placeholder="Cari disini"
-                        class="text-sm w-80 text-biru1 focus:outline-none">
-                </div>
+                    <input type="text" name="search" value="{{ $search ?? '' }}" placeholder="Cari disini"
+                        class="text-sm w-full text-biru1 focus:outline-none" />
+                    <button type="submit" class="hidden">Cari</button>
+                </form>
                 <a href="{{ route('manajemen-data-inflasi.create') }}"
                     class="flex items-center gap-2 px-2 py-2 rounded-lg bg-kuning1 text-biru1 hover:bg-biru4 hover:text-white group transition duration-300"
                     data-page="tabel">
@@ -59,8 +61,10 @@
                             <td class="px-4 py-2 text-center">
                                 <div
                                     class="inline-flex items-center gap-0.5 bg-gray-200 text-biru1 px-3 py-1 rounded-full w-fit mx-auto">
-                                    <img src="{{ asset('images/adminProv/manajemenData/usernameIcon.svg') }}" alt="User Icon" class="h-6 w-6">
-                                    <span class="text-sm font-semibold"></span>{{ $upload->pengguna->nama ?? 'Tidak Diketahui' }}</span>
+                                    <img src="{{ asset('images/adminProv/manajemenData/usernameIcon.svg') }}"
+                                        alt="User Icon" class="h-6 w-6">
+                                    <span
+                                        class="text-sm font-semibold"></span>{{ $upload->pengguna->nama ?? 'Tidak Diketahui' }}</span>
                                 </div>
                             </td>
 
@@ -93,11 +97,20 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="text-center text-gray-500 py-4">Belum ada data yang diupload.</td>
+                            <td colspan="5" class="text-center py-4">
+                                @if ($search)
+                                    Tidak ada hasil untuk pencarian "{{ $search }}".
+                                @else
+                                    Tidak ada data komoditas.
+                                @endif
+                            </td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
+            <div class="mt-4">
+                {{ $uploads->links('components.pagination') }}
+            </div>
         </div>
     </div>
 @endsection
@@ -126,4 +139,3 @@
         icon.setAttribute('src', hoverSrc);
     }
 </script>
-

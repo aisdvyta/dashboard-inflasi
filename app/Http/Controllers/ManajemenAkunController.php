@@ -8,12 +8,35 @@ use Illuminate\Support\Str;
 
 class ManajemenAkunController extends Controller
 {
-    public function index()
+    // public function index()
+    // {
+    //     // Mengambil semua data pengguna dengan relasi satker dan role
+    //     $users = User::orderBy('id_satker', 'asc')->get();
+    //     return view('prov.manajemen-akun.index', compact('users'));
+    // }
+
+    public function index(Request $request)
     {
-        // Mengambil semua data pengguna dengan relasi satker dan role
-        $users = User::orderBy('id_satker', 'asc')->get();
-        dd:
-        $users;
+        // Ambil input pencarian
+        $search = $request->input('search');
+
+        // Query pengguna dengan relasi ke role dan satker
+        $users = User::query()
+            ->with(['role', 'satker']) // Pastikan relasi role dan satker sudah didefinisikan di model User
+            ->when($search, function ($query, $search) {
+                return $query->where('nama', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhereHas('role', function ($query) use ($search) {
+                        $query->where('nama_role', 'like', "%{$search}%"); // Cari berdasarkan nama role
+                    })
+                    ->orWhereHas('satker', function ($query) use ($search) {
+                        $query->where('kode_satker', 'like', "%{$search}%") // Cari berdasarkan kode satker
+                            ->orWhere('nama_satker', 'like', "%{$search}%"); // Cari berdasarkan nama satker
+                    });
+            })
+            ->orderBy('id_satker', 'asc')
+            ->paginate(10);
+
         return view('prov.manajemen-akun.index', compact('users'));
     }
 

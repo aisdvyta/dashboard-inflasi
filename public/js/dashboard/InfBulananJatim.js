@@ -30,9 +30,14 @@ document.addEventListener("DOMContentLoaded", function () {
         var values = data.map(item => Number(item.andil));
 
         var option = {
-            title: { text: title },
             tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
-            grid: { left: "3%", right: "4%", bottom: "3%", containLabel: true },
+            grid: {
+                left: "3%",
+                right: "4%",
+                bottom: "3%",
+                top: "5%", // Kurangi nilai 'top' untuk membuat grafik lebih mepet ke atas
+                containLabel: true
+            },
             xAxis: { type: "value", boundaryGap: [0, 0.01] },
             yAxis: {
                 type: "category",
@@ -40,7 +45,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 inverse: true
             },
             series: [{
-                name: title,
                 type: "bar",
                 data: values,
                 itemStyle: {
@@ -58,21 +62,18 @@ document.addEventListener("DOMContentLoaded", function () {
         renderChart(
             "andilmtm",
             window.topAndilMtM,
-            "Top 10 Komoditas Berdasarkan Andil MtM",
         );
 
         // Render grafik YtD
         renderChart(
             "andilytd",
             window.topAndilYtD,
-            "Top 10 Komoditas Berdasarkan Andil YtD",
         );
 
         // Render grafik YoY
         renderChart(
             "andilyoy",
             window.topAndilYoY,
-            "Top 10 Komoditas Berdasarkan Andil YoY",
         );
     }, 1000);
 });
