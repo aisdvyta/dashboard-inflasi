@@ -65,6 +65,11 @@
                 <span class="menu-text text-white text-[15px] transition duration-100">
                     ATAP</span>
             </a>
+            <button id="exportPdf"
+                class="flex items-center gap-2 px-10 py-2 rounded-t-xl bg-biru4 hover:bg-biru1 group transition duration-300 ml-4">
+                <span class="menu-text text-white text-[15px] transition duration-100">
+                    Export PDF</span>
+            </button>
         </div>
     </div>
 
@@ -378,6 +383,7 @@
 @endsection
 
 @push('scripts')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script>
         const topAndilMtM = @json($topAndilMtM);
         const topAndilYtD = @json($topAndilYtD);
@@ -402,6 +408,7 @@
             const tahunSelect = document.getElementById('tahun');
             const iconBulan = document.getElementById('icon-bulan');
             const iconTahun = document.getElementById('icon-tahun');
+            const exportPdfBtn = document.getElementById('exportPdf');
 
             // Fungsi untuk toggle ikon panah
             function toggleIcon(selectElement, iconElement) {
@@ -417,6 +424,75 @@
             // Terapkan fungsi toggle pada dropdown bulan dan tahun
             toggleIcon(bulanSelect, iconBulan);
             toggleIcon(tahunSelect, iconTahun);
+
+            // Export PDF functionality
+            exportPdfBtn.addEventListener('click', async function() {
+                // Show loading indicator first
+                const loading = document.createElement('div');
+                loading.style.position = 'fixed';
+                loading.style.top = '50%';
+                loading.style.left = '50%';
+                loading.style.transform = 'translate(-50%, -50%)';
+                loading.style.backgroundColor = 'rgba(0,0,0,0.7)';
+                loading.style.color = 'white';
+                loading.style.padding = '20px';
+                loading.style.borderRadius = '5px';
+                loading.style.zIndex = '9999';
+                loading.textContent = 'Generating PDF...';
+                document.body.appendChild(loading);
+
+                try {
+                    // Get only the main dashboard content
+                    const content = document.querySelector('.bg-white.rounded-b-lg.shadow-md');
+                    
+                    // Wait for charts to render
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+
+                    const opt = {
+                        margin: [10, 10, 10, 10],
+                        filename: `dashboard-inflasi-${document.getElementById('bulan').value}-${document.getElementById('tahun').value}.pdf`,
+                        image: { type: 'jpeg', quality: 1 },
+                        html2canvas: { 
+                            scale: 2,
+                            useCORS: true,
+                            logging: true,
+                            letterRendering: true,
+                            allowTaint: true,
+                            foreignObjectRendering: true,
+                            scrollY: -window.scrollY,
+                            onclone: function(clonedDoc) {
+                                Array.from(clonedDoc.getElementsByTagName('canvas')).forEach(canvas => {
+                                    const originalCanvas = document.querySelector(`canvas[data-id="${canvas.getAttribute('data-id')}"]`);
+                                    if (originalCanvas) {
+                                        const context = canvas.getContext('2d');
+                                        context.drawImage(originalCanvas, 0, 0);
+                                    }
+                                });
+                            }
+                        },
+                        jsPDF: { 
+                            unit: 'px',
+                            format: [1920, 1080],
+                            orientation: 'landscape',
+                            hotfixes: ['px_scaling']
+                        },
+                        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+                    };
+
+                    // Generate PDF
+                    await html2pdf()
+                        .from(content)
+                        .set(opt)
+                        .save();
+
+                } catch (error) {
+                    console.error('Error generating PDF:', error);
+                    alert('Terjadi kesalahan saat menghasilkan PDF. Silakan coba lagi.');
+                } finally {
+                    // Remove loading indicator
+                    document.body.removeChild(loading);
+                }
+            });
         });
     </script>
 @endpush
