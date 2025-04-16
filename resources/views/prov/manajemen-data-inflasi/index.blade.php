@@ -68,7 +68,6 @@
                                 </div>
                             </td>
 
-                            {{-- filepath: d:\Kuliah\New folder (2)\dashboard-inflasi\resources\views\prov\manajemen-data-inflasi\index.blade.php --}}
                             <td class="px-4 py-2">
                                 <div class="flex place-content-center gap-3">
                                     <!-- Tombol Edit -->
@@ -108,6 +107,7 @@
                     @endforelse
                 </tbody>
             </table>
+
             <div class="mt-4">
                 {{ $uploads->links('components.pagination') }}
             </div>

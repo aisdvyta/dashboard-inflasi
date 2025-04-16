@@ -3,7 +3,9 @@
 
 @section('body')
 <div class="container mx-auto p-6">
-    <h2 class="text-2xl font-semibold mb-4">Detail Data: {{ $upload->nama }}</h2>
+    <h2 class="text-4xl font-bold text-biru4 mb-4">
+        <span class="text-biru1">Detail Data : </span>
+        {{ $upload->nama }}</h2>
 
     <div class="bg-white shadow-md rounded-lg p-4">
         <p><strong>Uploader:</strong> {{ $upload->pengguna->nama ?? 'Tidak Diketahui' }}</p>
@@ -11,11 +13,12 @@
         <p><strong>Kategori:</strong> {{ $upload->jenis_data_inflasi }}</p>
     </div>
 
-    <h3 class="text-xl font-semibold mt-6">Isi Data:</h3>
+    <h3 class="text-2xl font-bold text-biru1 mt-6">Isi Data:</h3>
     <div class="overflow-x-auto bg-white shadow-md rounded-lg p-4 mt-4">
         <table class="w-full border-collapse border border-gray-300">
             <thead>
                 <tr class="bg-gray-200">
+                    <th class="border border-gray-300 px-4 py-2">No</th>
                     <th class="border border-gray-300 px-4 py-2">Tahun</th>
                     <th class="border border-gray-300 px-4 py-2">Bulan</th>
                     <th class="border border-gray-300 px-4 py-2">Kode Kota</th>
@@ -34,6 +37,8 @@
             <tbody>
                 @foreach ($details as $detail)
                     <tr class="hover:bg-gray-100">
+                        <td class="border border-gray-300 px-4 py-2">
+                            {{ $loop->iteration + ($details->currentPage() - 1) * $details->perPage() }}</td>
                         <td class="border border-gray-300 px-4 py-2">{{ \Carbon\Carbon::parse($upload->periode)->year }}</td>
                         <td class="border border-gray-300 px-4 py-2">{{ \Carbon\Carbon::parse($upload->periode)->month }}</td>
                         <td class="border border-gray-300 px-4 py-2">{{ $detail->id_wil }}</td>
@@ -51,6 +56,11 @@
                 @endforeach
             </tbody>
         </table>
+
+        <!-- Pagination -->
+        <div class="mt-4">
+            {{ $details->links('components.pagination') }}
+        </div>
     </div>
 </div>
 @endsection

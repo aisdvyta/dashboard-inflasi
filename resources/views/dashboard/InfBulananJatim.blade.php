@@ -71,7 +71,7 @@
     <div class="bg-white rounded-b-lg shadow-md  p-6">
         <div class="w-full max-w-7xl mx-auto px-6 py-10">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-                <!-- Kiri: Judul -->
+                {{-- judul --}}
                 <div class="space-y-1">
                     <h1 class="text-5xl md:text-5xl font-bold text-biru1">Dashboard</h1>
                     <h1 class="text-5xl md:text-5xl font-bold text-biru4">INFLASI BULANAN</h1>
@@ -82,25 +82,20 @@
                     </div>
                 </div>
 
-                <!-- Kanan: Kotak Komoditas + Filter -->
+                {{-- pojok kanan atas --}}
                 <div>
-                    <!-- Kotak Komoditas -->
                     <div
                         class="bg-[#D9EBF8] rounded-xl p-4 shadow-md mb-4 flex flex-col md:flex-row items-center md:items-start justify-between gap-4">
-                        <!-- Kiri: Logo dan Deskripsi -->
                         <div class="flex flex-col items-start">
                             <img src="/images/navbar/logoBPS.svg" alt="Logo" class="h-12 mb-2" />
-                            <div class="text-sm font-bold text-gray-800">
-                                Komoditas yang <br>
+                            <div class="text-sm font-bold text-gray-800">Komoditas yang <br>
                                 <span class="text-biru1">
                                     Memiliki<br><span class="text-biru4">Nilai Andil</span><br> Tertinggi dan Terdalam
                                 </span>
                             </div>
                         </div>
 
-                        <!-- Kanan: Komoditas -->
                         <div class="flex flex-col gap-2 w-full md:w-auto">
-                            <!-- Inflasi Tertinggi -->
                             <div class="text-sm font-semibold">
                                 <div class="text-xs font-semibold text-biru4 italic leading-tight">Komoditas dengan Andil
                                     Inflasi Tertinggi
@@ -114,7 +109,6 @@
                                 </div>
                             </div>
 
-                            <!-- Deflasi Terdalam -->
                             {{-- leading itu buat jarak antar hurufnya --}}
                             <div class="text-sm font-semibold">
                                 <div class="text-xs font-semibold text-biru4 italic leading-tight">Komoditas dengan Andil
@@ -132,10 +126,9 @@
                     </div>
 
 
-                    <!-- Dropdown Filter -->
+                    <!-- Filter -->
                     <div class="flex gap-2 justify-end">
                         <form method="GET" action="{{ route('dashboard.bulanan') }}" class="flex gap-2">
-                            <!-- Bulan -->
                             <div class="relative">
                                 <select id="bulan" name="bulan"
                                     class="appearance-none w-full rounded-full bg-biru4 text-white font-semibold px-6 py-2 pr-10 shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400">
@@ -154,7 +147,6 @@
                                 </div>
                             </div>
 
-                            <!-- Tahun -->
                             <div class="relative">
                                 <select id="tahun" name="tahun"
                                     class="appearance-none w-full rounded-full bg-biru4 text-white font-semibold px-6 py-2 pr-10 shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400">
@@ -174,7 +166,6 @@
                                 </div>
                             </div>
 
-                            <!-- Tombol Submit -->
                             <button type="submit"
                                 class="rounded-full bg-orange-500 text-white font-semibold px-5 py-2 shadow-md focus:outline-none focus:ring-2 focus:ring-orange-400">
                                 Filter
@@ -187,7 +178,7 @@
         </div>
 
         <div class="grid grid-cols-3 gap-4 mt-2">
-            <div class="col-span-3 flex gap-4 items-stretch"> <!-- Tambahkan items-stretch -->
+            <div class="col-span-3 flex gap-4 items-stretch">
                 {{-- MtM --}}
                 <div class="flex flex-col flex-1 gap-2">
                     <div class="text-xs text-white italic leading-tight">
@@ -196,7 +187,6 @@
                     </div>
                     <div
                         class="bg-biru1 rounded-xl shadow-lg px-4 py-2 flex-1 text-white flex flex-col justify-between h-full">
-                        <!-- Tambahkan h-full -->
                         <div class="flex justify-between items-end">
                             <div class="text-sm font-bold">
                                 Nilai Inflasi Bulanan<br>
@@ -216,7 +206,6 @@
                     </div>
                     <div
                         class="bg-biru1 rounded-xl shadow-lg px-4 py-2 flex-1 text-white flex flex-col justify-between h-full">
-                        <!-- Tambahkan h-full -->
                         <div class="flex justify-between items-end">
                             <div class="text-sm font-bold">
                                 Nilai Inflasi Tahun Kalender<br>
@@ -236,7 +225,6 @@
                     </div>
                     <div
                         class="bg-biru1 rounded-xl shadow-lg px-4 py-2 flex-1 text-white flex flex-col justify-between h-full">
-                        <!-- Tambahkan h-full -->
                         <div class="flex justify-between items-end">
                             <div class="text-sm font-bold">
                                 Nilai Inflasi Tahunan<br>
@@ -251,9 +239,8 @@
             </div>
         </div>
 
-        {{-- filepath: d:\Kuliah\New folder\coding\dashboard-inflasi\resources\views\dashboard\InfBulananJatim.blade.php --}}
+        {{-- js echart barchart --}}
         <div class="grid grid-cols-3 gap-4 mt-4 ">
-            {{-- Grafik MtM --}}
             <div class="bg-white rounded-xl shadow-lg p-4">
                 <h2 class="text-center text-base font-bold text-biru1">
                     10 Komoditas dengan <br> Sumbangan Inflasi Bulanan Terbesar<br>
@@ -262,7 +249,6 @@
                 <div class="h-80" id="andilmtm"></div>
             </div>
 
-            {{-- Grafik YtD --}}
             <div class="bg-white rounded-xl shadow-lg  p-4">
                 <h2 class="text-center text-base font-bold text-biru1">
                     10 Komoditas dengan <br> Sumbangan Inflasi Tahun Kalender Terbesar<br>
@@ -271,7 +257,6 @@
                 <div class="h-80" id="andilytd"></div>
             </div>
 
-            {{-- Grafik YoY --}}
             <div class="bg-white rounded-xl shadow-lg p-4">
                 <h2 class="text-center text-base font-bold text-biru1">
                     10 Komoditas dengan <br> Sumbangan Inflasi Tahunan Terbesar<br>
@@ -281,9 +266,8 @@
             </div>
         </div>
 
-
+        {{-- tabel top komoditas --}}
         <div class="grid grid-cols-3 gap-4 mt-4">
-            {{-- Tabel MtM --}}
             <div class="bg-white rounded-xl shadow-lg p-4 h-auto">
                 <h2 class="text-center text-base font-bold text-biru1 pb-4">
                     10 Komoditas Penyumbang Inflasi Bulanan<br>
@@ -293,7 +277,7 @@
                     <table class="text-sm text-left rtl:text-right w-full mx-auto">
                         <thead class="text-xs bg-biru1 text-white">
                             <tr>
-                                <th scope="col" class="px-2 py-2 text-left">#</th> <!-- Nomor urut -->
+                                <th scope="col" class="px-2 py-2 text-left"> </th>
                                 <th scope="col" class="px-2 py-2 text-left">Nama Komoditas</th>
                                 <th scope="col" class="px-2 py-2 text-right">Inflasi MtM</th>
                                 <th scope="col" class="px-2 py-2 text-right">Andil MtM</th>
@@ -302,7 +286,7 @@
                         <tbody>
                             @foreach ($topInflasiMtM as $index => $item)
                                 <tr class="text-biru1">
-                                    <td class="px-2 py-2 text-left">{{ $index + 1 }}</td> <!-- Nomor urut -->
+                                    <td class="px-2 py-2 text-left">{{ $index + 1 }}</td>
                                     <td class="px-2 py-2 font-medium text-left">{{ $item->nama_kom }}</td>
                                     <td
                                         class="px-2 py-2 text-right {{ getHeatClass($item->inflasi, $minInflasiMtM, $maxInflasiMtM) }}">
@@ -319,7 +303,6 @@
                 </div>
             </div>
 
-            {{-- Tabel YtD --}}
             <div class="bg-white rounded-xl shadow-lg p-4 h-auto">
                 <h2 class="text-center text-base font-bold text-biru1 pb-4">
                     10 Komoditas Penyumbang Inflasi Tahun Kalender<br>
@@ -329,7 +312,7 @@
                     <table class="text-sm text-left rtl:text-right w-full mx-auto">
                         <thead class="text-xs bg-biru1 text-white">
                             <tr>
-                                <th scope="col" class="px-2 py-2 text-left">#</th>
+                                <th scope="col" class="px-2 py-2 text-left"> </th>
                                 <th scope="col" class="px-2 py-2 text-left">Nama Komoditas</th>
                                 <th scope="col" class="px-2 py-2 text-right">Inflasi YtD</th>
                                 <th scope="col" class="px-2 py-2 text-right">Andil YtD</th>
@@ -355,7 +338,6 @@
                 </div>
             </div>
 
-            {{-- Tabel YoY --}}
             <div class="bg-white rounded-xl shadow-lg p-4 h-auto">
                 <h2 class="text-center text-base font-bold text-biru1 pb-4">
                     10 Komoditas Penyumbang Inflasi Tahunan<br>
@@ -365,7 +347,7 @@
                     <table class="text-sm text-left rtl:text-right w-full mx-auto">
                         <thead class="text-xs bg-biru1 text-white">
                             <tr>
-                                <th scope="col" class="px-2 py-2 text-left">#</th>
+                                <th scope="col" class="px-2 py-2 text-left"> </th>
                                 <th scope="col" class="px-2 py-2 text-left">Nama Komoditas</th>
                                 <th scope="col" class="px-2 py-2 text-right">Inflasi YoY</th>
                                 <th scope="col" class="px-2 py-2 text-right">Andil YoY</th>

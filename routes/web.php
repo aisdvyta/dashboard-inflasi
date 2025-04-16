@@ -63,7 +63,7 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::get('/TabelDataInflasi', [UploadController::class, 'index'])->name('manajemen-data-inflasi.index');
     Route::get('/TabelDataInflasi/import', [UploadController::class, 'create'])->name('manajemen-data-inflasi.create');
-    Route::post('/upload', [UploadController::class, 'store'])->name('manajemen-data-inflasi.store');
+    Route::post('/upload-inflasi', [UploadController::class, 'uploadInflasiAjax'])->name('upload.inflasi.ajax');
     Route::get('/TabelDataInflasi/{data_name}', [UploadController::class, 'show'])->name('manajemen-data-inflasi.show');
     Route::delete('/TabelDataInflasi/{id}', [UploadController::class, 'destroy'])->name('manajemen-data-inflasi.destroy');
     Route::get('/TabelDataInflasi/{id}/edit', [UploadController::class, 'edit'])->name('manajemen-data-inflasi.edit');
@@ -96,8 +96,6 @@ Route::get('/dashboard/infbulanan', [DashboardController::class, 'showInflasiBul
 Route::get('/login', [LoginController::class, 'index'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-
-Route::post('/upload-inflasi', [UploadController::class, 'uploadInflasiAjax'])->name('upload.inflasi.ajax');
 
 // COBA //
 Route::get('/coba', function () {

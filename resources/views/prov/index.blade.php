@@ -79,7 +79,7 @@
                 <h2 class="text-biru1 text-lg font-semibold">Dashboard Inflasi</h2>
                 <p class="text-biru1 text-sm mt-2 flex-grow">Melihat tampilan visualisasi data inflasi di dashboard Provinsi
                     Jawa Timur</p>
-                <a href="#"
+                <a href="{{ route('dashboard.bulanan') }}"
                     class="text-biru4 mt-3 transition-transform duration-200 hover:translate-x-2 inline-block">Lakukan →</a>
             </div>
         </div>

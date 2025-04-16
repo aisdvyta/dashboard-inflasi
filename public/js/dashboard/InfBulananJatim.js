@@ -1,14 +1,13 @@
 document.addEventListener("DOMContentLoaded", function () {
     console.log("Script Loaded");
 
-    function renderChart(id, data, title, isDeflasi = false) {
+    function renderChart(id, data) {
         if (!data || data.length === 0) {
-            console.warn('Data for ${title} is empty or undefined.');
+            console.warn('Data for chart is empty or undefined.');
             return;
         }
 
-        console.log('Rendering ${title} for ID: ${id}', data);
-        console.log('isDeflasi for ${title}:', isDeflasi);
+        console.log('Rendering chart', data);
 
         var chartDom = document.getElementById(id);
         if (!chartDom) {
@@ -18,15 +17,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
         var myChart = echarts.init(chartDom);
 
-        // Jangan urutkan ulang data — biarkan urutan dari backend
-        // data.sort((a, b) => isDeflasi ? a.andil - b.andil : b.andil - a.andil);
-
-        // Potong nama komoditas maksimal 12 karakter
         var komoditas = data.map(item =>
             item.nama_kom.length > 12 ? item.nama_kom.substring(0, 12) + "..." : item.nama_kom
         );
 
-        // Pastikan 'andil' dikonversi ke angka
+        // konversi nilai andil ke angka
         var values = data.map(item => Number(item.andil));
 
         var option = {
@@ -35,7 +30,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 left: "3%",
                 right: "4%",
                 bottom: "3%",
-                top: "5%", // Kurangi nilai 'top' untuk membuat grafik lebih mepet ke atas
+                top: "5%",
                 containLabel: true
             },
             xAxis: { type: "value", boundaryGap: [0, 0.01] },
@@ -48,7 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 type: "bar",
                 data: values,
                 itemStyle: {
-                    color: '#4C84B0' // Bisa diganti dinamis kalau mau beda warna untuk deflasi
+                    color: '#4C84B0'
                 }
             }],
         };
@@ -58,22 +53,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Tunggu 1 detik untuk pastikan window.* sudah tersedia
     setTimeout(() => {
-        // Render grafik MtM
         renderChart(
             "andilmtm",
             window.topAndilMtM,
         );
 
-        // Render grafik YtD
         renderChart(
             "andilytd",
             window.topAndilYtD,
         );
 
-        // Render grafik YoY
         renderChart(
             "andilyoy",
             window.topAndilYoY,
         );
-    }, 1000);
+    }, 500);
 });

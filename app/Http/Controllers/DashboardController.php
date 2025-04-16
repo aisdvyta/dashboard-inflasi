@@ -12,10 +12,6 @@ class DashboardController extends Controller
 {
     public function showInflasiBulanan(Request $request)
     {
-        // Ambil filter dari request
-        $filterBulan = $request->input('bulan');
-        $filterTahun = $request->input('tahun');
-
         $bulanMap = [
             'Januari' => 1,
             'Februari' => 2,
@@ -31,7 +27,7 @@ class DashboardController extends Controller
             'Desember' => 12,
         ];
 
-        // Periode default (terdekat dengan tanggal sekarang)
+        // Ini bikin periode default (kalo gaada, diambil yang terdekat dengan tanggal sekarang)w
         $now = Carbon::now();
         $periode = master_inflasi::whereYear('periode', $now->year)
             ->whereMonth('periode', $now->month)
@@ -39,15 +35,16 @@ class DashboardController extends Controller
             ->value('periode');
 
         if (!$periode) {
-            // Jika bulan sekarang tidak ada, cari periode yang paling dekat
             $periode = master_inflasi::orderByRaw('ABS(DATEDIFF(periode, ?))', [$now])
                 ->value('periode');
         }
 
-        // Jika filter bulan dan tahun diberikan, gunakan filter tersebut
+        // Ini bikin filter bulan dan tahun
+        $filterBulan = $request->input('bulan');
+        $filterTahun = $request->input('tahun');
+
         if ($filterBulan && $filterTahun) {
             $bulanAngka = $bulanMap[$filterBulan] ?? null;
-
             if ($bulanAngka) {
                 $periode = master_inflasi::whereYear('periode', $filterTahun)
                     ->whereMonth('periode', $bulanAngka)
@@ -55,10 +52,47 @@ class DashboardController extends Controller
             }
         }
 
-        // Pastikan periode tidak null
         if (!$periode) {
             abort(404, 'Data untuk periode yang diminta tidak ditemukan.');
         }
+
+        // Bikin Periode (bulan dan tahun)
+        Carbon::setLocale('id');
+        $bulan = Carbon::parse($periode)->isoFormat('MMMM');
+        $tahun = Carbon::parse($periode)->format('Y');
+
+         // Daftar semua periode untuk filter dropdown
+        $daftarPeriode = master_inflasi::orderBy('periode', 'desc')->get()->map(function ($item) {
+            return [
+                'bulan' => Carbon::parse($item->periode)->isoFormat('MMMM'),
+                'tahun' => Carbon::parse($item->periode)->format('Y'),
+            ];
+        });
+
+        // NGATUR VIEW POJOK KANAN ATAS
+        $komoditasTertinggi = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
+            ->join('master_komoditas as mk', 'detail_inflasis.id_kom', '=', 'mk.kode_kom')
+            ->where('detail_inflasis.id_flag', 3) // ngambil flag 3
+            ->where('detail_inflasis.id_wil', 3500) // ngambil wilayah
+            ->where('master_inflasis.periode', $periode) // ngambil periode
+            ->orderByDesc('detail_inflasis.andil_mtm') // urut andil tertinggi
+            ->select('mk.nama_kom', 'detail_inflasis.andil_mtm')
+            ->first();
+
+        $komoditasTerendah = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
+            ->join('master_komoditas as mk', 'detail_inflasis.id_kom', '=', 'mk.kode_kom')
+            ->where('detail_inflasis.id_flag', 3) // ngambil flag 3
+            ->where('detail_inflasis.id_wil', 3500) // ngambil wilayah
+            ->where('master_inflasis.periode', $periode) // ngambil periode
+            ->orderBy('detail_inflasis.andil_mtm') // urut andil terendah
+            ->select('mk.nama_kom', 'detail_inflasis.andil_mtm')
+            ->first();
+
+        $namaKomoditasTertinggi = optional($komoditasTertinggi)->nama_kom ?? '-';
+        $andilTertinggi = optional($komoditasTertinggi)->andil_mtm ?? 0;
+
+        $namaKomoditasTerendah = optional($komoditasTerendah)->nama_kom ?? '-';
+        $andilTerendah = optional($komoditasTerendah)->andil_mtm ?? 0;
 
         // Ambil nilai inflasi berdasarkan periode
         $inflasiMtM = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
@@ -84,7 +118,6 @@ class DashboardController extends Controller
         $orderYtD = $inflasiYtD >= 0 ? 'desc' : 'asc';
         $orderYoY = $inflasiYoY >= 0 ? 'desc' : 'asc';
 
-        // Top 10 Inflasi MtM
         $topInflasiMtM = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
             ->join('master_komoditas as mk', 'detail_inflasis.id_kom', '=', 'mk.kode_kom')
             ->where('detail_inflasis.id_flag', 3) // Hanya ambil flag 3
@@ -95,7 +128,6 @@ class DashboardController extends Controller
             ->take(10)
             ->get();
 
-        // Top 10 Inflasi YtD
         $topInflasiYtD = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
             ->join('master_komoditas as mk', 'detail_inflasis.id_kom', '=', 'mk.kode_kom')
             ->where('detail_inflasis.id_flag', 3) // Hanya ambil flag 3
@@ -106,7 +138,6 @@ class DashboardController extends Controller
             ->take(10)
             ->get();
 
-        // Top 10 Inflasi YoY
         $topInflasiYoY = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
             ->join('master_komoditas as mk', 'detail_inflasis.id_kom', '=', 'mk.kode_kom')
             ->where('detail_inflasis.id_flag', 3) // Hanya ambil flag 3
@@ -117,7 +148,6 @@ class DashboardController extends Controller
             ->take(10)
             ->get();
 
-        // Top 10 Andil MtM
         $topAndilMtM = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
             ->join('master_komoditas as mk', 'detail_inflasis.id_kom', '=', 'mk.kode_kom')
             ->where('detail_inflasis.id_flag', 3) // Hanya ambil flag 3
@@ -128,7 +158,6 @@ class DashboardController extends Controller
             ->take(10)
             ->get();
 
-        // Top 10 Andil YtD
         $topAndilYtD = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
             ->join('master_komoditas as mk', 'detail_inflasis.id_kom', '=', 'mk.kode_kom')
             ->where('detail_inflasis.id_flag', 3) // Hanya ambil flag 3
@@ -139,7 +168,6 @@ class DashboardController extends Controller
             ->take(10)
             ->get();
 
-        // Top 10 Andil YoY
         $topAndilYoY = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
             ->join('master_komoditas as mk', 'detail_inflasis.id_kom', '=', 'mk.kode_kom')
             ->where('detail_inflasis.id_flag', 3) // Hanya ambil flag 3
@@ -150,48 +178,14 @@ class DashboardController extends Controller
             ->take(10)
             ->get();
 
-        // Ambil komoditas dengan andil tertinggi (M-to-M)
-        $komoditasTertinggi = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
-            ->join('master_komoditas as mk', 'detail_inflasis.id_kom', '=', 'mk.kode_kom')
-            ->where('detail_inflasis.id_flag', 3) // Hanya ambil flag 3
-            ->where('detail_inflasis.id_wil', 3500) // Filter wilayah
-            ->where('master_inflasis.periode', $periode) // Filter periode
-            ->orderByDesc('detail_inflasis.andil_mtm') // Urutkan berdasarkan andil tertinggi
-            ->select('mk.nama_kom', 'detail_inflasis.andil_mtm')
-            ->first();
-
-        // Ambil komoditas dengan andil terendah (M-to-M)
-        $komoditasTerendah = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
-            ->join('master_komoditas as mk', 'detail_inflasis.id_kom', '=', 'mk.kode_kom')
-            ->where('detail_inflasis.id_flag', 3) // Hanya ambil flag 3
-            ->where('detail_inflasis.id_wil', 3500) // Filter wilayah
-            ->where('master_inflasis.periode', $periode) // Filter periode
-            ->orderBy('detail_inflasis.andil_mtm') // Urutkan berdasarkan andil terendah
-            ->select('mk.nama_kom', 'detail_inflasis.andil_mtm')
-            ->first();
-
-        // Pastikan data tidak null
-        $namaKomoditasTertinggi = optional($komoditasTertinggi)->nama_kom ?? '-';
-        $andilTertinggi = optional($komoditasTertinggi)->andil_mtm ?? 0;
-
-        $namaKomoditasTerendah = optional($komoditasTerendah)->nama_kom ?? '-';
-        $andilTerendah = optional($komoditasTerendah)->andil_mtm ?? 0;
-
-
-        // Periode (bulan dan tahun)
-        Carbon::setLocale('id');
-        $bulan = Carbon::parse($periode)->isoFormat('MMMM');
-        $tahun = Carbon::parse($periode)->format('Y');
-
-        // Daftar semua periode untuk filter dropdown
-        $daftarPeriode = master_inflasi::orderBy('periode', 'desc')->get()->map(function ($item) {
-            return [
-                'bulan' => Carbon::parse($item->periode)->isoFormat('MMMM'),
-                'tahun' => Carbon::parse($item->periode)->format('Y'),
-            ];
-        });
-
         return view('dashboard.infBulananJatim', compact(
+            'bulan',
+            'tahun',
+            'daftarPeriode',
+            'namaKomoditasTertinggi',
+            'andilTertinggi',
+            'namaKomoditasTerendah',
+            'andilTerendah',
             'inflasiMtM',
             'inflasiYtD',
             'inflasiYoY',
@@ -201,13 +195,6 @@ class DashboardController extends Controller
             'topAndilMtM',
             'topAndilYtD',
             'topAndilYoY',
-            'namaKomoditasTertinggi',
-            'andilTertinggi',
-            'namaKomoditasTerendah',
-            'andilTerendah',
-            'bulan',
-            'tahun',
-            'daftarPeriode'
         ));
     }
 }

@@ -103,22 +103,22 @@
                 progressContainer.classList.remove('hidden');
                 progressBar.style.width = '0%';
                 progressBar.textContent = '0%';
-                progressBar.style.backgroundColor = '#2563eb'; // biru
-                periodeError.classList.add('hidden'); // Sembunyikan error periode sebelumnya
-                periodeError.textContent = ''; // Reset pesan error
+                progressBar.style.backgroundColor = '#4C84B0';
+                periodeError.classList.add('hidden');
+                periodeError.textContent = '';
             };
 
             xhr.upload.addEventListener('progress', function(e) {
                 if (e.lengthComputable) {
-                    const percent = Math.round((e.loaded / e.total) * 80); // max sampai 80% untuk upload
+                    const percent = Math.round((e.loaded / e.total) * 50); // max sampai 80% untuk upload
                     progressBar.style.width = percent + '%';
                     progressBar.textContent = percent + '%';
                 }
             });
 
-            xhr.upload.onloadend = function () {
+            xhr.upload.onloadend = function() {
                 // Setelah upload selesai, lanjut animasi manual progress dari 80 ke 99
-                let current = parseInt(progressBar.style.width) || 80;
+                let current = parseInt(progressBar.style.width) || 50;
                 manualProgressInterval = setInterval(() => {
                     if (current < 99) {
                         current += 1;
@@ -130,7 +130,7 @@
                 }, 100); // kecepatan naiknya (semakin kecil = makin cepat)
             };
 
-            xhr.onload = function () {
+            xhr.onload = function() {
                 clearInterval(manualProgressInterval);
                 submitBtn.disabled = false;
 
@@ -140,36 +140,39 @@
                         if (response.success) {
                             progressBar.style.width = '100%';
                             progressBar.textContent = '100%';
-                            alert(response.message || 'Upload berhasil!');
-                            window.location.href = response.redirect_url; // Redirect ke halaman index
+                            progressBar.style.backgroundColor = '#4CAF50'; // Hijau untuk sukses
+                            window.location.href = response.redirect_url; // Langsung ke index
                         } else {
-                            progressBar.style.backgroundColor = '#e53e3e';
-                            alert('Upload gagal: ' + (response.message || 'Unknown error'));
+                            progressBar.style.backgroundColor = '#F15A42';
+                            progressBar.textContent = 'Gagal';
+                            console.error('Upload gagal:', response.message || 'Unknown error');
                         }
                     } catch (err) {
-                        progressBar.style.backgroundColor = '#e53e3e';
-                        alert('Gagal parsing respon server!');
+                        progressBar.style.backgroundColor = '#F15A42';
+                        progressBar.textContent = 'Gagal';
+                        console.error('Gagal parsing respon server:', err);
                     }
                 } else if (xhr.status === 422) {
                     const response = JSON.parse(xhr.responseText);
-                    progressBar.style.backgroundColor = '#e53e3e';
+                    progressBar.style.backgroundColor = '#F15A42';
+                    progressBar.textContent = 'Validasi Gagal';
 
-                    // Tampilkan pesan error di bawah kolom periode
-                    if (response.errors && response.errors.periode) {
-                        periodeError.textContent = response.errors.periode;
-                        periodeError.classList.remove('hidden');
+                    // Tampilkan pesan error di console
+                    if (response.message) {
+                        console.error('Validasi gagal:', response.message);
+                    } else {
+                        console.error('Validasi gagal: Unknown error');
                     }
-
-                    alert('Validasi gagal: ' + (response.errors.periode || 'Unknown error'));
                 } else {
-                    progressBar.style.backgroundColor = '#e53e3e';
-                    alert('Upload gagal. Status: ' + xhr.status);
+                    progressBar.style.backgroundColor = '#F15A42';
+                    progressBar.textContent = 'Gagal';
+                    console.error('Upload gagal. Status:', xhr.status);
                 }
             };
 
-            xhr.onerror = function () {
+            xhr.onerror = function() {
                 submitBtn.disabled = false;
-                progressBar.style.backgroundColor = '#e53e3e';
+                progressBar.style.backgroundColor = '#F15A42';
                 clearInterval(manualProgressInterval);
                 alert('Terjadi kesalahan jaringan saat mengupload.');
             };
@@ -178,4 +181,3 @@
         });
     </script>
 @endpush
-

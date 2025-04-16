@@ -24,7 +24,7 @@ class detail_inflasi extends Model
 
     public function satker()
     {
-        return $this->belongsTo(master_satker::class, 'id_satker');
+        return $this->belongsTo(master_satker::class, 'id_wil', 'kode_satker');
     }
 
     public function komoditas()

@@ -11,17 +11,18 @@ use Carbon\Carbon;
 
 class UploadController extends Controller
 {
+    //FUNGSI TAMPILIN, SEARCH, N PAGINATION
     public function index(Request $request)
     {
-        $search = $request->input('search'); // Ambil input pencarian
+        $search = $request->input('search');
 
         $uploads = master_inflasi::with('pengguna')
             ->when($search, function ($query, $search) {
                 return $query->where('nama', 'like', "%{$search}%")
                     ->orWhere('jenis_data_inflasi', 'like', "%{$search}%");
             })
-            ->orderBy('periode', 'asc')
-            ->paginate(10); // Gunakan pagination
+            ->orderBy('periode', 'desc')
+            ->paginate(10);
 
         return view('prov.manajemen-data-inflasi.index', compact('uploads', 'search'));
     }
@@ -31,78 +32,11 @@ class UploadController extends Controller
         return view('prov.manajemen-data-inflasi.create');
     }
 
-    public function store(Request $request)
+    private function truncateToTwoDecimals($number)
     {
-        $request->validate([
-            'periode' => 'required|date_format:Y-m',
-            'jenis_data_inflasi' => 'required',
-            'file' => 'required|mimes:xlsx'
-        ]);
-
-        // Cek apakah data untuk periode dan jenis_data_inflasi sudah ada
-        $periode = Carbon::createFromFormat('Y-m', $request->periode)->startOfMonth()->toDateString();
-        $jenisDataInflasi = $request->jenis_data_inflasi;
-
-        $existingData = master_inflasi::where('periode', $periode)
-            ->where('jenis_data_inflasi', $jenisDataInflasi)
-            ->first();
-
-        if ($existingData) {
-            return redirect()->back()
-                ->withInput()
-                ->withErrors(['periode' => 'Data untuk periode dan jenis data inflasi terpilih sudah ada. Silakan pilih data lain.']);
-        }
-
-        // Generate nama otomatis
-        $nama = 'data inflasi ' . $jenisDataInflasi . ' ' . Carbon::createFromFormat('Y-m', $request->periode)->translatedFormat('F Y');
-
-        // Simpan ke master_inflasi terlebih dahulu
-        $dataInflasi = master_inflasi::create([
-            'id_pengguna' => Auth::user()->id,
-            'nama' => $nama,
-            'periode' => $periode,
-            'jenis_data_inflasi' => $jenisDataInflasi,
-            'upload_at' => now(),
-        ]);
-
-        // Proses file Excel
-        $file = $request->file('file');
-        $spreadsheet = IOFactory::load($file->getPathname());
-        $worksheet = $spreadsheet->getActiveSheet();
-        $rows = $worksheet->toArray(null, true, true, true);
-
-        // Ambil header untuk mapping indeks kolom
-        $header = array_shift($rows);
-
-        // Mapping indeks berdasarkan header
-        $indexKodeKota = array_search('Kode Kota', $header);
-        $indexKodeKomoditas = array_search('Kode Komoditas', $header);
-        $indexFlag = array_search('Flag', $header);
-        $indexInflasiMtM = array_search('Inflasi MtM', $header);
-        $indexInflasiYtD = array_search('Inflasi YtD', $header);
-        $indexInflasiYoY = array_search('Inflasi YoY', $header);
-        $indexAndilMtM = array_search('Andil MtM', $header);
-        $indexAndilYtD = array_search('Andil YtD', $header);
-        $indexAndilYoY = array_search('Andil YoY', $header);
-
-        // Loop setiap baris data di Excel dan simpan ke tabel detail_inflasi
-        foreach ($rows as $row) {
-            detail_inflasi::create([
-                'id_inflasi' => $dataInflasi->id,
-                'id_wil' => $row[$indexKodeKota] ?? null,
-                'id_kom' => sprintf('%s', $row[$indexKodeKomoditas] ?? ''),
-                'id_flag' => $row[$indexFlag] ?? null,
-                'inflasi_MtM' => isset($row[$indexInflasiMtM]) ? round(floatval($row[$indexInflasiMtM]), 2) : null,
-                'inflasi_YtD' => isset($row[$indexInflasiYtD]) ? round(floatval($row[$indexInflasiYtD]), 2) : null,
-                'inflasi_YoY' => isset($row[$indexInflasiYoY]) ? round(floatval($row[$indexInflasiYoY]), 2) : null,
-                'andil_MtM' => isset($row[$indexAndilMtM]) ? round(floatval($row[$indexAndilMtM]), 2) : null,
-                'andil_YtD' => isset($row[$indexAndilYtD]) ? round(floatval($row[$indexAndilYtD]), 2) : null,
-                'andil_YoY' => isset($row[$indexAndilYoY]) ? round(floatval($row[$indexAndilYoY]), 2) : null,
-                'created_at' => now(),
-            ]);
-        }
-
-        return redirect()->back()->with('success', 'File berhasil diupload dan data berhasil disimpan!');
+        return $number < 0
+            ? ceil($number * 100) / 100 // Untuk angka negatif
+            : floor($number * 100) / 100; // Untuk angka positif
     }
 
     public function uploadInflasiAjax(Request $request)
@@ -113,7 +47,6 @@ class UploadController extends Controller
             'file' => 'required|mimes:xlsx'
         ]);
 
-        // Cek apakah data untuk periode dan jenis_data_inflasi sudah ada
         $periode = Carbon::createFromFormat('Y-m', $request->periode)->startOfMonth()->toDateString();
         $jenisDataInflasi = $request->jenis_data_inflasi;
 
@@ -130,10 +63,8 @@ class UploadController extends Controller
             ], 422);
         }
 
-        // Generate nama otomatis
-        $nama = 'data inflasi ' . $jenisDataInflasi . ' ' . Carbon::createFromFormat('Y-m', $request->periode)->translatedFormat('F Y');
+        $nama = 'Data Inflasi ' . $jenisDataInflasi . ' ' . Carbon::createFromFormat('Y-m', $request->periode)->translatedFormat('F Y');
 
-        // Simpan ke master_inflasi terlebih dahulu
         $dataInflasi = master_inflasi::create([
             'id_pengguna' => Auth::user()->id,
             'nama' => $nama,
@@ -142,55 +73,62 @@ class UploadController extends Controller
             'upload_at' => now(),
         ]);
 
-        try {
-            $file = $request->file('file');
-            $spreadsheet = IOFactory::load($file->getPathname());
-            $worksheet = $spreadsheet->getActiveSheet();
-            $rows = $worksheet->toArray(null, true, true, true);
+        $file = $request->file('file');
+        $spreadsheet = IOFactory::load($file->getPathname());
+        $worksheet = $spreadsheet->getActiveSheet();
+        $rows = $worksheet->toArray(null, true, true, true);
 
-            $header = array_shift($rows);
+        $header = array_shift($rows);
 
-            // Mapping kolom
-            $indexKodeKota = array_search('Kode Kota', $header);
-            $indexKodeKomoditas = array_search('Kode Komoditas', $header);
-            $indexFlag = array_search('Flag', $header);
-            $indexInflasiMtM = array_search('Inflasi MtM', $header);
-            $indexInflasiYtD = array_search('Inflasi YtD', $header);
-            $indexInflasiYoY = array_search('Inflasi YoY', $header);
-            $indexAndilMtM = array_search('Andil MtM', $header);
-            $indexAndilYtD = array_search('Andil YtD', $header);
-            $indexAndilYoY = array_search('Andil YoY', $header);
+        $indexKodeKota = array_search('Kode Kota', $header);
+        $indexKodeKomoditas = array_search('Kode Komoditas', $header);
+        $indexFlag = array_search('Flag', $header);
+        $indexInflasiMtM = array_search('Inflasi MtM', $header);
+        $indexInflasiYtD = array_search('Inflasi YtD', $header);
+        $indexInflasiYoY = array_search('Inflasi YoY', $header);
+        $indexAndilMtM = array_search('Andil MtM', $header);
+        $indexAndilYtD = array_search('Andil YtD', $header);
+        $indexAndilYoY = array_search('Andil YoY', $header);
 
-            $insertedCount = 0;
+        $insertedCount = 0;
+        $errorCount = 0;
 
-            foreach ($rows as $row) {
+        foreach ($rows as $row) {
+            try {
                 detail_inflasi::create([
                     'id_inflasi' => $dataInflasi->id,
                     'id_wil' => $row[$indexKodeKota] ?? null,
                     'id_kom' => sprintf('%s', $row[$indexKodeKomoditas] ?? ''),
                     'id_flag' => $row[$indexFlag] ?? null,
-                    'inflasi_MtM' => isset($row[$indexInflasiMtM]) ? round(floatval($row[$indexInflasiMtM]), 2) : null,
-                    'inflasi_YtD' => isset($row[$indexInflasiYtD]) ? round(floatval($row[$indexInflasiYtD]), 2) : null,
-                    'inflasi_YoY' => isset($row[$indexInflasiYoY]) ? round(floatval($row[$indexInflasiYoY]), 2) : null,
-                    'andil_MtM' => isset($row[$indexAndilMtM]) ? round(floatval($row[$indexAndilMtM]), 2) : null,
-                    'andil_YtD' => isset($row[$indexAndilYtD]) ? round(floatval($row[$indexAndilYtD]), 2) : null,
-                    'andil_YoY' => isset($row[$indexAndilYoY]) ? round(floatval($row[$indexAndilYoY]), 2) : null,
+                    'inflasi_MtM' => isset($row[$indexInflasiMtM]) && is_numeric(trim($row[$indexInflasiMtM])) ? $this->truncateToTwoDecimals(floatval(trim($row[$indexInflasiMtM]))) : null,
+                    'inflasi_YtD' => isset($row[$indexInflasiYtD]) && is_numeric(trim($row[$indexInflasiYtD])) ? $this->truncateToTwoDecimals(floatval(trim($row[$indexInflasiYtD]))) : null,
+                    'inflasi_YoY' => isset($row[$indexInflasiYoY]) && is_numeric(trim($row[$indexInflasiYoY])) ? $this->truncateToTwoDecimals(floatval(trim($row[$indexInflasiYoY]))) : null,
+                    'andil_MtM' => isset($row[$indexAndilMtM]) && is_numeric(trim($row[$indexAndilMtM])) ? $this->truncateToTwoDecimals(floatval(trim($row[$indexAndilMtM]))) : null,
+                    'andil_YtD' => isset($row[$indexAndilYtD]) && is_numeric(trim($row[$indexAndilYtD])) ? $this->truncateToTwoDecimals(floatval(trim($row[$indexAndilYtD]))) : null,
+                    'andil_YoY' => isset($row[$indexAndilYoY]) && is_numeric(trim($row[$indexAndilYoY])) ? $this->truncateToTwoDecimals(floatval(trim($row[$indexAndilYoY]))) : null,
                     'created_at' => now(),
                 ]);
 
                 $insertedCount++;
+            } catch (\Exception $e) {
+                $errorCount++;
+                \Log::error('Error inserting row: ' . $e->getMessage(), ['row' => $row]);
             }
+        }
 
+        if ($insertedCount > 0) {
             return response()->json([
                 'success' => true,
-                'message' => 'Berhasil mengupload!',
-                'redirect_url' => route('manajemen-data-inflasi.index')
+                'message' => $errorCount > 0
+                    ? "Data berhasil diupload dengan beberapa error. Jumlah error: $errorCount"
+                    : "Semua data berhasil diupload.",
+                'redirect_url' => route('manajemen-data-inflasi.index'),
             ]);
-        } catch (\Exception $e) {
+        } else {
             return response()->json([
                 'success' => false,
-                'message' => 'Terjadi kesalahan saat proses data: ' . $e->getMessage()
-            ], 500);
+                'message' => 'Tidak ada data yang berhasil diupload. Periksa format file Anda.',
+            ], 422);
         }
     }
 
@@ -216,7 +154,6 @@ class UploadController extends Controller
             'jenis_data_inflasi' => $request->jenis_data_inflasi,
         ]);
 
-        // Jika ada file baru, proses file tersebut
         if ($request->hasFile('file')) {
             // Hapus data lama di detail_inflasi
             detail_inflasi::where('id_inflasi', $upload->id)->delete();
@@ -227,10 +164,8 @@ class UploadController extends Controller
             $worksheet = $spreadsheet->getActiveSheet();
             $rows = $worksheet->toArray(null, true, true, true);
 
-            // Ambil header untuk mapping indeks kolom
             $header = array_shift($rows);
 
-            // Mapping indeks berdasarkan header
             $indexKodeKota = array_search('Kode Kota', $header);
             $indexKodeKomoditas = array_search('Kode Komoditas', $header);
             $indexFlag = array_search('Flag', $header);
@@ -241,19 +176,18 @@ class UploadController extends Controller
             $indexAndilYtD = array_search('Andil YtD', $header);
             $indexAndilYoY = array_search('Andil YoY', $header);
 
-            // Loop setiap baris data di Excel dan simpan ke tabel detail_inflasi
             foreach ($rows as $row) {
                 detail_inflasi::create([
                     'id_inflasi' => $upload->id,
                     'id_wil' => $row[$indexKodeKota] ?? null,
-                    'id_kom' => sprintf('%s', $row[$indexKodeKomoditas] ?? ''),
+                    'id_kom' => sprintf('%s', $row[$indexKodeKomoditas] ?? ''), //rawan
                     'id_flag' => $row[$indexFlag] ?? null,
-                    'inflasi_MtM' => isset($row[$indexInflasiMtM]) ? round(floatval($row[$indexInflasiMtM]), 2) : null,
-                    'inflasi_YtD' => isset($row[$indexInflasiYtD]) ? round(floatval($row[$indexInflasiYtD]), 2) : null,
-                    'inflasi_YoY' => isset($row[$indexInflasiYoY]) ? round(floatval($row[$indexInflasiYoY]), 2) : null,
-                    'andil_MtM' => isset($row[$indexAndilMtM]) ? round(floatval($row[$indexAndilMtM]), 2) : null,
-                    'andil_YtD' => isset($row[$indexAndilYtD]) ? round(floatval($row[$indexAndilYtD]), 2) : null,
-                    'andil_YoY' => isset($row[$indexAndilYoY]) ? round(floatval($row[$indexAndilYoY]), 2) : null,
+                    'inflasi_MtM' => isset($row[$indexInflasiMtM]) && is_numeric(trim($row[$indexInflasiMtM])) ? $this->truncateToTwoDecimals(floatval(trim($row[$indexInflasiMtM]))) : null,
+                    'inflasi_YtD' => isset($row[$indexInflasiYtD]) && is_numeric(trim($row[$indexInflasiYtD])) ? $this->truncateToTwoDecimals(floatval(trim($row[$indexInflasiYtD]))) : null,
+                    'inflasi_YoY' => isset($row[$indexInflasiYoY]) && is_numeric(trim($row[$indexInflasiYoY])) ? $this->truncateToTwoDecimals(floatval(trim($row[$indexInflasiYoY]))) : null,
+                    'andil_MtM' => isset($row[$indexAndilMtM]) && is_numeric(trim($row[$indexAndilMtM])) ? $this->truncateToTwoDecimals(floatval(trim($row[$indexAndilMtM]))) : null,
+                    'andil_YtD' => isset($row[$indexAndilYtD]) && is_numeric(trim($row[$indexAndilYtD])) ? $this->truncateToTwoDecimals(floatval(trim($row[$indexAndilYtD]))) : null,
+                    'andil_YoY' => isset($row[$indexAndilYoY]) && is_numeric(trim($row[$indexAndilYoY])) ? $this->truncateToTwoDecimals(floatval(trim($row[$indexAndilYoY]))) : null,
                     'created_at' => now(),
                 ]);
             }
@@ -270,23 +204,17 @@ class UploadController extends Controller
         // Ambil data detail_inflasi yang terkait dengan master_inflasi
         $details = detail_inflasi::with(['satker', 'komoditas'])
             ->where('id_inflasi', $upload->id)
-            ->get();
+            ->orderBy('id_wil', 'asc')
+            ->paginate(10);
 
         return view('prov.manajemen-data-inflasi.show', compact('upload', 'details'));
     }
 
     public function destroy($id)
     {
-        // Cari data di tabel master_inflasi berdasarkan ID
         $upload = master_inflasi::findOrFail($id);
-
-        // Hapus semua data terkait di tabel detail_inflasi
         detail_inflasi::where('id_inflasi', $upload->id)->delete();
-
-        // Hapus data di tabel master_inflasi
         $upload->delete();
-
-        // Redirect kembali ke halaman index dengan pesan sukses
         return redirect()->route('manajemen-data-inflasi.index')->with('success', 'Data berhasil dihapus beserta detail terkait.');
     }
 }
