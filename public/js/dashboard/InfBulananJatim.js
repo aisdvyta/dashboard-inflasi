@@ -1,13 +1,17 @@
 document.addEventListener("DOMContentLoaded", function () {
     console.log("Script Loaded");
 
-    function renderChart(id, data) {
+    function renderChart(id, data, inflationValue) {
         if (!data || data.length === 0) {
             console.warn("Data for chart is empty or undefined.");
             return;
         }
 
-        console.log("Rendering chart", data);
+        // Extract numeric value from the element's text content
+        let numericValue = parseFloat(
+            inflationValue.textContent.replace(",", ".").trim()
+        );
+        console.log("Rendering chart with inflation value:", numericValue);
 
         var chartDom = document.getElementById(id);
         if (!chartDom) {
@@ -19,7 +23,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
         var komoditas = data.map((item) => {
             return item.nama_kom.length > 17
-                ? item.nama_kom.substring(0, 17) + "\n" + item.nama_kom.substring(17)
+                ? item.nama_kom.substring(0, 17) +
+                      "\n" +
+                      item.nama_kom.substring(17)
                 : item.nama_kom;
         });
 
@@ -29,8 +35,8 @@ document.addEventListener("DOMContentLoaded", function () {
         var option = {
             tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
             grid: {
-                left: "2%",
-                right: "2%",
+                left: "5%",
+                right: "5%",
                 bottom: "3%",
                 top: "3%",
                 containLabel: true,
@@ -55,13 +61,15 @@ document.addEventListener("DOMContentLoaded", function () {
                     },
                     label: {
                         show: true,
-                        position: function (params) {
-                            return params.value < 0 ? 'left' : 'right';
-                        },
+                        position: "outside",
+                        align: numericValue < 0 ? "left" : "right",
                         color: "#063051",
                         fontSize: 12,
                         fontWeight: 350,
-                        distance: 10,
+                        distance: numericValue < 0 ? 35 : 0,
+                        formatter: function (params) {
+                            return params.value.toFixed(2);
+                        },
                     },
                 },
             ],
@@ -70,12 +78,15 @@ document.addEventListener("DOMContentLoaded", function () {
         myChart.setOption(option);
     }
 
-    // Tunggu 1 detik untuk pastikan window.* sudah tersedia
+    // Tunggu 0.5 detik untuk pastikan window.* sudah tersedia
     setTimeout(() => {
-        renderChart("andilmtm", window.topAndilMtM);
+        // Get the elements containing inflation values
+        const inflasiMtM = document.getElementById("inflasiMtM");
+        const inflasiYtD = document.getElementById("inflasiYtD");
+        const inflasiYoY = document.getElementById("inflasiYoY");
 
-        renderChart("andilytd", window.topAndilYtD);
-
-        renderChart("andilyoy", window.topAndilYoY);
+        renderChart("andilmtm", window.topAndilMtM, inflasiMtM);
+        renderChart("andilytd", window.topAndilYtD, inflasiYtD);
+        renderChart("andilyoy", window.topAndilYoY, inflasiYoY);
     }, 500);
 });

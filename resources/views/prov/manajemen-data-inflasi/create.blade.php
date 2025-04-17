@@ -37,14 +37,14 @@
                             <span class="text-biru1">ASEM 1</span>
                         </label>
                         <label>
-                            <input type="radio" name="jenis_data_inflasi" value="ASEM3" required
+                            <input type="radio" name="jenis_data_inflasi" value="ASEM2" required
                                 class="form-radio text-biru1 checked:text-biru1 focus:ring-biru1">
                             <span class="text-biru1">ASEM 2</span>
                         </label>
                     </div>
                     <div class="flex flex-col gap-2">
                         <label>
-                            <input type="radio" name="jenis_data_inflasi" value="ASEM2" required
+                            <input type="radio" name="jenis_data_inflasi" value="ASEM3" required
                                 class="form-radio text-biru1 checked:text-biru1 focus:ring-biru1">
                             <span class="text-biru1">ASEM 3</span>
                         </label>

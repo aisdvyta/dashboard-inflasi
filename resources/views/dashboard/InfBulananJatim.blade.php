@@ -40,28 +40,28 @@
             </p>
         </div>
 
-        <div class="flex flex-col md:flex-row items-center justify-between">
-            <div class="relative mt-7 flex justify-start">
-                <a href="#"
-                    class="flex items-center gap-2 px-10 py-2 rounded-t-xl bg-biru4 hover:bg-biru1 group transition duration-300"
+        <div class="flex flex-col items-center justify-between md:flex-row">
+            <div class="relative flex justify-start mt-7">
+                <a href="{{ route('dashboard.bulanan', ['jenis_data_inflasi' => 'ASEM1']) }}"
+                    class="flex items-center gap-2 px-10 py-2 transition duration-300 rounded-t-xl {{ $jenisDataInflasi == 'ASEM1' ? 'bg-biru1' : 'bg-biru4' }} hover:bg-biru1 group"
                     data-page="tabel">
                     <span class="menu-text text-white text-[15px] transition duration-100">
                         ASEM 1</span>
                 </a>
-                <a href="#"
-                    class="flex items-center gap-2 px-10 py-2 rounded-t-xl bg-biru4 hover:bg-biru1 group transition duration-300"
+                <a href="{{ route('dashboard.bulanan', ['jenis_data_inflasi' => 'ASEM2']) }}"
+                    class="flex items-center gap-2 px-10 py-2 transition duration-300 rounded-t-xl {{ $jenisDataInflasi == 'ASEM2' ? 'bg-biru1' : 'bg-biru4' }} hover:bg-biru1 group"
                     data-page="tabel">
                     <span class="menu-text text-white text-[15px] transition duration-100">
                         ASEM 2</span>
                 </a>
-                <a href="#"
-                    class="flex items-center gap-2 px-10 py-2 rounded-t-xl bg-biru4 hover:bg-biru1 group transition duration-300"
+                <a href="{{ route('dashboard.bulanan', ['jenis_data_inflasi' => 'ASEM3']) }}"
+                    class="flex items-center gap-2 px-10 py-2 transition duration-300 rounded-t-xl {{ $jenisDataInflasi == 'ASEM3' ? 'bg-biru1' : 'bg-biru4' }} hover:bg-biru1 group"
                     data-page="tabel">
                     <span class="menu-text text-white text-[15px] transition duration-100">
                         ASEM 3</span>
                 </a>
-                <a href="#"
-                    class="flex items-center gap-2 px-12 py-2 rounded-t-xl bg-biru4 hover:bg-biru1 group transition duration-300"
+                <a href="{{ route('dashboard.bulanan', ['jenis_data_inflasi' => 'ATAP']) }}"
+                    class="flex items-center gap-2 px-12 py-2 transition duration-300 rounded-t-xl {{ $jenisDataInflasi == 'ATAP' ? 'bg-biru1' : 'bg-biru4' }} hover:bg-biru1 group"
                     data-page="tabel">
                     <span class="menu-text text-white text-[15px] transition duration-100">
                         ATAP</span>
@@ -70,12 +70,12 @@
 
             <div class="flex items-center justify-end mb-8">
                 <button id="exportExcel"
-                    class="flex items-end gap-2 px-10 py-2 rounded-xl shadow-xl bg-hijau hover:bg-hijaumuda group transition duration-300 ml-4">
+                    class="flex items-end gap-2 px-10 py-2 ml-4 transition duration-300 shadow-xl rounded-xl bg-hijau hover:bg-hijaumuda group">
                     <span class="menu-text text-white text-[15px] transition duration-100">
                         Export Excel</span>
                 </button>
                 <button id="exportPdf"
-                    class="flex items-end gap-2 px-10 py-2 rounded-xl shadow-xl bg-merah1 hover:bg-merah1muda group transition duration-300 ml-4">
+                    class="flex items-end gap-2 px-10 py-2 ml-4 transition duration-300 shadow-xl rounded-xl bg-merah1 hover:bg-merah1muda group">
                     <span class="menu-text text-white text-[15px] transition duration-100">
                         Export PDF</span>
                 </button>
@@ -84,15 +84,15 @@
     </div>
 
 
-    <div class="bg-white rounded-b-lg shadow-md  p-6">
-        <div class="w-full max-w-7xl mx-auto px-6 py-10">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+    <div class="p-6 bg-white rounded-b-lg shadow-md">
+        <div class="w-full px-6 py-10 mx-auto max-w-7xl">
+            <div class="grid items-start grid-cols-1 gap-6 md:grid-cols-2">
                 {{-- judul --}}
                 <div class="space-y-1">
-                    <h1 class="text-5xl md:text-5xl font-bold text-biru1">Dashboard</h1>
-                    <h1 class="text-5xl md:text-5xl font-bold text-biru4">INFLASI BULANAN</h1>
+                    <h1 class="text-5xl font-bold md:text-5xl text-biru1">Dashboard</h1>
+                    <h1 class="text-5xl font-bold md:text-5xl text-biru4">INFLASI BULANAN</h1>
                     <h1 class="text-5xl font-bold text-biru1">Provinsi Jawa Timur</h1>
-                    <div class="flex gap-4 text-5xl leading-8 text-biru1 pt-2 pr-36 justify-end">
+                    <div class="flex justify-end gap-4 pt-2 text-5xl leading-8 text-biru1 pr-36">
                         <span class="text-right">{{ $bulan }}</span>
                         <span class="text-right">{{ $tahun }}</span>
                     </div>
@@ -111,31 +111,33 @@
                             </div>
                         </div>
 
-                        <div class="flex flex-col gap-2 w-full md:w-auto">
+                        <div class="flex flex-col w-full gap-2 md:w-auto">
                             <div class="text-sm font-semibold">
-                                <div class="text-xs font-semibold text-biru4 italic leading-tight">Komoditas dengan Andil
+                                <div class="text-xs italic font-semibold leading-tight text-biru4">Komoditas dengan Andil
                                     Inflasi Tertinggi
                                     (M-to-M, %)</div>
                             </div>
                             <div
-                                class="rounded-full bg-merah1 text-white px-6 py-3 flex justify-between items-center w-full md:w-96 shadow-md">
+                                class="flex items-center justify-between w-full px-6 py-3 text-white rounded-full shadow-md bg-merah1 md:w-96">
                                 <div class="flex items-center gap-4">
-                                    <div class="font-semibold text-lg uppercase">{{ $namaKomoditasTertinggi }}</div>
-                                    <div class="font-semibold text-lg">{{ number_format($andilTertinggi, 2, ',', '.') }}</div>
+                                    <div class="text-lg font-semibold uppercase">{{ $namaKomoditasTertinggi }}</div>
+                                    <div class="text-lg font-semibold">{{ number_format($andilTertinggi, 2, ',', '.') }}
+                                    </div>
                                 </div>
                             </div>
 
                             {{-- leading itu buat jarak antar hurufnya --}}
                             <div class="text-sm font-semibold">
-                                <div class="text-xs font-semibold text-biru4 italic leading-tight">Komoditas dengan Andil
+                                <div class="text-xs italic font-semibold leading-tight text-biru4">Komoditas dengan Andil
                                     Deflasi Terdalam
                                     (M-to-M, %)</div>
                             </div>
                             <div
-                                class="rounded-full bg-hijaumuda text-white px-6 py-3 flex justify-between items-center w-full md:w-96 shadow-md">
+                                class="flex items-center justify-between w-full px-6 py-3 text-white rounded-full shadow-md bg-hijaumuda md:w-96">
                                 <div class="flex items-center gap-4">
-                                    <div class="font-semibold text-lg uppercase">{{ $namaKomoditasTerendah }}</div>
-                                    <div class="font-semibold text-lg">{{ number_format($andilTerendah, 2, ',', '.') }}</div>
+                                    <div class="text-lg font-semibold uppercase">{{ $namaKomoditasTerendah }}</div>
+                                    <div class="text-lg font-semibold">{{ number_format($andilTerendah, 2, ',', '.') }}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -143,20 +145,22 @@
 
 
                     <!-- Filter -->
-                    <div class="flex gap-2 justify-end">
+                    <div class="flex justify-end gap-2">
                         <form method="GET" action="{{ route('dashboard.bulanan') }}" class="flex gap-2">
+                            <input type="hidden" name="jenis_data_inflasi" value="{{ $jenisDataInflasi }}">
                             <div class="relative">
                                 <select id="bulan" name="bulan"
-                                    class="appearance-none w-full rounded-full bg-biru4 text-white font-semibold px-6 py-2 pr-10 shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400">
+                                    class="w-full px-6 py-2 pr-10 font-semibold text-white rounded-full shadow-md appearance-none bg-biru4 focus:outline-none focus:ring-2 focus:ring-blue-400">
                                     @foreach ($daftarPeriode->pluck('bulan')->unique() as $bulanOption)
-                                        <option value="{{ $bulanOption }}" {{ $bulanOption == $bulan ? 'selected' : '' }}>
+                                        <option value="{{ $bulanOption }}"
+                                            {{ $bulanOption == $bulan ? 'selected' : '' }}>
                                             Bulan: {{ $bulanOption }}
                                         </option>
                                     @endforeach
                                 </select>
-                                <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+                                <div class="absolute inset-y-0 flex items-center pointer-events-none right-3">
                                     <svg id="icon-bulan" xmlns="http://www.w3.org/2000/svg"
-                                        class="h-5 w-5 text-white transition-transform duration-200 rotate-180"
+                                        class="w-5 h-5 text-white transition-transform duration-200 rotate-180"
                                         fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                                     </svg>
@@ -165,7 +169,7 @@
 
                             <div class="relative">
                                 <select id="tahun" name="tahun"
-                                    class="appearance-none w-full rounded-full bg-biru4 text-white font-semibold px-6 py-2 pr-10 shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400">
+                                    class="w-full px-6 py-2 pr-10 font-semibold text-white rounded-full shadow-md appearance-none bg-biru4 focus:outline-none focus:ring-2 focus:ring-blue-400">
                                     @foreach ($daftarPeriode->pluck('tahun')->unique() as $tahunOption)
                                         <option value="{{ $tahunOption }}"
                                             {{ $tahunOption == $tahun ? 'selected' : '' }}>
@@ -173,9 +177,9 @@
                                         </option>
                                     @endforeach
                                 </select>
-                                <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+                                <div class="absolute inset-y-0 flex items-center pointer-events-none right-3">
                                     <svg id="icon-tahun" xmlns="http://www.w3.org/2000/svg"
-                                        class="h-5 w-5 text-white transition-transform duration-200 rotate-180"
+                                        class="w-5 h-5 text-white transition-transform duration-200 rotate-180"
                                         fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                                     </svg>
@@ -183,7 +187,7 @@
                             </div>
 
                             <button type="submit"
-                                class="rounded-full bg-orange-500 text-white font-semibold px-5 py-2 shadow-md focus:outline-none focus:ring-2 focus:ring-orange-400">
+                                class="px-5 py-2 font-semibold text-white bg-orange-500 rounded-full shadow-md focus:outline-none focus:ring-2 focus:ring-orange-400">
                                 Filter
                             </button>
                         </form>
@@ -194,21 +198,22 @@
         </div>
 
         <div class="grid grid-cols-3 gap-4 mt-2">
-            <div class="col-span-3 flex gap-4 items-stretch">
+            <div class="flex items-stretch col-span-3 gap-4">
                 {{-- MtM --}}
                 <div class="flex flex-col flex-1 gap-2">
-                    <div class="text-xs text-white italic leading-tight">
+                    <div class="text-xs italic leading-tight text-white">
                         ?<br>
                         <span class="text-biru4">Nilai inflasi pada Bulan saat ini terhadap Bulan sebelumnya</span>
                     </div>
                     <div
-                        class="bg-biru1 rounded-2xl shadow-lg px-4 py-2 flex-1 text-white flex flex-col justify-between h-full">
-                        <div class="flex justify-between items-end">
+                        class="flex flex-col justify-between flex-1 h-full px-4 py-2 text-white shadow-lg bg-biru1 rounded-2xl">
+                        <div class="flex items-end justify-between">
                             <div class="text-sm font-bold">
                                 Nilai Inflasi Bulanan<br>
-                                <span class="text-xs font-normal italic">(M-to-M, %)</span>
+                                <span class="text-xs italic font-normal">(M-to-M, %)</span>
                             </div>
-                            <div class="text-5xl font-semibold {{ $inflasiMtM < 0 ? 'text-hijau' : 'text-merah1' }}">
+                            <div id="inflasiMtM"
+                                class="text-5xl font-semibold {{ $inflasiMtM < 0 ? 'text-hijau' : 'text-merah1' }}">
                                 {{ number_format($inflasiMtM, 2, ',', '.') }}
                             </div>
                         </div>
@@ -217,17 +222,18 @@
 
                 {{-- YtD --}}
                 <div class="flex flex-col flex-1 gap-2">
-                    <div class="text-xs text-biru4 italic leading-tight">
+                    <div class="text-xs italic leading-tight text-biru4">
                         Nilai inflasi pada Bulan saat ini terhadap Bulan Desember Tahun sebelumnya
                     </div>
                     <div
-                        class="bg-biru1 rounded-2xl shadow-lg px-4 py-2 flex-1 text-white flex flex-col justify-between h-full">
-                        <div class="flex justify-between items-end">
+                        class="flex flex-col justify-between flex-1 h-full px-4 py-2 text-white shadow-lg bg-biru1 rounded-2xl">
+                        <div class="flex items-end justify-between">
                             <div class="text-sm font-bold">
                                 Nilai Inflasi Tahun Kalender<br>
-                                <span class="text-xs font-normal italic">(Y-to-D, %)</span>
+                                <span class="text-xs italic font-normal">(Y-to-D, %)</span>
                             </div>
-                            <div class="text-5xl font-semibold {{ $inflasiYtD < 0 ? 'text-hijau' : 'text-merah1' }}">
+                            <div id="inflasiYtD"
+                                class="text-5xl font-semibold {{ $inflasiYtD < 0 ? 'text-hijau' : 'text-merah1' }}">
                                 {{ number_format($inflasiYtD, 2, ',', '.') }}
                             </div>
                         </div>
@@ -236,17 +242,18 @@
 
                 {{-- YoY --}}
                 <div class="flex flex-col flex-1 gap-2">
-                    <div class="text-xs text-biru4 italic leading-tight">
+                    <div class="text-xs italic leading-tight text-biru4">
                         Nilai inflasi pada Bulan ini di Tahun saat ini terhadap Bulan ini di Tahun sebelumnya
                     </div>
                     <div
-                        class="bg-biru1 rounded-2xl shadow-lg px-4 py-2 flex-1 text-white flex flex-col justify-between h-full">
-                        <div class="flex justify-between items-end">
+                        class="flex flex-col justify-between flex-1 h-full px-4 py-2 text-white shadow-lg bg-biru1 rounded-2xl">
+                        <div class="flex items-end justify-between">
                             <div class="text-sm font-bold">
                                 Nilai Inflasi Tahunan<br>
-                                <span class="text-xs font-normal italic">(Y-to-Y, %)</span>
+                                <span class="text-xs italic font-normal">(Y-to-Y, %)</span>
                             </div>
-                            <div class="text-5xl font-semibold {{ $inflasiYoY < 0 ? 'text-hijau' : 'text-merah1' }}">
+                            <div id="inflasiYoY"
+                                class="text-5xl font-semibold {{ $inflasiYoY < 0 ? 'text-hijau' : 'text-merah1' }}">
                                 {{ number_format($inflasiYoY, 2, ',', '.') }}
                             </div>
                         </div>
@@ -257,26 +264,26 @@
 
         {{-- js echart barchart --}}
         <div class="grid grid-cols-3 gap-4 mt-4 ">
-            <div class="bg-white rounded-2xl border border-biru1 shadow-lg p-3">
-                <h2 class="text-center text-sm font-bold text-biru1 leading-tight pb-3">
+            <div class="p-3 bg-white border shadow-lg rounded-2xl border-biru1">
+                <h2 class="pb-3 text-sm font-bold leading-tight text-center text-biru1">
                     10 Komoditas dengan <br> Sumbangan Inflasi Bulanan Terbesar<br>
-                    <span class="font-normal italic">(M-to-M, %)</span>
+                    <span class="italic font-normal">(M-to-M, %)</span>
                 </h2>
                 <div class="h-80" id="andilmtm"></div>
             </div>
 
-            <div class="bg-white rounded-2xl border border-biru1 shadow-lg  p-3">
-                <h2 class="text-center text-sm font-bold text-biru1 leading-tight pb-3">
+            <div class="p-3 bg-white border shadow-lg rounded-2xl border-biru1">
+                <h2 class="pb-3 text-sm font-bold leading-tight text-center text-biru1">
                     10 Komoditas dengan <br> Sumbangan Inflasi Tahun Kalender Terbesar<br>
-                    <span class="font-normal italic">(Y-to-D, %)</span>
+                    <span class="italic font-normal">(Y-to-D, %)</span>
                 </h2>
                 <div class="h-80" id="andilytd"></div>
             </div>
 
-            <div class="bg-white rounded-2xl border border-biru1 shadow-lg p-3">
-                <h2 class="text-center text-sm font-bold text-biru1 leading-tight pb-3">
+            <div class="p-3 bg-white border shadow-lg rounded-2xl border-biru1">
+                <h2 class="pb-3 text-sm font-bold leading-tight text-center text-biru1">
                     10 Komoditas dengan <br> Sumbangan Inflasi Tahunan Terbesar<br>
-                    <span class="font-normal italic">(Y-on-Y, %)</span>
+                    <span class="italic font-normal">(Y-on-Y, %)</span>
                 </h2>
                 <div class="h-80" id="andilyoy"></div>
             </div>
@@ -284,14 +291,14 @@
 
         {{-- tabel top komoditas --}}
         <div class="grid grid-cols-3 gap-4 mt-4">
-            <div class="bg-white rounded-2xl border border-biru1 shadow-lg p-4 h-auto">
-                <h2 class="text-center text-sm font-bold text-biru1 leading-tight pb-3">
+            <div class="h-auto p-4 bg-white border shadow-lg rounded-2xl border-biru1">
+                <h2 class="pb-3 text-sm font-bold leading-tight text-center text-biru1">
                     10 Komoditas Penyumbang Inflasi Bulanan<br>
-                    <span class="font-normal italic">(M-to-M, %)</span>
+                    <span class="italic font-normal">(M-to-M, %)</span>
                 </h2>
                 <div class="shadow-md sm:rounded-lg">
-                    <table class="text-sm text-left rtl:text-right w-full mx-auto">
-                        <thead class="text-xs bg-biru1 text-white">
+                    <table class="w-full mx-auto text-sm text-left rtl:text-right">
+                        <thead class="text-xs text-white bg-biru1">
                             <tr>
                                 <th scope="col" class="px-2 py-2 text-left"> </th>
                                 <th scope="col" class="px-2 py-2 text-left">Nama Komoditas</th>
@@ -301,7 +308,7 @@
                         </thead>
                         <tbody>
                             @foreach ($topInflasiMtM as $index => $item)
-                                <tr class="text-biru1 text-xs">
+                                <tr class="text-xs text-biru1">
                                     <td class="px-2 py-2 text-left">{{ $index + 1 }}</td>
                                     <td class="px-2 py-2 font-normal text-left">{{ $item->nama_kom }}</td>
                                     <td
@@ -319,14 +326,14 @@
                 </div>
             </div>
 
-            <div class="bg-white rounded-2xl border border-biru1 shadow-lg p-4 h-auto">
-                <h2 class="text-center text-sm font-bold text-biru1 leading-tight pb-3">
+            <div class="h-auto p-4 bg-white border shadow-lg rounded-2xl border-biru1">
+                <h2 class="pb-3 text-sm font-bold leading-tight text-center text-biru1">
                     10 Komoditas Penyumbang Inflasi Tahun Kalender<br>
-                    <span class="font-normal italic">(Y-to-D, %)</span>
+                    <span class="italic font-normal">(Y-to-D, %)</span>
                 </h2>
                 <div class="shadow-md sm:rounded-lg">
-                    <table class="text-sm text-left rtl:text-right w-full mx-auto">
-                        <thead class="text-xs bg-biru1 text-white">
+                    <table class="w-full mx-auto text-sm text-left rtl:text-right">
+                        <thead class="text-xs text-white bg-biru1">
                             <tr>
                                 <th scope="col" class="px-2 py-2 text-left"> </th>
                                 <th scope="col" class="px-2 py-2 text-left">Nama Komoditas</th>
@@ -336,7 +343,7 @@
                         </thead>
                         <tbody>
                             @foreach ($topInflasiYtD as $index => $item)
-                                <tr class="text-biru1 text-xs">
+                                <tr class="text-xs text-biru1">
                                     <td class="px-2 py-2 text-left">{{ $index + 1 }}</td>
                                     <td class="px-2 py-2 font-normal text-left">{{ $item->nama_kom }}</td>
                                     <td
@@ -354,14 +361,14 @@
                 </div>
             </div>
 
-            <div class="bg-white rounded-2xl border border-biru1 shadow-lg p-4 h-auto">
-                <h2 class="text-center text-sm font-bold text-biru1 leading-tight pb-3">
+            <div class="h-auto p-4 bg-white border shadow-lg rounded-2xl border-biru1">
+                <h2 class="pb-3 text-sm font-bold leading-tight text-center text-biru1">
                     10 Komoditas Penyumbang Inflasi Tahunan<br>
-                    <span class="font-normal italic">(Y-on-Y, %)</span>
+                    <span class="italic font-normal">(Y-on-Y, %)</span>
                 </h2>
                 <div class="shadow-md sm:rounded-lg">
-                    <table class="text-sm text-left rtl:text-right w-full mx-auto">
-                        <thead class="text-xs bg-biru1 text-white">
+                    <table class="w-full mx-auto text-sm text-left rtl:text-right">
+                        <thead class="text-xs text-white bg-biru1">
                             <tr>
                                 <th scope="col" class="px-2 py-2 text-left"> </th>
                                 <th scope="col" class="px-2 py-2 text-left">Nama Komoditas</th>
@@ -371,7 +378,7 @@
                         </thead>
                         <tbody>
                             @foreach ($topInflasiYoY as $index => $item)
-                                <tr class="text-biru1 text-xs">
+                                <tr class="text-xs text-biru1">
                                     <td class="px-2 py-2 text-left">{{ $index + 1 }}</td>
                                     <td class="px-2 py-2 font-normal text-left">{{ $item->nama_kom }}</td>
                                     <td
@@ -421,6 +428,7 @@
             const iconTahun = document.getElementById('icon-tahun');
             const exportPdfBtn = document.getElementById('exportPdf');
             const exportExcelBtn = document.getElementById('exportExcel');
+            const jenisDataInflasi = '{{ $jenisDataInflasi }}';
 
             // Fungsi untuk toggle ikon panah
             function toggleIcon(selectElement, iconElement) {
@@ -441,13 +449,13 @@
             exportPdfBtn.addEventListener('click', async function() {
                 const loading = document.createElement('div');
                 loading.style.position = 'fixed';
-                loading.style.top = '50%';
-                loading.style.left = '50%';
+                loading.style.top = '40%';
+                loading.style.left = '40%';
                 loading.style.transform = 'translate(-50%, -50%)';
                 loading.style.backgroundColor = 'rgba(0,0,0,0.7)';
                 loading.style.color = 'white';
-                loading.style.padding = '20px';
-                loading.style.borderRadius = '5px';
+                loading.style.padding = '7px';
+                loading.style.borderRadius = '3px';
                 loading.style.zIndex = '9999';
                 loading.textContent = 'Generating PDF...';
                 document.body.appendChild(loading);
@@ -457,22 +465,22 @@
                     const content = document.querySelector('.bg-white.rounded-b-lg.shadow-md');
 
                     // Adjust scale for PDF
-                    content.style.transform = 'scale(0.7)'; // Sesuaikan skala agar muat
-                    content.style.transformOrigin = 'top left'; // Pastikan skala dimulai dari kiri atas
-                    content.style.width = '140%'; // Sesuaikan lebar agar tetap proporsional
+                    content.style.transform = 'scale(0.55)'; // Reduced scale to fit portrait
+                    content.style.transformOrigin = 'top left';
+                    content.style.width = '180%'; // Increased width to maintain readability
 
                     // Wait for charts to render
                     await new Promise(resolve => setTimeout(resolve, 2000));
 
                     const opt = {
-                        margin: [5, 5, 5, 5], // Margin untuk halaman PDF
-                        filename: `dashboard-inflasi-${document.getElementById('bulan').value}-${document.getElementById('tahun').value}.pdf`,
+                        margin: [10, 10, 10, 10], // Slightly increased margins
+                        filename: `dashboard-inflasi-${document.getElementById('bulan').value}-${document.getElementById('tahun').value}-${jenisDataInflasi}.pdf`,
                         image: {
                             type: 'jpeg',
                             quality: 1
                         },
                         html2canvas: {
-                            scale: 2, // Skala untuk meningkatkan kualitas
+                            scale: 2,
                             useCORS: true,
                             logging: true,
                             letterRendering: true,
@@ -492,9 +500,9 @@
                             }
                         },
                         jsPDF: {
-                            unit: 'mm', // Gunakan milimeter untuk ukuran A4
-                            format: 'a4', // Ukuran halaman A4
-                            orientation: 'landscape', // Pilih landscape untuk memastikan dashboard muat
+                            unit: 'mm',
+                            format: 'a4',
+                            orientation: 'portrait' // Set to portrait
                         },
                         pagebreak: {
                             mode: ['avoid-all', 'css', 'legacy']
@@ -535,7 +543,9 @@
                     const tahun = document.getElementById('tahun').value;
 
                     // Kirim request ke endpoint export Excel
-                    const response = await fetch(`/dashboard/export-excel?bulan=${bulan}&tahun=${tahun}`);
+                    const response = await fetch(
+                        `/dashboard/export-excel?bulan=${bulan}&tahun=${tahun}&jenis_data_inflasi=${jenisDataInflasi}`
+                    );
 
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
@@ -548,7 +558,8 @@
                     const url = window.URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url;
-                    a.download = `dashboard-inflasi-${bulan}-${tahun}.xlsx`;
+                    a.download =
+                        `10 Komoditas Tertinggi dashboard inflasi ${bulan} ${tahun} ${jenisDataInflasi}.xlsx`;
                     document.body.appendChild(a);
                     a.click();
                     window.URL.revokeObjectURL(url);
