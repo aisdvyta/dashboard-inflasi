@@ -7,6 +7,9 @@ use App\Models\detail_inflasi;
 use App\Models\master_komoditas;
 use App\Models\master_inflasi;
 use Carbon\Carbon;
+use App\Exports\InflasiExport;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -196,5 +199,156 @@ class DashboardController extends Controller
             'topAndilYtD',
             'topAndilYoY',
         ));
+    }
+
+    public function exportExcel(Request $request)
+    {
+        $bulan = $request->query('bulan');
+        $tahun = $request->query('tahun');
+
+        // Konversi nama bulan ke angka
+        $bulanMap = [
+            'Januari' => 1, 'Februari' => 2, 'Maret' => 3, 'April' => 4,
+            'Mei' => 5, 'Juni' => 6, 'Juli' => 7, 'Agustus' => 8,
+            'September' => 9, 'Oktober' => 10, 'November' => 11, 'Desember' => 12
+        ];
+        $bulanAngka = $bulanMap[$bulan] ?? null;
+
+        if (!$bulanAngka) {
+            return response()->json(['error' => 'Bulan tidak valid'], 400);
+        }
+
+        // Ambil data MtM
+        $dataMtM = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
+            ->join('master_komoditas as mk', 'detail_inflasis.id_kom', '=', 'mk.kode_kom')
+            ->where('detail_inflasis.id_flag', 3)
+            ->where('detail_inflasis.id_wil', 3500)
+            ->whereYear('master_inflasis.periode', $tahun)
+            ->whereMonth('master_inflasis.periode', $bulanAngka)
+            ->select('mk.nama_kom', 'detail_inflasis.inflasi_mtm as inflasi', 'detail_inflasis.andil_mtm as andil')
+            ->orderBy('detail_inflasis.andil_mtm', 'desc')
+            ->limit(10)
+            ->get();
+
+        // Ambil data YtD
+        $dataYtD = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
+            ->join('master_komoditas as mk', 'detail_inflasis.id_kom', '=', 'mk.kode_kom')
+            ->where('detail_inflasis.id_flag', 3)
+            ->where('detail_inflasis.id_wil', 3500)
+            ->whereYear('master_inflasis.periode', $tahun)
+            ->whereMonth('master_inflasis.periode', $bulanAngka)
+            ->select('mk.nama_kom', 'detail_inflasis.inflasi_ytd as inflasi', 'detail_inflasis.andil_ytd as andil')
+            ->orderBy('detail_inflasis.andil_ytd', 'desc')
+            ->limit(10)
+            ->get();
+
+        // Ambil data YoY
+        $dataYoY = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
+            ->join('master_komoditas as mk', 'detail_inflasis.id_kom', '=', 'mk.kode_kom')
+            ->where('detail_inflasis.id_flag', 3)
+            ->where('detail_inflasis.id_wil', 3500)
+            ->whereYear('master_inflasis.periode', $tahun)
+            ->whereMonth('master_inflasis.periode', $bulanAngka)
+            ->select('mk.nama_kom', 'detail_inflasis.inflasi_yoy as inflasi', 'detail_inflasis.andil_yoy as andil')
+            ->orderBy('detail_inflasis.andil_yoy', 'desc')
+            ->limit(10)
+            ->get();
+
+        // Tambahkan nomor urut
+        $dataMtM = $dataMtM->map(function($item, $key) {
+            $item->no = $key + 1;
+            return $item;
+        });
+
+        $dataYtD = $dataYtD->map(function($item, $key) {
+            $item->no = $key + 1;
+            return $item;
+        });
+
+        $dataYoY = $dataYoY->map(function($item, $key) {
+            $item->no = $key + 1;
+            return $item;
+        });
+
+        // Buat spreadsheet
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        
+        // Sheet 1: MtM
+        $sheet1 = $spreadsheet->getActiveSheet();
+        $sheet1->setTitle('Inflasi MtM');
+        $sheet1->setCellValue('A1', 'No');
+        $sheet1->setCellValue('B1', 'Nama Komoditas');
+        $sheet1->setCellValue('C1', 'Inflasi MtM (%)');
+        $sheet1->setCellValue('D1', 'Andil MtM (%)');
+        
+        $row = 2;
+        foreach ($dataMtM as $item) {
+            $sheet1->setCellValue('A' . $row, $item->no);
+            $sheet1->setCellValue('B' . $row, $item->nama_kom);
+            $sheet1->setCellValue('C' . $row, $item->inflasi);
+            $sheet1->setCellValue('D' . $row, $item->andil);
+            $row++;
+        }
+
+        // Sheet 2: YtD
+        $sheet2 = $spreadsheet->createSheet();
+        $sheet2->setTitle('Inflasi YtD');
+        $sheet2->setCellValue('A1', 'No');
+        $sheet2->setCellValue('B1', 'Nama Komoditas');
+        $sheet2->setCellValue('C1', 'Inflasi YtD (%)');
+        $sheet2->setCellValue('D1', 'Andil YtD (%)');
+        
+        $row = 2;
+        foreach ($dataYtD as $item) {
+            $sheet2->setCellValue('A' . $row, $item->no);
+            $sheet2->setCellValue('B' . $row, $item->nama_kom);
+            $sheet2->setCellValue('C' . $row, $item->inflasi);
+            $sheet2->setCellValue('D' . $row, $item->andil);
+            $row++;
+        }
+
+        // Sheet 3: YoY
+        $sheet3 = $spreadsheet->createSheet();
+        $sheet3->setTitle('Inflasi YoY');
+        $sheet3->setCellValue('A1', 'No');
+        $sheet3->setCellValue('B1', 'Nama Komoditas');
+        $sheet3->setCellValue('C1', 'Inflasi YoY (%)');
+        $sheet3->setCellValue('D1', 'Andil YoY (%)');
+        
+        $row = 2;
+        foreach ($dataYoY as $item) {
+            $sheet3->setCellValue('A' . $row, $item->no);
+            $sheet3->setCellValue('B' . $row, $item->nama_kom);
+            $sheet3->setCellValue('C' . $row, $item->inflasi);
+            $sheet3->setCellValue('D' . $row, $item->andil);
+            $row++;
+        }
+
+        // Set style untuk semua sheet
+        foreach ($spreadsheet->getAllSheets() as $sheet) {
+            // Set header style
+            $sheet->getStyle('A1:D1')->getFont()->setBold(true);
+            $sheet->getStyle('A1:D1')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+            
+            // Set column widths
+            $sheet->getColumnDimension('A')->setWidth(5);
+            $sheet->getColumnDimension('B')->setWidth(40);
+            $sheet->getColumnDimension('C')->setWidth(15);
+            $sheet->getColumnDimension('D')->setWidth(15);
+            
+            // Set number format for percentage columns
+            $sheet->getStyle('C2:D' . $sheet->getHighestRow())->getNumberFormat()->setFormatCode('0.00');
+        }
+
+        // Buat writer dan download
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $filename = "dashboard-inflasi-{$bulan}-{$tahun}.xlsx";
+        
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+        
+        $writer->save('php://output');
+        exit;
     }
 }

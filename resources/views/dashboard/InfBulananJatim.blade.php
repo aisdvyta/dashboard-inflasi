@@ -40,38 +40,49 @@
             </p>
         </div>
 
-        <div class="relative mt-4 flex justify-start">
-            <a href="#"
-                class="flex items-center gap-2 px-10 py-2 rounded-t-xl bg-biru4 hover:bg-biru1 group transition duration-300"
-                data-page="tabel">
-                <span class="menu-text text-white text-[15px] transition duration-100">
-                    ASEM 1</span>
-            </a>
-            <a href="#"
-                class="flex items-center gap-2 px-10 py-2 rounded-t-xl bg-biru4 hover:bg-biru1 group transition duration-300"
-                data-page="tabel">
-                <span class="menu-text text-white text-[15px] transition duration-100">
-                    ASEM 2</span>
-            </a>
-            <a href="#"
-                class="flex items-center gap-2 px-10 py-2 rounded-t-xl bg-biru4 hover:bg-biru1 group transition duration-300"
-                data-page="tabel">
-                <span class="menu-text text-white text-[15px] transition duration-100">
-                    ASEM 3</span>
-            </a>
-            <a href="#"
-                class="flex items-center gap-2 px-12 py-2 rounded-t-xl bg-biru4 hover:bg-biru1 group transition duration-300"
-                data-page="tabel">
-                <span class="menu-text text-white text-[15px] transition duration-100">
-                    ATAP</span>
-            </a>
-            <button id="exportPdf"
-                class="flex items-center gap-2 px-10 py-2 rounded-t-xl bg-biru4 hover:bg-biru1 group transition duration-300 ml-4">
-                <span class="menu-text text-white text-[15px] transition duration-100">
-                    Export PDF</span>
-            </button>
+        <div class="flex flex-col md:flex-row items-center justify-between">
+            <div class="relative mt-7 flex justify-start">
+                <a href="#"
+                    class="flex items-center gap-2 px-10 py-2 rounded-t-xl bg-biru4 hover:bg-biru1 group transition duration-300"
+                    data-page="tabel">
+                    <span class="menu-text text-white text-[15px] transition duration-100">
+                        ASEM 1</span>
+                </a>
+                <a href="#"
+                    class="flex items-center gap-2 px-10 py-2 rounded-t-xl bg-biru4 hover:bg-biru1 group transition duration-300"
+                    data-page="tabel">
+                    <span class="menu-text text-white text-[15px] transition duration-100">
+                        ASEM 2</span>
+                </a>
+                <a href="#"
+                    class="flex items-center gap-2 px-10 py-2 rounded-t-xl bg-biru4 hover:bg-biru1 group transition duration-300"
+                    data-page="tabel">
+                    <span class="menu-text text-white text-[15px] transition duration-100">
+                        ASEM 3</span>
+                </a>
+                <a href="#"
+                    class="flex items-center gap-2 px-12 py-2 rounded-t-xl bg-biru4 hover:bg-biru1 group transition duration-300"
+                    data-page="tabel">
+                    <span class="menu-text text-white text-[15px] transition duration-100">
+                        ATAP</span>
+                </a>
+            </div>
+
+            <div class="flex items-center justify-end mb-8">
+                <button id="exportExcel"
+                    class="flex items-end gap-2 px-10 py-2 rounded-xl shadow-xl bg-hijau hover:bg-hijaumuda group transition duration-300 ml-4">
+                    <span class="menu-text text-white text-[15px] transition duration-100">
+                        Export Excel</span>
+                </button>
+                <button id="exportPdf"
+                    class="flex items-end gap-2 px-10 py-2 rounded-xl shadow-xl bg-merah1 hover:bg-merah1muda group transition duration-300 ml-4">
+                    <span class="menu-text text-white text-[15px] transition duration-100">
+                        Export PDF</span>
+                </button>
+            </div>
         </div>
     </div>
+
 
     <div class="bg-white rounded-b-lg shadow-md  p-6">
         <div class="w-full max-w-7xl mx-auto px-6 py-10">
@@ -191,7 +202,7 @@
                         <span class="text-biru4">Nilai inflasi pada Bulan saat ini terhadap Bulan sebelumnya</span>
                     </div>
                     <div
-                        class="bg-biru1 rounded-xl shadow-lg px-4 py-2 flex-1 text-white flex flex-col justify-between h-full">
+                        class="bg-biru1 rounded-2xl shadow-lg px-4 py-2 flex-1 text-white flex flex-col justify-between h-full">
                         <div class="flex justify-between items-end">
                             <div class="text-sm font-bold">
                                 Nilai Inflasi Bulanan<br>
@@ -210,7 +221,7 @@
                         Nilai inflasi pada Bulan saat ini terhadap Bulan Desember Tahun sebelumnya
                     </div>
                     <div
-                        class="bg-biru1 rounded-xl shadow-lg px-4 py-2 flex-1 text-white flex flex-col justify-between h-full">
+                        class="bg-biru1 rounded-2xl shadow-lg px-4 py-2 flex-1 text-white flex flex-col justify-between h-full">
                         <div class="flex justify-between items-end">
                             <div class="text-sm font-bold">
                                 Nilai Inflasi Tahun Kalender<br>
@@ -229,7 +240,7 @@
                         Nilai inflasi pada Bulan ini di Tahun saat ini terhadap Bulan ini di Tahun sebelumnya
                     </div>
                     <div
-                        class="bg-biru1 rounded-xl shadow-lg px-4 py-2 flex-1 text-white flex flex-col justify-between h-full">
+                        class="bg-biru1 rounded-2xl shadow-lg px-4 py-2 flex-1 text-white flex flex-col justify-between h-full">
                         <div class="flex justify-between items-end">
                             <div class="text-sm font-bold">
                                 Nilai Inflasi Tahunan<br>
@@ -246,26 +257,26 @@
 
         {{-- js echart barchart --}}
         <div class="grid grid-cols-3 gap-4 mt-4 ">
-            <div class="bg-white rounded-xl shadow-lg p-4">
-                <h2 class="text-center text-base font-bold text-biru1">
+            <div class="bg-white rounded-2xl border border-biru1 shadow-lg p-3">
+                <h2 class="text-center text-sm font-bold text-biru1 leading-tight pb-3">
                     10 Komoditas dengan <br> Sumbangan Inflasi Bulanan Terbesar<br>
-                    <span class="text-xs italic">(M-to-M, %)</span>
+                    <span class="font-normal italic">(M-to-M, %)</span>
                 </h2>
                 <div class="h-80" id="andilmtm"></div>
             </div>
 
-            <div class="bg-white rounded-xl shadow-lg  p-4">
-                <h2 class="text-center text-base font-bold text-biru1">
+            <div class="bg-white rounded-2xl border border-biru1 shadow-lg  p-3">
+                <h2 class="text-center text-sm font-bold text-biru1 leading-tight pb-3">
                     10 Komoditas dengan <br> Sumbangan Inflasi Tahun Kalender Terbesar<br>
-                    <span class="text-xs italic">(Y-to-D, %)</span>
+                    <span class="font-normal italic">(Y-to-D, %)</span>
                 </h2>
                 <div class="h-80" id="andilytd"></div>
             </div>
 
-            <div class="bg-white rounded-xl shadow-lg p-4">
-                <h2 class="text-center text-base font-bold text-biru1">
+            <div class="bg-white rounded-2xl border border-biru1 shadow-lg p-3">
+                <h2 class="text-center text-sm font-bold text-biru1 leading-tight pb-3">
                     10 Komoditas dengan <br> Sumbangan Inflasi Tahunan Terbesar<br>
-                    <span class="text-xs italic">(Y-on-Y, %)</span>
+                    <span class="font-normal italic">(Y-on-Y, %)</span>
                 </h2>
                 <div class="h-80" id="andilyoy"></div>
             </div>
@@ -273,10 +284,10 @@
 
         {{-- tabel top komoditas --}}
         <div class="grid grid-cols-3 gap-4 mt-4">
-            <div class="bg-white rounded-xl shadow-lg p-4 h-auto">
-                <h2 class="text-center text-base font-bold text-biru1 pb-4">
+            <div class="bg-white rounded-2xl border border-biru1 shadow-lg p-4 h-auto">
+                <h2 class="text-center text-sm font-bold text-biru1 leading-tight pb-3">
                     10 Komoditas Penyumbang Inflasi Bulanan<br>
-                    <span class="text-xs italic">(M-to-M, %)</span>
+                    <span class="font-normal italic">(M-to-M, %)</span>
                 </h2>
                 <div class="shadow-md sm:rounded-lg">
                     <table class="text-sm text-left rtl:text-right w-full mx-auto">
@@ -290,9 +301,9 @@
                         </thead>
                         <tbody>
                             @foreach ($topInflasiMtM as $index => $item)
-                                <tr class="text-biru1">
+                                <tr class="text-biru1 text-xs">
                                     <td class="px-2 py-2 text-left">{{ $index + 1 }}</td>
-                                    <td class="px-2 py-2 font-medium text-left">{{ $item->nama_kom }}</td>
+                                    <td class="px-2 py-2 font-normal text-left">{{ $item->nama_kom }}</td>
                                     <td
                                         class="px-2 py-2 text-right {{ getHeatClass($item->inflasi, $minInflasiMtM, $maxInflasiMtM) }}">
                                         {{ number_format($item->inflasi, 2) }}
@@ -308,10 +319,10 @@
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl shadow-lg p-4 h-auto">
-                <h2 class="text-center text-base font-bold text-biru1 pb-4">
+            <div class="bg-white rounded-2xl border border-biru1 shadow-lg p-4 h-auto">
+                <h2 class="text-center text-sm font-bold text-biru1 leading-tight pb-3">
                     10 Komoditas Penyumbang Inflasi Tahun Kalender<br>
-                    <span class="text-xs italic">(Y-to-D, %)</span>
+                    <span class="font-normal italic">(Y-to-D, %)</span>
                 </h2>
                 <div class="shadow-md sm:rounded-lg">
                     <table class="text-sm text-left rtl:text-right w-full mx-auto">
@@ -325,9 +336,9 @@
                         </thead>
                         <tbody>
                             @foreach ($topInflasiYtD as $index => $item)
-                                <tr class="text-biru1">
+                                <tr class="text-biru1 text-xs">
                                     <td class="px-2 py-2 text-left">{{ $index + 1 }}</td>
-                                    <td class="px-2 py-2 font-medium text-left">{{ $item->nama_kom }}</td>
+                                    <td class="px-2 py-2 font-normal text-left">{{ $item->nama_kom }}</td>
                                     <td
                                         class="px-2 py-2 text-right {{ getHeatClass($item->inflasi, $minInflasiYtD, $maxInflasiYtD) }}">
                                         {{ number_format($item->inflasi, 2) }}
@@ -343,10 +354,10 @@
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl shadow-lg p-4 h-auto">
-                <h2 class="text-center text-base font-bold text-biru1 pb-4">
+            <div class="bg-white rounded-2xl border border-biru1 shadow-lg p-4 h-auto">
+                <h2 class="text-center text-sm font-bold text-biru1 leading-tight pb-3">
                     10 Komoditas Penyumbang Inflasi Tahunan<br>
-                    <span class="text-xs italic">(Y-on-Y, %)</span>
+                    <span class="font-normal italic">(Y-on-Y, %)</span>
                 </h2>
                 <div class="shadow-md sm:rounded-lg">
                     <table class="text-sm text-left rtl:text-right w-full mx-auto">
@@ -360,9 +371,9 @@
                         </thead>
                         <tbody>
                             @foreach ($topInflasiYoY as $index => $item)
-                                <tr class="text-biru1">
+                                <tr class="text-biru1 text-xs">
                                     <td class="px-2 py-2 text-left">{{ $index + 1 }}</td>
-                                    <td class="px-2 py-2 font-medium text-left">{{ $item->nama_kom }}</td>
+                                    <td class="px-2 py-2 font-normal text-left">{{ $item->nama_kom }}</td>
                                     <td
                                         class="px-2 py-2 text-right {{ getHeatClass($item->inflasi, $minInflasiYoY, $maxInflasiYoY) }}">
                                         {{ number_format($item->inflasi, 2) }}
@@ -409,6 +420,7 @@
             const iconBulan = document.getElementById('icon-bulan');
             const iconTahun = document.getElementById('icon-tahun');
             const exportPdfBtn = document.getElementById('exportPdf');
+            const exportExcelBtn = document.getElementById('exportExcel');
 
             // Fungsi untuk toggle ikon panah
             function toggleIcon(selectElement, iconElement) {
@@ -425,9 +437,8 @@
             toggleIcon(bulanSelect, iconBulan);
             toggleIcon(tahunSelect, iconTahun);
 
-            // Export PDF functionality
+            // JS EXPORT PDF
             exportPdfBtn.addEventListener('click', async function() {
-                // Show loading indicator first
                 const loading = document.createElement('div');
                 loading.style.position = 'fixed';
                 loading.style.top = '50%';
@@ -442,41 +453,52 @@
                 document.body.appendChild(loading);
 
                 try {
-                    // Get only the main dashboard content
+                    // Get the main dashboard content
                     const content = document.querySelector('.bg-white.rounded-b-lg.shadow-md');
-                    
+
+                    // Adjust scale for PDF
+                    content.style.transform = 'scale(0.7)'; // Sesuaikan skala agar muat
+                    content.style.transformOrigin = 'top left'; // Pastikan skala dimulai dari kiri atas
+                    content.style.width = '140%'; // Sesuaikan lebar agar tetap proporsional
+
                     // Wait for charts to render
                     await new Promise(resolve => setTimeout(resolve, 2000));
 
                     const opt = {
-                        margin: [10, 10, 10, 10],
+                        margin: [5, 5, 5, 5], // Margin untuk halaman PDF
                         filename: `dashboard-inflasi-${document.getElementById('bulan').value}-${document.getElementById('tahun').value}.pdf`,
-                        image: { type: 'jpeg', quality: 1 },
-                        html2canvas: { 
-                            scale: 2,
+                        image: {
+                            type: 'jpeg',
+                            quality: 1
+                        },
+                        html2canvas: {
+                            scale: 2, // Skala untuk meningkatkan kualitas
                             useCORS: true,
                             logging: true,
                             letterRendering: true,
                             allowTaint: true,
-                            foreignObjectRendering: true,
-                            scrollY: -window.scrollY,
+                            scrollY: 0,
                             onclone: function(clonedDoc) {
-                                Array.from(clonedDoc.getElementsByTagName('canvas')).forEach(canvas => {
-                                    const originalCanvas = document.querySelector(`canvas[data-id="${canvas.getAttribute('data-id')}"]`);
-                                    if (originalCanvas) {
-                                        const context = canvas.getContext('2d');
-                                        context.drawImage(originalCanvas, 0, 0);
-                                    }
-                                });
+                                Array.from(clonedDoc.getElementsByTagName('canvas')).forEach(
+                                    canvas => {
+                                        const originalCanvas = document.querySelector(
+                                            `canvas[data-id="${canvas.getAttribute('data-id')}"]`
+                                        );
+                                        if (originalCanvas) {
+                                            const context = canvas.getContext('2d');
+                                            context.drawImage(originalCanvas, 0, 0);
+                                        }
+                                    });
                             }
                         },
-                        jsPDF: { 
-                            unit: 'px',
-                            format: [1920, 1080],
-                            orientation: 'landscape',
-                            hotfixes: ['px_scaling']
+                        jsPDF: {
+                            unit: 'mm', // Gunakan milimeter untuk ukuran A4
+                            format: 'a4', // Ukuran halaman A4
+                            orientation: 'landscape', // Pilih landscape untuk memastikan dashboard muat
                         },
-                        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+                        pagebreak: {
+                            mode: ['avoid-all', 'css', 'legacy']
+                        }
                     };
 
                     // Generate PDF
@@ -489,7 +511,53 @@
                     console.error('Error generating PDF:', error);
                     alert('Terjadi kesalahan saat menghasilkan PDF. Silakan coba lagi.');
                 } finally {
-                    // Remove loading indicator
+                    document.body.removeChild(loading);
+                }
+            });
+
+            // JS EXPORT EXCEL
+            exportExcelBtn.addEventListener('click', async function() {
+                const loading = document.createElement('div');
+                loading.style.position = 'fixed';
+                loading.style.top = '50%';
+                loading.style.left = '50%';
+                loading.style.transform = 'translate(-50%, -50%)';
+                loading.style.backgroundColor = 'rgba(0,0,0,0.7)';
+                loading.style.color = 'white';
+                loading.style.padding = '20px';
+                loading.style.borderRadius = '5px';
+                loading.style.zIndex = '9999';
+                loading.textContent = 'Generating Excel...';
+                document.body.appendChild(loading);
+
+                try {
+                    const bulan = document.getElementById('bulan').value;
+                    const tahun = document.getElementById('tahun').value;
+
+                    // Kirim request ke endpoint export Excel
+                    const response = await fetch(`/dashboard/export-excel?bulan=${bulan}&tahun=${tahun}`);
+                    
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+
+                    // Dapatkan blob dari response
+                    const blob = await response.blob();
+                    
+                    // Buat URL untuk download
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `dashboard-inflasi-${bulan}-${tahun}.xlsx`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+
+                } catch (error) {
+                    console.error('Error generating Excel:', error);
+                    alert('Terjadi kesalahan saat menghasilkan Excel. Silakan coba lagi.');
+                } finally {
                     document.body.removeChild(loading);
                 }
             });

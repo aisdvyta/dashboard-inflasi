@@ -92,6 +92,7 @@ Route::get('/dashboard/infspasial', function () {
     return view('dashboard.infSpasial');
 })->name('dashboard.spasial');
 Route::get('/dashboard/infbulanan', [DashboardController::class, 'showInflasiBulanan'])->name('dashboard.bulanan');
+Route::get('/dashboard/export-excel', [DashboardController::class, 'exportExcel'])->name('dashboard.export-excel');
 
 Route::get('/login', [LoginController::class, 'index'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
