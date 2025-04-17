@@ -121,7 +121,7 @@
                                 class="rounded-full bg-merah1 text-white px-6 py-3 flex justify-between items-center w-full md:w-96 shadow-md">
                                 <div class="flex items-center gap-4">
                                     <div class="font-semibold text-lg uppercase">{{ $namaKomoditasTertinggi }}</div>
-                                    <div class="font-semibold text-lg">{{ number_format($andilTertinggi, 2) }}</div>
+                                    <div class="font-semibold text-lg">{{ number_format($andilTertinggi, 2, ',', '.') }}</div>
                                 </div>
                             </div>
 
@@ -135,7 +135,7 @@
                                 class="rounded-full bg-hijaumuda text-white px-6 py-3 flex justify-between items-center w-full md:w-96 shadow-md">
                                 <div class="flex items-center gap-4">
                                     <div class="font-semibold text-lg uppercase">{{ $namaKomoditasTerendah }}</div>
-                                    <div class="font-semibold text-lg">{{ number_format($andilTerendah, 2) }}</div>
+                                    <div class="font-semibold text-lg">{{ number_format($andilTerendah, 2, ',', '.') }}</div>
                                 </div>
                             </div>
                         </div>
@@ -209,7 +209,7 @@
                                 <span class="text-xs font-normal italic">(M-to-M, %)</span>
                             </div>
                             <div class="text-5xl font-semibold {{ $inflasiMtM < 0 ? 'text-hijau' : 'text-merah1' }}">
-                                {{ number_format($inflasiMtM, 2) }}
+                                {{ number_format($inflasiMtM, 2, ',', '.') }}
                             </div>
                         </div>
                     </div>
@@ -228,7 +228,7 @@
                                 <span class="text-xs font-normal italic">(Y-to-D, %)</span>
                             </div>
                             <div class="text-5xl font-semibold {{ $inflasiYtD < 0 ? 'text-hijau' : 'text-merah1' }}">
-                                {{ number_format($inflasiYtD, 2) }}
+                                {{ number_format($inflasiYtD, 2, ',', '.') }}
                             </div>
                         </div>
                     </div>
@@ -247,7 +247,7 @@
                                 <span class="text-xs font-normal italic">(Y-to-Y, %)</span>
                             </div>
                             <div class="text-5xl font-semibold {{ $inflasiYoY < 0 ? 'text-hijau' : 'text-merah1' }}">
-                                {{ number_format($inflasiYoY, 2) }}
+                                {{ number_format($inflasiYoY, 2, ',', '.') }}
                             </div>
                         </div>
                     </div>
@@ -306,11 +306,11 @@
                                     <td class="px-2 py-2 font-normal text-left">{{ $item->nama_kom }}</td>
                                     <td
                                         class="px-2 py-2 text-right {{ getHeatClass($item->inflasi, $minInflasiMtM, $maxInflasiMtM) }}">
-                                        {{ number_format($item->inflasi, 2) }}
+                                        {{ number_format($item->inflasi, 2, ',', '.') }}
                                     </td>
                                     <td
                                         class="px-2 py-2 text-right {{ getHeatClass($item->andil, $minAndilMtM, $maxAndilMtM) }}">
-                                        {{ number_format($item->andil, 2) }}
+                                        {{ number_format($item->andil, 2, ',', '.') }}
                                     </td>
                                 </tr>
                             @endforeach
@@ -341,11 +341,11 @@
                                     <td class="px-2 py-2 font-normal text-left">{{ $item->nama_kom }}</td>
                                     <td
                                         class="px-2 py-2 text-right {{ getHeatClass($item->inflasi, $minInflasiYtD, $maxInflasiYtD) }}">
-                                        {{ number_format($item->inflasi, 2) }}
+                                        {{ number_format($item->inflasi, 2, ',', '.') }}
                                     </td>
                                     <td
                                         class="px-2 py-2 text-right {{ getHeatClass($item->andil, $minAndilYtD, $maxAndilYtD) }}">
-                                        {{ number_format($item->andil, 2) }}
+                                        {{ number_format($item->andil, 2, ',', '.') }}
                                     </td>
                                 </tr>
                             @endforeach
@@ -376,11 +376,11 @@
                                     <td class="px-2 py-2 font-normal text-left">{{ $item->nama_kom }}</td>
                                     <td
                                         class="px-2 py-2 text-right {{ getHeatClass($item->inflasi, $minInflasiYoY, $maxInflasiYoY) }}">
-                                        {{ number_format($item->inflasi, 2) }}
+                                        {{ number_format($item->inflasi, 2, ',', '.') }}
                                     </td>
                                     <td
                                         class="px-2 py-2 text-right {{ getHeatClass($item->andil, $minAndilYoY, $maxAndilYoY) }}">
-                                        {{ number_format($item->andil, 2) }}
+                                        {{ number_format($item->andil, 2, ',', '.') }}
                                     </td>
                                 </tr>
                             @endforeach
@@ -536,14 +536,14 @@
 
                     // Kirim request ke endpoint export Excel
                     const response = await fetch(`/dashboard/export-excel?bulan=${bulan}&tahun=${tahun}`);
-                    
+
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
                     }
 
                     // Dapatkan blob dari response
                     const blob = await response.blob();
-                    
+
                     // Buat URL untuk download
                     const url = window.URL.createObjectURL(blob);
                     const a = document.createElement('a');

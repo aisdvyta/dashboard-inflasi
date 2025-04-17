@@ -3,28 +3,28 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function renderChart(id, data) {
         if (!data || data.length === 0) {
-            console.warn('Data for chart is empty or undefined.');
+            console.warn("Data for chart is empty or undefined.");
             return;
         }
 
-        console.log('Rendering chart', data);
+        console.log("Rendering chart", data);
 
         var chartDom = document.getElementById(id);
         if (!chartDom) {
-            console.error('Element ${id} not found');
-        return;
+            console.error("Element ${id} not found");
+            return;
         }
 
         var myChart = echarts.init(chartDom);
 
-        var komoditas = data.map(item => {
+        var komoditas = data.map((item) => {
             return item.nama_kom.length > 17
                 ? item.nama_kom.substring(0, 17) + "\n" + item.nama_kom.substring(17)
                 : item.nama_kom;
         });
 
         // konversi nilai andil ke angka
-        var values = data.map(item => Number(item.andil));
+        var values = data.map((item) => Number(item.andil));
 
         var option = {
             tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 right: "2%",
                 bottom: "3%",
                 top: "3%",
-                containLabel: true
+                containLabel: true,
             },
             xAxis: { type: "value", boundaryGap: [0, 0.01] },
             yAxis: {
@@ -46,21 +46,25 @@ document.addEventListener("DOMContentLoaded", function () {
                     fontWeight: 330,
                 },
             },
-            series: [{
-                type: "bar",
-                data: values,
-                itemStyle: {
-                    color: '#4C84B0'
+            series: [
+                {
+                    type: "bar",
+                    data: values,
+                    itemStyle: {
+                        color: "#4C84B0",
+                    },
+                    label: {
+                        show: true,
+                        position: function (params) {
+                            return params.value < 0 ? 'left' : 'right';
+                        },
+                        color: "#063051",
+                        fontSize: 12,
+                        fontWeight: 350,
+                        distance: 10,
+                    },
                 },
-                label: {
-                    show: true,
-                    position: 'right',
-                    formatter: '{c}',
-                    color: '#4C84B0',
-                    fontSize: 12,
-                    fontWeight: 350,
-                },
-            }],
+            ],
         };
 
         myChart.setOption(option);
@@ -68,19 +72,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Tunggu 1 detik untuk pastikan window.* sudah tersedia
     setTimeout(() => {
-        renderChart(
-            "andilmtm",
-            window.topAndilMtM,
-        );
+        renderChart("andilmtm", window.topAndilMtM);
 
-        renderChart(
-            "andilytd",
-            window.topAndilYtD,
-        );
+        renderChart("andilytd", window.topAndilYtD);
 
-        renderChart(
-            "andilyoy",
-            window.topAndilYoY,
-        );
+        renderChart("andilyoy", window.topAndilYoY);
     }, 500);
 });

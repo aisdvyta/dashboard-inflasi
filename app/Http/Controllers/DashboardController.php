@@ -218,41 +218,14 @@ class DashboardController extends Controller
             return response()->json(['error' => 'Bulan tidak valid'], 400);
         }
 
-        // Ambil data MtM
-        $dataMtM = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
-            ->join('master_komoditas as mk', 'detail_inflasis.id_kom', '=', 'mk.kode_kom')
-            ->where('detail_inflasis.id_flag', 3)
-            ->where('detail_inflasis.id_wil', 3500)
-            ->whereYear('master_inflasis.periode', $tahun)
-            ->whereMonth('master_inflasis.periode', $bulanAngka)
-            ->select('mk.nama_kom', 'detail_inflasis.inflasi_mtm as inflasi', 'detail_inflasis.andil_mtm as andil')
-            ->orderBy('detail_inflasis.andil_mtm', 'desc')
-            ->limit(10)
-            ->get();
-
-        // Ambil data YtD
-        $dataYtD = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
-            ->join('master_komoditas as mk', 'detail_inflasis.id_kom', '=', 'mk.kode_kom')
-            ->where('detail_inflasis.id_flag', 3)
-            ->where('detail_inflasis.id_wil', 3500)
-            ->whereYear('master_inflasis.periode', $tahun)
-            ->whereMonth('master_inflasis.periode', $bulanAngka)
-            ->select('mk.nama_kom', 'detail_inflasis.inflasi_ytd as inflasi', 'detail_inflasis.andil_ytd as andil')
-            ->orderBy('detail_inflasis.andil_ytd', 'desc')
-            ->limit(10)
-            ->get();
-
-        // Ambil data YoY
-        $dataYoY = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
-            ->join('master_komoditas as mk', 'detail_inflasis.id_kom', '=', 'mk.kode_kom')
-            ->where('detail_inflasis.id_flag', 3)
-            ->where('detail_inflasis.id_wil', 3500)
-            ->whereYear('master_inflasis.periode', $tahun)
-            ->whereMonth('master_inflasis.periode', $bulanAngka)
-            ->select('mk.nama_kom', 'detail_inflasis.inflasi_yoy as inflasi', 'detail_inflasis.andil_yoy as andil')
-            ->orderBy('detail_inflasis.andil_yoy', 'desc')
-            ->limit(10)
-            ->get();
+        // Ambil data dengan memanggil showInflasiBulanan
+        $request->merge(['bulan' => $bulan, 'tahun' => $tahun]);
+        $data = $this->showInflasiBulanan($request)->getData();
+        
+        // Ambil data dari hasil showInflasiBulanan
+        $dataMtM = $data['topInflasiMtM'];
+        $dataYtD = $data['topInflasiYtD'];
+        $dataYoY = $data['topInflasiYoY'];
 
         // Tambahkan nomor urut
         $dataMtM = $dataMtM->map(function($item, $key) {
@@ -336,8 +309,8 @@ class DashboardController extends Controller
             $sheet->getColumnDimension('C')->setWidth(15);
             $sheet->getColumnDimension('D')->setWidth(15);
             
-            // Set number format for percentage columns
-            $sheet->getStyle('C2:D' . $sheet->getHighestRow())->getNumberFormat()->setFormatCode('0.00');
+            // Set number format for percentage columns with comma as decimal separator
+            $sheet->getStyle('C2:D' . $sheet->getHighestRow())->getNumberFormat()->setFormatCode('#,##0.00');
         }
 
         // Buat writer dan download
