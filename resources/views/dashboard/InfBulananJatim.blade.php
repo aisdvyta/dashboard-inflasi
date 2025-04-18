@@ -30,39 +30,41 @@
     $minAndilYoY = $topInflasiYoY->min('andil');
     $maxAndilYoY = $topInflasiYoY->max('andil');
 
+    // Add condition for black and white mode
+    $isBlackWhite = in_array($jenisDataInflasi, ['ASEM 1', 'ASEM 2', 'ASEM 3']);
 @endphp
 
 @section('body')
-    <div class="container">
+    <div ">
         <div class="px-4 py-4 ">
             <p class="text-4xl font-bold text-biru1">
                 <span class="text-kuning1">Jenis</span> Data Inflasi
             </p>
         </div>
 
-        <div class="flex flex-col items-center justify-between md:flex-row">
+        <div class="flex flex-col items-center justify-between md:flex-row ">
             <div class="relative flex justify-start mt-7">
-                <a href="{{ route('dashboard.bulanan', ['jenis_data_inflasi' => 'ASEM1']) }}"
-                    class="flex items-center gap-2 px-10 py-2 transition duration-300 rounded-t-xl {{ $jenisDataInflasi == 'ASEM1' ? 'bg-biru1' : 'bg-biru4' }} hover:bg-biru1 group"
-                    data-page="tabel">
+                <a href="{{ route('dashboard.bulanan', ['jenis_data_inflasi' => 'ASEM 1']) }}"
+                    class="flex items-center gap-2 px-10 py-2 transition-all duration-300 rounded-t-xl {{ $jenisDataInflasi === 'ASEM 1' ? 'bg-biru1  -mt-2 -mr-1' : 'bg-biru4' }} hover:bg-biru1 group"
+                    data-page="tabel" id="tab-asem1">
                     <span class="menu-text text-white text-[15px] transition duration-100">
                         ASEM 1</span>
                 </a>
-                <a href="{{ route('dashboard.bulanan', ['jenis_data_inflasi' => 'ASEM2']) }}"
-                    class="flex items-center gap-2 px-10 py-2 transition duration-300 rounded-t-xl {{ $jenisDataInflasi == 'ASEM2' ? 'bg-biru1' : 'bg-biru4' }} hover:bg-biru1 group"
-                    data-page="tabel">
+                <a href="{{ route('dashboard.bulanan', ['jenis_data_inflasi' => 'ASEM 2']) }}"
+                    class="flex items-center gap-2 px-10 py-2 transition-all duration-300 rounded-t-xl {{ $jenisDataInflasi === 'ASEM 2' ? 'bg-biru1 -mt-2 -mx-1' : 'bg-biru4' }} hover:bg-biru1 group"
+                    data-page="tabel" id="tab-asem2">
                     <span class="menu-text text-white text-[15px] transition duration-100">
                         ASEM 2</span>
                 </a>
-                <a href="{{ route('dashboard.bulanan', ['jenis_data_inflasi' => 'ASEM3']) }}"
-                    class="flex items-center gap-2 px-10 py-2 transition duration-300 rounded-t-xl {{ $jenisDataInflasi == 'ASEM3' ? 'bg-biru1' : 'bg-biru4' }} hover:bg-biru1 group"
-                    data-page="tabel">
+                <a href="{{ route('dashboard.bulanan', ['jenis_data_inflasi' => 'ASEM 3']) }}"
+                    class="flex items-center gap-2 px-10 py-2 transition-all duration-300 rounded-t-xl {{ $jenisDataInflasi === 'ASEM 3' ? 'bg-biru1 -mt-2 -mx-1' : 'bg-biru4' }} hover:bg-biru1 group"
+                    data-page="tabel" id="tab-asem3">
                     <span class="menu-text text-white text-[15px] transition duration-100">
                         ASEM 3</span>
                 </a>
                 <a href="{{ route('dashboard.bulanan', ['jenis_data_inflasi' => 'ATAP']) }}"
-                    class="flex items-center gap-2 px-12 py-2 transition duration-300 rounded-t-xl {{ $jenisDataInflasi == 'ATAP' ? 'bg-biru1' : 'bg-biru4' }} hover:bg-biru1 group"
-                    data-page="tabel">
+                    class="flex items-center gap-2 px-12 py-2 transition-all duration-300 rounded-t-xl {{ $jenisDataInflasi === 'ATAP' ? 'bg-biru1 -mt-2 -ml-1' : 'bg-biru4' }} hover:bg-biru1 group"
+                    data-page="tabel" id="tab-atap">
                     <span class="menu-text text-white text-[15px] transition duration-100">
                         ATAP</span>
                 </a>
@@ -83,12 +85,11 @@
         </div>
     </div>
 
-
-    <div class="p-6 bg-white rounded-b-lg shadow-md">
-        <div class="w-full px-6 py-10 mx-auto max-w-7xl">
-            <div class="grid items-start grid-cols-1 gap-6 md:grid-cols-2">
+    <div class="p-6 bg-white rounded-b-lg shadow-md {{ $isBlackWhite ? 'grayscale' : '' }}">
+        <div class="w-full px-6 py-10 mx-auto max-w-7xl {{ $isBlackWhite ? 'grayscale' : '' }}">
+            <div class="grid items-start grid-cols-1 gap-6 md:grid-cols-2 {{ $isBlackWhite ? 'grayscale' : '' }}">
                 {{-- judul --}}
-                <div class="space-y-1">
+                <div class="space-y-1 {{ $isBlackWhite ? 'grayscale' : '' }}">
                     <h1 class="text-5xl font-bold md:text-5xl text-biru1">Dashboard</h1>
                     <h1 class="text-5xl font-bold md:text-5xl text-biru4">INFLASI BULANAN</h1>
                     <h1 class="text-5xl font-bold text-biru1">Provinsi Jawa Timur</h1>
@@ -99,9 +100,9 @@
                 </div>
 
                 {{-- pojok kanan atas --}}
-                <div>
+                <div class="{{ $isBlackWhite ? 'grayscale' : '' }}">
                     <div
-                        class="bg-[#D9EBF8] rounded-xl p-4 shadow-md mb-4 flex flex-col md:flex-row items-center md:items-start justify-between gap-4">
+                        class="bg-[#D9EBF8] rounded-xl p-4 shadow-md mb-4 flex flex-col md:flex-row items-center md:items-start justify-between gap-4 {{ $isBlackWhite ? 'grayscale' : '' }}">
                         <div class="flex flex-col items-start">
                             <img src="/images/navbar/logoBPS.svg" alt="Logo" class="h-12 mb-2" />
                             <div class="text-sm font-bold text-gray-800">Komoditas yang <br>
@@ -151,10 +152,11 @@
                             <div class="relative">
                                 <select id="bulan" name="bulan"
                                     class="w-full px-6 py-2 pr-10 font-semibold text-white rounded-full shadow-md appearance-none bg-biru4 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                                    <option value="">Pilih Bulan</option>
                                     @foreach ($daftarPeriode->pluck('bulan')->unique() as $bulanOption)
                                         <option value="{{ $bulanOption }}"
                                             {{ $bulanOption == $bulan ? 'selected' : '' }}>
-                                            Bulan: {{ $bulanOption }}
+                                            {{ $bulanOption }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -170,10 +172,11 @@
                             <div class="relative">
                                 <select id="tahun" name="tahun"
                                     class="w-full px-6 py-2 pr-10 font-semibold text-white rounded-full shadow-md appearance-none bg-biru4 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                                    <option value="">Pilih Tahun</option>
                                     @foreach ($daftarPeriode->pluck('tahun')->unique() as $tahunOption)
                                         <option value="{{ $tahunOption }}"
                                             {{ $tahunOption == $tahun ? 'selected' : '' }}>
-                                            Tahun: {{ $tahunOption }}
+                                            {{ $tahunOption }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -451,7 +454,7 @@
                 loading.style.position = 'fixed';
                 loading.style.top = '40%';
                 loading.style.left = '40%';
-                loading.style.transform = 'translate(-50%, -50%)';
+                loading.style.transform = 'translate(-60%, -60%)';
                 loading.style.backgroundColor = 'rgba(0,0,0,0.7)';
                 loading.style.color = 'white';
                 loading.style.padding = '7px';
@@ -465,9 +468,10 @@
                     const content = document.querySelector('.bg-white.rounded-b-lg.shadow-md');
 
                     // Adjust scale for PDF
-                    content.style.transform = 'scale(0.55)'; // Reduced scale to fit portrait
+                    content.style.transform = 'scale(0.525)'; // Reduced scale to fit portrait
                     content.style.transformOrigin = 'top left';
-                    content.style.width = '180%'; // Increased width to maintain readability
+                    content.style.width = '190%'; // Increased width to maintain readability
+                    content.style.height = '50%';
 
                     // Wait for charts to render
                     await new Promise(resolve => setTimeout(resolve, 2000));
@@ -480,7 +484,7 @@
                             quality: 1
                         },
                         html2canvas: {
-                            scale: 2,
+                            scale: 4,
                             useCORS: true,
                             logging: true,
                             letterRendering: true,
@@ -502,7 +506,7 @@
                         jsPDF: {
                             unit: 'mm',
                             format: 'a4',
-                            orientation: 'portrait' // Set to portrait
+                            orientation: 'landscape' // Set to portrait
                         },
                         pagebreak: {
                             mode: ['avoid-all', 'css', 'legacy']
@@ -571,6 +575,22 @@
                 } finally {
                     document.body.removeChild(loading);
                 }
+            });
+
+            // Get current jenis_data_inflasi from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const currentJenis = urlParams.get('jenis_data_inflasi') || 'ATAP';
+
+            // Add click event listeners to tabs
+            document.querySelectorAll('[id^="tab-"]').forEach(tab => {
+                tab.addEventListener('click', function(e) {
+                    // Prevent default link behavior
+                    e.preventDefault();
+
+                    // Get the href and navigate programmatically
+                    const href = this.getAttribute('href');
+                    window.location.href = href;
+                });
             });
         });
     </script>

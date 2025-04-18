@@ -31,22 +31,22 @@
                 <div class="flex flex-row w-64 gap-14 p-4 font-normal">
                     <div class="flex flex-col gap-2">
                         <label>
-                            <input type="radio" name="jenis_data_inflasi" value="ASEM1"
-                                {{ $upload->jenis_data_inflasi == 'ASEM1' ? 'checked' : '' }}
+                            <input type="radio" name="jenis_data_inflasi" value="ASEM 1"
+                                {{ $upload->jenis_data_inflasi == 'ASEM 1' ? 'checked' : '' }}
                                 class="form-radio text-biru1 checked:text-biru1 focus:ring-biru1">
                             <span class="text-biru1">ASEM 1</span>
                         </label>
                         <label>
-                            <input type="radio" name="jenis_data_inflasi" value="ASEM3"
-                                {{ $upload->jenis_data_inflasi == 'ASEM3' ? 'checked' : '' }}
+                            <input type="radio" name="jenis_data_inflasi" value="ASEM 2"
+                                {{ $upload->jenis_data_inflasi == 'ASEM 2' ? 'checked' : '' }}
                                 class="form-radio text-biru1 checked:text-biru1 focus:ring-biru1">
                             <span class="text-biru1">ASEM 2</span>
                         </label>
                     </div>
                     <div class="flex flex-col gap-2">
                         <label>
-                            <input type="radio" name="jenis_data_inflasi" value="ASEM2"
-                                {{ $upload->jenis_data_inflasi == 'ASEM2' ? 'checked' : '' }}
+                            <input type="radio" name="jenis_data_inflasi" value="ASEM 3"
+                                {{ $upload->jenis_data_inflasi == 'ASEM 3' ? 'checked' : '' }}
                                 class="form-radio text-biru1 checked:text-biru1 focus:ring-biru1">
                             <span class="text-biru1">ASEM 3</span>
                         </label>

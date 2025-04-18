@@ -43,7 +43,7 @@ class UploadController extends Controller
     {
         $request->validate([
             'periode' => 'required|date_format:Y-m',
-            'jenis_data_inflasi' => 'required|in:ASEM1,ASEM2,ASEM3,ATAP',
+            'jenis_data_inflasi' => 'required|in:ASEM 1,ASEM 2,ASEM 3,ATAP',
             'file' => 'required|mimes:xlsx'
         ]);
 

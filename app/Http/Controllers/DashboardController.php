@@ -10,22 +10,32 @@ use Carbon\Carbon;
 use App\Exports\InflasiExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class DashboardController extends Controller
 {
     private $bulanMap = [
         'Januari' => 1,
+        'January' => 1,
         'Februari' => 2,
+        'February' => 2,
         'Maret' => 3,
+        'March' => 3,
         'April' => 4,
         'Mei' => 5,
+        'May' => 5,
         'Juni' => 6,
+        'June' => 6,
         'Juli' => 7,
+        'July' => 7,
         'Agustus' => 8,
+        'August' => 8,
         'September' => 9,
         'Oktober' => 10,
+        'October' => 10,
         'November' => 11,
-        'Desember' => 12
+        'Desember' => 12,
+        'December' => 12
     ];
 
     public function showInflasiBulanan(Request $request)
@@ -33,21 +43,9 @@ class DashboardController extends Controller
         // Get jenis_data_inflasi from request, default to ATAP
         $jenisDataInflasi = $request->input('jenis_data_inflasi', 'ATAP');
 
-        // Get the most recent data for the selected jenis_data_inflasi
-        $latestData = master_inflasi::where('jenis_data_inflasi', $jenisDataInflasi)
-            ->orderBy('periode', 'desc')
-            ->first();
-
-        if (!$latestData) {
-            abort(404, 'Data tidak ditemukan untuk jenis data inflasi yang dipilih.');
-        }
-
-        // Get the period from the latest data
-        $periode = $latestData->periode;
-
-        // Get bulan and tahun from the latest data
-        $bulan = Carbon::parse($periode)->isoFormat('MMMM');
-        $tahun = Carbon::parse($periode)->format('Y');
+        // Get bulan and tahun from request
+        $bulan = $request->input('bulan');
+        $tahun = $request->input('tahun');
 
         // Get all available periods for the filter dropdown
         $daftarPeriode = master_inflasi::where('jenis_data_inflasi', $jenisDataInflasi)
@@ -55,10 +53,40 @@ class DashboardController extends Controller
             ->get()
             ->map(function ($item) {
                 return [
-                    'bulan' => Carbon::parse($item->periode)->isoFormat('MMMM'),
+                    'bulan' => Carbon::parse($item->periode)->translatedFormat('F'),
                     'tahun' => Carbon::parse($item->periode)->format('Y'),
                 ];
             });
+
+        // If bulan and tahun are provided, use them
+        if ($bulan && $tahun) {
+            $bulanAngka = $this->bulanMap[$bulan] ?? null;
+            if (!$bulanAngka) {
+                // Try to convert English month to Indonesian
+                $bulanIndo = Carbon::createFromFormat('F', $bulan)->translatedFormat('F');
+                $bulanAngka = $this->bulanMap[$bulanIndo] ?? null;
+
+                if (!$bulanAngka) {
+                    abort(404, 'Bulan tidak valid');
+                }
+            }
+            $periode = Carbon::createFromDate($tahun, $bulanAngka, 1)->startOfMonth();
+        } else {
+            // Otherwise, get the most recent data for the selected jenis_data_inflasi
+            $latestData = master_inflasi::where('jenis_data_inflasi', $jenisDataInflasi)
+                ->orderBy('periode', 'desc')
+                ->first();
+
+            if (!$latestData) {
+                abort(404, 'Data tidak ditemukan untuk jenis data inflasi yang dipilih.');
+            }
+
+            $periode = Carbon::parse($latestData->periode);
+        }
+
+        // Get bulan and tahun from the selected period
+        $bulan = $periode->translatedFormat('F');
+        $tahun = $periode->format('Y');
 
         // Get the highest and lowest contributing commodities
         $komoditasTertinggi = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')

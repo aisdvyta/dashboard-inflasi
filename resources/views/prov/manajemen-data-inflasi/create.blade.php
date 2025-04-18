@@ -32,19 +32,19 @@
                 <div class="flex flex-row w-64 gap-14 p-4 font-normal">
                     <div class="flex flex-col gap-2">
                         <label>
-                            <input type="radio" name="jenis_data_inflasi" value="ASEM1" required
+                            <input type="radio" name="jenis_data_inflasi" value="ASEM 1" required
                                 class="form-radio text-biru1 checked:text-biru1 focus:ring-biru1">
                             <span class="text-biru1">ASEM 1</span>
                         </label>
                         <label>
-                            <input type="radio" name="jenis_data_inflasi" value="ASEM2" required
+                            <input type="radio" name="jenis_data_inflasi" value="ASEM 2" required
                                 class="form-radio text-biru1 checked:text-biru1 focus:ring-biru1">
                             <span class="text-biru1">ASEM 2</span>
                         </label>
                     </div>
                     <div class="flex flex-col gap-2">
                         <label>
-                            <input type="radio" name="jenis_data_inflasi" value="ASEM3" required
+                            <input type="radio" name="jenis_data_inflasi" value="ASEM 3" required
                                 class="form-radio text-biru1 checked:text-biru1 focus:ring-biru1">
                             <span class="text-biru1">ASEM 3</span>
                         </label>
