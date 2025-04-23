@@ -28,10 +28,13 @@
 
     <!-- Ini Main 2 -->
     <!-- Section Dashboard -->
-    @include('components.dashboardcard')
+    <div>
+        @include('components.dashboardcard')
+    </div>
+
 
     <!-- Ini Main 3 -->
-    <div id="main3" class="min-h-[90vh]">
+    <div id="main3" class="min-h-[70vh] pt-32">
         <div class="container mx-auto px-6 md:px-12 lg:px-24 flex flex-col md:flex-row items-center mt-8">
             <!-- Image -->
             <div class="w-full md:w-1/3 flex flex-col items-center -translate-y-8">

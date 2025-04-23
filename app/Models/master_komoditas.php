@@ -10,7 +10,7 @@ class master_komoditas extends Model
     use HasFactory;
 
     protected $table = 'master_komoditas';
-    protected $primaryKey = 'kode_kom'; 
+    protected $primaryKey = 'kode_kom';
     public $incrementing = false;
     protected $keyType = 'string';
 
@@ -22,6 +22,7 @@ class master_komoditas extends Model
     {
         return $this->belongsTo(master_komoditas::class, 'flag_2', 'flag');
     }
+    
     public function children()
     {
         return $this->hasMany(master_komoditas::class, 'flag_2', 'flag');

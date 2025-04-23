@@ -84,8 +84,7 @@ class MasterKomoditasController extends Controller
         return redirect()->route('master-komoditas.index')->with('success', 'Data komoditas berhasil diperbarui.');
     }
 
-
-
+    
     public function destroy(master_komoditas $komoditas)
     {
         $komoditas->delete();

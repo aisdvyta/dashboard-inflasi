@@ -12,9 +12,10 @@ use Illuminate\Support\Facades\Auth;
 
 
 // USER //
-Route::get('/', function () {
-    return view('user.index');
-})->name('landingPage');
+Route::get('/', [UploadController::class, 'landing'])->name('landingPage');
+// Route::get('/', function () {
+//     return view('user.index');
+// })->name('landingPage');
 Route::get('/DaftarTabelInflasi', function () {
     return view('user.daftar-tabel-inflasi.index');
 })->name('daftar-tabel-inlfasi.index');

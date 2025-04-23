@@ -88,7 +88,7 @@
             const submitBtn = document.getElementById('submitBtn');
             const progressContainer = document.getElementById('progressContainer');
             const progressBar = document.getElementById('progressBar');
-            const periodeError = document.getElementById('periodeError'); // Elemen untuk menampilkan error periode
+            const periodeError = document.getElementById('periodeError');
 
             const formData = new FormData(form);
             formData.append('_token', '{{ csrf_token() }}');

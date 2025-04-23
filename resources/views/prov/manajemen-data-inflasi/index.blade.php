@@ -107,7 +107,6 @@
                     @endforelse
                 </tbody>
             </table>
-
             <div class="mt-4">
                 {{ $uploads->links('components.pagination') }}
             </div>

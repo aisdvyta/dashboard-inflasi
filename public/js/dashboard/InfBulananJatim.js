@@ -7,7 +7,6 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        // Extract numeric value from the element's text content
         let numericValue = parseFloat(
             inflationValue.textContent.replace(",", ".").trim()
         );
@@ -23,9 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         var komoditas = data.map((item) => {
             return item.nama_kom.length > 17
-                ? item.nama_kom.substring(0, 17) +
-                      "\n" +
-                      item.nama_kom.substring(17)
+                ? item.nama_kom.substring(0, 17) + "\n" + item.nama_kom.substring(17)
                 : item.nama_kom;
         });
 
@@ -62,11 +59,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     label: {
                         show: true,
                         position: "outside",
-                        align: numericValue < 0 ? "left" : "right",
                         color: "#063051",
                         fontSize: 12,
                         fontWeight: 350,
-                        distance: numericValue < 0 ? 35 : 0,
                         formatter: function (params) {
                             return params.value.toFixed(2);
                         },

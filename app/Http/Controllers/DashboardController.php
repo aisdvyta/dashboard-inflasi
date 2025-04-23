@@ -38,6 +38,26 @@ class DashboardController extends Controller
         'December' => 12
     ];
 
+    private function getTopData($periode, $jenisDataInflasi, $columnInflasi, $columnAndil, $isNegative = false)
+    {
+        $query = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
+            ->join('master_komoditas as mk', 'detail_inflasis.id_kom', '=', 'mk.kode_kom')
+            ->where('detail_inflasis.id_flag', 3)
+            ->where('detail_inflasis.id_wil', 3500)
+            ->where('master_inflasis.periode', $periode)
+            ->where('master_inflasis.jenis_data_inflasi', $jenisDataInflasi)
+            ->select('mk.nama_kom', "detail_inflasis.{$columnInflasi} as inflasi", "detail_inflasis.{$columnAndil} as andil");
+
+        // Jika negatif, ambil 10 terbawah, jika positif ambil 10 teratas
+        if ($isNegative) {
+            $query->orderBy($columnAndil); // Terbawah
+        } else {
+            $query->orderByDesc($columnAndil); // Teratas
+        }
+
+        return $query->take(10)->get();
+    }
+
     public function showInflasiBulanan(Request $request)
     {
         // Get jenis_data_inflasi from request, default to ATAP
@@ -136,74 +156,20 @@ class DashboardController extends Controller
             ->where('master_inflasis.periode', $periode)
             ->where('master_inflasis.jenis_data_inflasi', $jenisDataInflasi)
             ->value('detail_inflasis.inflasi_yoy');
+            
+        $isMtMNegative = $inflasiMtM < 0;
+        $isYtDNegative = $inflasiYtD < 0;
+        $isYoYNegative = $inflasiYoY < 0;
 
-        // Get top 10 commodities for each type
-        $topInflasiMtM = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
-            ->join('master_komoditas as mk', 'detail_inflasis.id_kom', '=', 'mk.kode_kom')
-            ->where('detail_inflasis.id_flag', 3)
-            ->where('detail_inflasis.id_wil', 3500)
-            ->where('master_inflasis.periode', $periode)
-            ->where('master_inflasis.jenis_data_inflasi', $jenisDataInflasi)
-            ->select('mk.nama_kom', 'detail_inflasis.inflasi_mtm as inflasi', 'detail_inflasis.andil_mtm as andil')
-            ->orderByDesc('detail_inflasis.andil_mtm')
-            ->take(10)
-            ->get();
+        // Ambil data top inflasi
+        $topInflasiMtM = $this->getTopData($periode, $jenisDataInflasi, 'inflasi_mtm', 'andil_mtm', $isMtMNegative);
+        $topInflasiYtD = $this->getTopData($periode, $jenisDataInflasi, 'inflasi_ytd', 'andil_ytd', $isYtDNegative);
+        $topInflasiYoY = $this->getTopData($periode, $jenisDataInflasi, 'inflasi_yoy', 'andil_yoy', $isYoYNegative);
 
-        $topInflasiYtD = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
-            ->join('master_komoditas as mk', 'detail_inflasis.id_kom', '=', 'mk.kode_kom')
-            ->where('detail_inflasis.id_flag', 3)
-            ->where('detail_inflasis.id_wil', 3500)
-            ->where('master_inflasis.periode', $periode)
-            ->where('master_inflasis.jenis_data_inflasi', $jenisDataInflasi)
-            ->select('mk.nama_kom', 'detail_inflasis.inflasi_ytd as inflasi', 'detail_inflasis.andil_ytd as andil')
-            ->orderByDesc('detail_inflasis.andil_ytd')
-            ->take(10)
-            ->get();
-
-        $topInflasiYoY = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
-            ->join('master_komoditas as mk', 'detail_inflasis.id_kom', '=', 'mk.kode_kom')
-            ->where('detail_inflasis.id_flag', 3)
-            ->where('detail_inflasis.id_wil', 3500)
-            ->where('master_inflasis.periode', $periode)
-            ->where('master_inflasis.jenis_data_inflasi', $jenisDataInflasi)
-            ->select('mk.nama_kom', 'detail_inflasis.inflasi_yoy as inflasi', 'detail_inflasis.andil_yoy as andil')
-            ->orderByDesc('detail_inflasis.andil_yoy')
-            ->take(10)
-            ->get();
-
-        // Get top 10 commodities by andil for each type
-        $topAndilMtM = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
-            ->join('master_komoditas as mk', 'detail_inflasis.id_kom', '=', 'mk.kode_kom')
-            ->where('detail_inflasis.id_flag', 3)
-            ->where('detail_inflasis.id_wil', 3500)
-            ->where('master_inflasis.periode', $periode)
-            ->where('master_inflasis.jenis_data_inflasi', $jenisDataInflasi)
-            ->select('mk.nama_kom', 'detail_inflasis.andil_mtm as andil')
-            ->orderByDesc('detail_inflasis.andil_mtm')
-            ->take(10)
-            ->get();
-
-        $topAndilYtD = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
-            ->join('master_komoditas as mk', 'detail_inflasis.id_kom', '=', 'mk.kode_kom')
-            ->where('detail_inflasis.id_flag', 3)
-            ->where('detail_inflasis.id_wil', 3500)
-            ->where('master_inflasis.periode', $periode)
-            ->where('master_inflasis.jenis_data_inflasi', $jenisDataInflasi)
-            ->select('mk.nama_kom', 'detail_inflasis.andil_ytd as andil')
-            ->orderByDesc('detail_inflasis.andil_ytd')
-            ->take(10)
-            ->get();
-
-        $topAndilYoY = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
-            ->join('master_komoditas as mk', 'detail_inflasis.id_kom', '=', 'mk.kode_kom')
-            ->where('detail_inflasis.id_flag', 3)
-            ->where('detail_inflasis.id_wil', 3500)
-            ->where('master_inflasis.periode', $periode)
-            ->where('master_inflasis.jenis_data_inflasi', $jenisDataInflasi)
-            ->select('mk.nama_kom', 'detail_inflasis.andil_yoy as andil')
-            ->orderByDesc('detail_inflasis.andil_yoy')
-            ->take(10)
-            ->get();
+        // Ambil data top andil
+        $topAndilMtM = $this->getTopData($periode, $jenisDataInflasi, 'inflasi_mtm', 'andil_mtm', $isMtMNegative);
+        $topAndilYtD = $this->getTopData($periode, $jenisDataInflasi, 'inflasi_ytd', 'andil_ytd', $isYtDNegative);
+        $topAndilYoY = $this->getTopData($periode, $jenisDataInflasi, 'inflasi_yoy', 'andil_yoy', $isYoYNegative);
 
         return view('dashboard.infBulananJatim', compact(
             'bulan',
@@ -262,17 +228,17 @@ class DashboardController extends Controller
         $dataYoY = $data['topInflasiYoY'];
 
         // Tambahkan nomor urut
-        $dataMtM = $dataMtM->map(function($item, $key) {
+        $dataMtM = $dataMtM->map(function ($item, $key) {
             $item->no = $key + 1;
             return $item;
         });
 
-        $dataYtD = $dataYtD->map(function($item, $key) {
+        $dataYtD = $dataYtD->map(function ($item, $key) {
             $item->no = $key + 1;
             return $item;
         });
 
-        $dataYoY = $dataYoY->map(function($item, $key) {
+        $dataYoY = $dataYoY->map(function ($item, $key) {
             $item->no = $key + 1;
             return $item;
         });

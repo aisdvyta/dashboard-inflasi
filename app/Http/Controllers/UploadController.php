@@ -12,6 +12,24 @@ use Carbon\Carbon;
 class UploadController extends Controller
 {
     //FUNGSI TAMPILIN, SEARCH, N PAGINATION
+    public function landing(Request $request)
+    {
+        $search = $request->input('search');
+
+        $uploads = master_inflasi::with('pengguna')
+            ->where('jenis_data_inflasi', 'ATAP') // Tambahkan kondisi untuk hanya menampilkan "ATAP"
+            ->when($search, function ($query, $search) {
+                return $query->where(function ($query) use ($search) {
+                    $query->where('nama', 'like', "%{$search}%")
+                        ->orWhere('jenis_data_inflasi', 'like', "%{$search}%");
+                });
+            })
+            ->orderBy('periode', 'desc')
+            ->paginate(10);
+
+        return view('user.index', compact('uploads', 'search'));
+    }
+
     public function index(Request $request)
     {
         $search = $request->input('search');
