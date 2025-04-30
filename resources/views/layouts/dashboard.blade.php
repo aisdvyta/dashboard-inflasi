@@ -16,81 +16,92 @@
             document.documentElement.classList.remove('dark')
         }
     </script>
+    <style>
+
+    </style>
 </head>
 
-<body class="min-h-screen bg-abubiru flex flex-col">
+<body class="flex flex-col min-h-screen bg-abubiru">
     <!-- Sidebar Container -->
-    <div class="flex flex-grow relative">
+    <div class="flex h-screen">
         <!-- Sidebar -->
-        @include('components.sidebar')
+        <div id="sidebar"
+            class="fixed top-0 left-0 z-50 w-64 h-screen overflow-y-auto text-white transition-all duration-300 bg-gray-800">
+            @include('components.sidebar')
+        </div>
 
         <!-- Konten Utama -->
-        <div class="flex-grow p-5  relative z-10">
-            <div class="z-20">
-                @yield('body')
+        <div id="mainContent" class="flex flex-col flex-grow min-h-screen ml-64 transition-all duration-300">
+            <div class="flex-grow p-5 overflow-auto">
+                <div class="z-20">
+                    @yield('body')
+                </div>
+            </div>
+
+            <!-- Footer Kecil -->
+            <div class="mt-auto text-white bg-gray-900 ">
+                @include('components.footerKecil')
             </div>
         </div>
-
-        <!-- Gambar Batik Kawung -->
-        <div class="absolute -top-20 right-14 z-15">
-            <img src="{{ asset('images/kawung.svg') }}" alt="Batik Kawung" class="h-[25rem]">
-        </div>
-        <div class="absolute bottom-4 left-60 z-15">
-            <img src="{{ asset('images/kawung.svg') }}" alt="Batik Kawung" class="h-[15rem] rotate-45">
-        </div>
     </div>
-    @include('components.footerKecil')
 
     <!-- Script -->
     <script>
-        const sidebar = document.getElementById('sidebar');
-        const toggleButton = document.getElementById('toggleButton');
-        const dashboardText = document.getElementById('dashboardText');
-        const dropdownToggle = document.getElementById('dropdownToggle');
-        const dropdownMenu = document.getElementById('dropdownMenu');
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar'); // Sidebar di layouts.dashboard
+            const sidebarComponent = sidebar.querySelector('.flex.flex-col'); // Sidebar utama di components.sidebar
+            const mainContent = document.getElementById('mainContent');
+            const toggleButton = document.getElementById('toggleSidebar');
+            const dashboardText = document.getElementById('dashboardText');
 
-        // Toggle Sidebar
-        toggleButton.addEventListener('click', () => {
-            if (sidebar.classList.contains('w-64')) {
-                sidebar.classList.remove('w-64');
-                sidebar.classList.add('w-24');
+            // Toggle Sidebar
+            toggleButton.addEventListener('click', () => {
+                if (sidebar.classList.contains('w-64')) {
+                    // Mengecilkan sidebar di layouts.dashboard
+                    sidebar.classList.remove('w-64');
+                    sidebar.classList.add('w-24');
 
-                // Fade-out dashboardText sebelum disembunyikan
-                dashboardText.style.opacity = "0";
-                dashboardText.style.transform = "translateX(10px)";
+                    // Mengecilkan sidebar utama di components.sidebar
+                    if (sidebarComponent) {
+                        sidebarComponent.classList.remove('w-64');
+                        sidebarComponent.classList.add('w-24');
+                    }
 
-                setTimeout(() => {
-                    dashboardText.classList.add('hidden');
-                }, 50); // Tunggu sampai animasi selesai sebelum disembunyikan
-            } else {
-                sidebar.classList.remove('w-24');
-                sidebar.classList.add('w-64');
+                    mainContent.classList.remove('ml-64');
+                    mainContent.classList.add('ml-24'); // Hilangkan margin kiri
 
-                // Tampilkan teks dengan transisi smooth
-                dashboardText.classList.remove('hidden');
-
-                requestAnimationFrame(() => {
+                    // Fade-out dashboardText sebelum disembunyikan
                     dashboardText.style.opacity = "0";
-                    dashboardText.style.transform = "translateX(10px)";
 
                     setTimeout(() => {
-                        dashboardText.style.opacity = "1";
-                        dashboardText.style.transform = "translateX(0)";
-                    }, 100); // Sedikit delay supaya transisi terlihat
-                });
-            }
-        });
+                        dashboardText.classList.add('hidden');
+                    }, 50);
+                } else {
+                    // Membesarkan sidebar di layouts.dashboard
+                    sidebar.classList.remove('w-24');
+                    sidebar.classList.add('w-64');
 
-        // Toggle Dropdown
-        dropdownToggle.addEventListener('click', () => {
-            dropdownMenu.classList.toggle('hidden');
-        });
+                    // Membesarkan sidebar utama di components.sidebar
+                    if (sidebarComponent) {
+                        sidebarComponent.classList.remove('w-24');
+                        sidebarComponent.classList.add('w-64');
+                    }
 
-        // Close Dropdown when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!dropdownToggle.contains(e.target) && !dropdownMenu.contains(e.target)) {
-                dropdownMenu.classList.add('hidden');
-            }
+                    mainContent.classList.remove('ml-24'); // Kembalikan margin kiri ke ml-64
+                    mainContent.classList.add('ml-64');
+
+                    // Tampilkan teks dengan transisi smooth
+                    dashboardText.classList.remove('hidden');
+
+                    requestAnimationFrame(() => {
+                        dashboardText.style.opacity = "0";
+
+                        setTimeout(() => {
+                            dashboardText.style.opacity = "1";
+                        }, 100);
+                    });
+                }
+            });
         });
     </script>
     @stack('scripts')

@@ -1,35 +1,49 @@
 @extends('layouts.dashboard')
 
+@push('styles')
+    <style>
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+@endpush
+
 @section('body')
-    <h2 class="text-4xl font-bold text-biru1 p-10 pl-24">Silahkan
+    <h2 class="p-10 pl-24 text-4xl font-bold text-biru1">Silahkan
         <span class="text-kuning1">isi form</span>
         untuk menambahkan Data!
     </h2>
 
-    <div class="max-w-lg bg-white shadow-md rounded-lg p-6 ml-24">
+    <div class="max-w-lg p-6 ml-24 bg-white rounded-lg shadow-md">
         <form id="uploadForm" enctype="multipart/form-data" class="space-y-4">
             @csrf
-            <div class="mb-4 text-left">
-                <label for="nama" class="block text-biru1 font-semibold">Username Upload</label>
+            {{-- <div class="mb-4 text-left">
+                <label for="nama" class="block font-semibold text-biru1">Username Upload</label>
                 <input type="text" id="nama" name="nama" value="{{ Auth::user()->nama }}" readonly
-                    class="w-full mt-1 p-2 rounded-2xl border border-biru5 bg-gray-100 focus:ring-biru5">
-            </div>
+                    class="w-full p-2 mt-1 bg-gray-100 border rounded-2xl border-biru5 focus:ring-biru5">
+            </div> --}}
 
             <div class="mb-4 text-left">
-                <label for="periode" class="block text-biru1 font-semibold">
-                    Pilih Periode Data <span class="text-gray-500 font-normal">(MM/YYYY)</span>
+                <label for="periode" class="block font-semibold text-biru1">
+                    Pilih Periode Data <span class="font-normal text-gray-500">(MM/YYYY)</span>
                 </label>
                 <input type="month" id="periode" name="periode" value="{{ old('periode') }}" required
-                    class="w-full mt-1 p-2 rounded-2xl border border-biru5 focus:ring-biru5">
-                <span id="periodeError" class="text-red-500 text-sm hidden"></span> <!-- Error dari AJAX -->
+                    class="w-full p-2 mt-1 border rounded-2xl border-biru5 focus:ring-biru5">
+                <span id="periodeError" class="hidden text-sm text-red-500"></span> <!-- Error dari AJAX -->
                 @error('periode')
-                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                    <span class="text-sm text-red-500">{{ $message }}</span>
                 @enderror
             </div>
 
             <div class="mb-4 text-left">
-                <label class="block text-biru1 font-semibold">Pilih Kategori Data</label>
-                <div class="flex flex-row w-64 gap-14 p-4 font-normal">
+                <label class="block font-semibold text-biru1">Pilih Kategori Data</label>
+                <div class="flex flex-row w-64 p-4 font-normal gap-14">
                     <div class="flex flex-col gap-2">
                         <label>
                             <input type="radio" name="jenis_data_inflasi" value="ASEM 1" required
@@ -58,36 +72,100 @@
             </div>
 
             <div class="mb-4">
-                <label class="block text-biru1 font-medium mb-1">Upload Data</label>
+                <label class="block mb-1 font-medium text-biru1">Upload Data</label>
                 <input type="file" id="fileInput" name="file" accept=".xlsx" required
-                    class="w-full mt-1 p-2 rounded-2xl border border-biru5">
-                <label class="block text-xs text-biru1 mt-1">Pastikan file memiliki format excel (.xlsx)</label>
+                    class="w-full p-2 mt-1 border rounded-2xl border-biru5">
+                <label class="block mt-1 text-xs text-biru1">Pastikan file memiliki format excel (.xlsx)</label>
             </div>
 
             <!-- Progress bar -->
-            <div id="progressContainer" class="hidden w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+            <div id="progressContainer" class="hidden w-full h-4 overflow-hidden bg-gray-200 rounded-full">
                 <div id="progressBar"
-                    class="bg-biru1 h-4 text-xs text-white text-center leading-4 transition-all duration-300 ease-in-out"
+                    class="h-4 text-xs leading-4 text-center text-white transition-all duration-300 ease-in-out bg-biru1"
                     style="width: 0%">0%</div>
             </div>
 
             <button type="submit" id="submitBtn"
-                class="w-full bg-biru1 hover:bg-biru4 text-white font-semibold py-2 px-4 rounded-lg transition duration-300">
+                class="flex items-center justify-center w-full gap-2 px-4 py-2 font-semibold text-white transition duration-300 rounded-lg bg-biru1 hover:bg-biru4 disabled:opacity-50 disabled:cursor-not-allowed">
                 Submit
             </button>
         </form>
+    </div>
+
+    <!-- Spinner Overlay -->
+    <div id="spinnerOverlay" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-black bg-opacity-40">
+        <div class="flex flex-col items-center">
+            <div class="w-16 h-16 border-4 border-t-4 rounded-full border-biru1 animate-spin"
+                style="border-top-color: transparent;"></div>
+            <span class="mt-4 text-lg font-semibold text-white">Mengupload data...</span>
+        </div>
+    </div>
+
+    <div id="modalBerhasil" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-black bg-opacity-50">
+        <div class="p-6 bg-white shadow-lg rounded-xl w-fit">
+            <div class="flex justify-center mb-2">
+                <img src="{{ asset('images/moda/berhasilIcon.svg') }}" alt="Berhasil Icon" class="w-8 h-8">
+            </div>
+            <h2 class="text-2xl font-[650] text-biru1 text-center">Yay <span class="text-hijau">Berhasil</span></h2>
+            <div class="mt-2 mb-6">
+                <p id="modalBerhasilMessage" class="mt-2 text-base text-center text-biru1">
+                    Data berhasil diupload!
+                </p>
+            </div>
+            <div class="flex justify-center mt-4">
+                <button
+                    class="px-8 py-2 font-normal text-white transition-all duration-200 rounded-lg shadow-lg bg-hijau hover:-translate-y-1"
+                    onclick="closeBerhasilModal()">Oke</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalGagal" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-black bg-opacity-50">
+        <div class="p-6 bg-white shadow-lg rounded-xl w-fit">
+            <div class="flex justify-center mb-2">
+                <img src="{{ asset('images/moda/gagalIcon.svg') }}" alt="Gagal Icon" class="w-8 h-8">
+            </div>
+            <h2 class="text-2xl font-[650] text-biru1 text-center">Yah <span class="text-merah1">Gagal</span></h2>
+            <div class="mt-2 mb-6">
+                <p id="modalGagalMessage" class="mt-2 text-base text-center text-biru1">
+                    Terjadi kesalahan saat mengupload data.
+                </p>
+            </div>
+            <div class="flex justify-center mt-4">
+                <button
+                    class="px-8 py-2 font-normal text-white transition-all duration-200 rounded-lg shadow-lg bg-merah1 hover:-translate-y-1"
+                    onclick="closeGagalModal()">Coba lagi</button>
+            </div>
+        </div>
     </div>
 @endsection
 
 @push('scripts')
     <script>
+        function openBerhasilModal(message) {
+            document.getElementById('modalBerhasilMessage').textContent = message || 'Data berhasil diupload!';
+            document.getElementById('modalBerhasil').classList.remove('hidden');
+        }
+
+        function closeBerhasilModal() {
+            document.getElementById('modalBerhasil').classList.add('hidden');
+        }
+
+        function openGagalModal(message) {
+            document.getElementById('modalGagalMessage').textContent = message || 'Terjadi kesalahan saat mengupload data.';
+            document.getElementById('modalGagal').classList.remove('hidden');
+        }
+
+        function closeGagalModal() {
+            document.getElementById('modalGagal').classList.add('hidden');
+        }
+
         document.getElementById('uploadForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
             const form = e.target;
             const submitBtn = document.getElementById('submitBtn');
-            const progressContainer = document.getElementById('progressContainer');
-            const progressBar = document.getElementById('progressBar');
+            const spinnerOverlay = document.getElementById('spinnerOverlay');
             const periodeError = document.getElementById('periodeError');
 
             const formData = new FormData(form);
@@ -96,85 +174,45 @@
             const xhr = new XMLHttpRequest();
             xhr.open('POST', '{{ route('upload.inflasi.ajax') }}', true);
 
-            let manualProgressInterval;
-
             xhr.onloadstart = function() {
                 submitBtn.disabled = true;
-                progressContainer.classList.remove('hidden');
-                progressBar.style.width = '0%';
-                progressBar.textContent = '0%';
-                progressBar.style.backgroundColor = '#4C84B0';
+                spinnerOverlay.classList.remove('hidden');
                 periodeError.classList.add('hidden');
                 periodeError.textContent = '';
             };
 
-            xhr.upload.addEventListener('progress', function(e) {
-                if (e.lengthComputable) {
-                    const percent = Math.round((e.loaded / e.total) * 50); // max sampai 80% untuk upload
-                    progressBar.style.width = percent + '%';
-                    progressBar.textContent = percent + '%';
-                }
-            });
-
-            xhr.upload.onloadend = function() {
-                // Setelah upload selesai, lanjut animasi manual progress dari 80 ke 99
-                let current = parseInt(progressBar.style.width) || 50;
-                manualProgressInterval = setInterval(() => {
-                    if (current < 99) {
-                        current += 1;
-                        progressBar.style.width = current + '%';
-                        progressBar.textContent = current + '%';
-                    } else {
-                        clearInterval(manualProgressInterval);
-                    }
-                }, 100); // kecepatan naiknya (semakin kecil = makin cepat)
-            };
-
             xhr.onload = function() {
-                clearInterval(manualProgressInterval);
                 submitBtn.disabled = false;
+                spinnerOverlay.classList.add('hidden');
 
                 if (xhr.status === 200) {
                     try {
                         const response = JSON.parse(xhr.responseText);
                         if (response.success) {
-                            progressBar.style.width = '100%';
-                            progressBar.textContent = '100%';
-                            progressBar.style.backgroundColor = '#4CAF50'; // Hijau untuk sukses
-                            window.location.href = response.redirect_url; // Langsung ke index
+                            openBerhasilModal(response.message || 'Data berhasil diupload!');
                         } else {
-                            progressBar.style.backgroundColor = '#F15A42';
-                            progressBar.textContent = 'Gagal';
-                            console.error('Upload gagal:', response.message || 'Unknown error');
+                            openGagalModal(response.message || 'Terjadi kesalahan saat mengupload data.');
                         }
                     } catch (err) {
-                        progressBar.style.backgroundColor = '#F15A42';
-                        progressBar.textContent = 'Gagal';
                         console.error('Gagal parsing respon server:', err);
+                        openGagalModal('Gagal parsing respon server.');
                     }
                 } else if (xhr.status === 422) {
                     const response = JSON.parse(xhr.responseText);
-                    progressBar.style.backgroundColor = '#F15A42';
-                    progressBar.textContent = 'Validasi Gagal';
-
-                    // Tampilkan pesan error di console
-                    if (response.message) {
-                        console.error('Validasi gagal:', response.message);
-                    } else {
-                        console.error('Validasi gagal: Unknown error');
+                    if (response.errors && response.errors.periode) {
+                        periodeError.textContent = response.errors.periode;
+                        periodeError.classList.remove('hidden');
                     }
+                    openGagalModal('Validasi gagal: ' + (response.errors.periode || 'Periksa data Anda.'));
                 } else {
-                    progressBar.style.backgroundColor = '#F15A42';
-                    progressBar.textContent = 'Gagal';
-                    console.error('Upload gagal. Status:', xhr.status);
+                    openGagalModal('Terjadi kesalahan jaringan. Silakan coba lagi.');
                 }
             };
 
             xhr.onerror = function() {
                 submitBtn.disabled = false;
-                progressBar.style.backgroundColor = '#F15A42';
-                clearInterval(manualProgressInterval);
-                alert('Terjadi kesalahan jaringan saat mengupload.');
+                spinnerOverlay.classList.add('hidden');
+                openGagalModal('Terjadi kesalahan jaringan. Silakan coba lagi.');
             };
 
             xhr.send(formData);

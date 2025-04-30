@@ -22,14 +22,20 @@ class User extends Authenticatable
     public $incrementing = false; // UUID bukan auto-increment
 
     public $timestamps = false;
-    
+
     protected $casts = [
         'id' => 'string', // Pastikan ID diperlakukan sebagai string
     ];
-    // public function getAuthIdentifierName()
-    // {
-    //     return 'nama';
-    // }
+
+    public function getAuthIdentifierName()
+    {
+        return 'nama';
+    }
+
+    public function getNameAttribute()
+    {
+        return $this->attributes['nama'];
+    }
 
     protected $fillable = [
         'id', 'nama', 'email', 'password', 'id_satker', 'id_role'

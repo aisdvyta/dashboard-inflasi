@@ -156,7 +156,7 @@ class DashboardController extends Controller
             ->where('master_inflasis.periode', $periode)
             ->where('master_inflasis.jenis_data_inflasi', $jenisDataInflasi)
             ->value('detail_inflasis.inflasi_yoy');
-            
+
         $isMtMNegative = $inflasiMtM < 0;
         $isYtDNegative = $inflasiYtD < 0;
         $isYoYNegative = $inflasiYoY < 0;
@@ -323,5 +323,11 @@ class DashboardController extends Controller
 
         $writer->save('php://output');
         exit;
+    }
+
+    public function showMap()
+    {
+        $wilayahs = DB::table('master_wilayahs')->get();
+        return view('dashboard.infSpasial', compact('wilayahs'));
     }
 }

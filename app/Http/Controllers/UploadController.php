@@ -75,78 +75,83 @@ class UploadController extends Controller
         if ($existingData) {
             return response()->json([
                 'success' => false,
+                'message' => 'Data untuk periode dan jenis data inflasi terpilih sudah ada. Silakan pilih data lain.',
                 'errors' => [
-                    'periode' => 'Data untuk periode dan jenis data inflasi terpilih sudah ada. Silakan pilih data lain.'
+                    'periode' => 'Data untuk periode dan jenis data inflasi terpilih sudah ada.'
                 ]
             ], 422);
         }
 
-        $nama = 'Data Inflasi ' . $jenisDataInflasi . ' ' . Carbon::createFromFormat('Y-m', $request->periode)->translatedFormat('F Y');
+        try {
+            $nama = 'Data Inflasi ' . $jenisDataInflasi . ' ' . Carbon::createFromFormat('Y-m', $request->periode)->translatedFormat('F Y');
 
-        $dataInflasi = master_inflasi::create([
-            'id_pengguna' => Auth::user()->id,
-            'nama' => $nama,
-            'periode' => $periode,
-            'jenis_data_inflasi' => $jenisDataInflasi,
-            'upload_at' => now(),
-        ]);
+            $dataInflasi = master_inflasi::create([
+                'id_pengguna' => Auth::user()->id,
+                'nama' => $nama,
+                'periode' => $periode,
+                'jenis_data_inflasi' => $jenisDataInflasi,
+                'upload_at' => now(),
+            ]);
 
-        $file = $request->file('file');
-        $spreadsheet = IOFactory::load($file->getPathname());
-        $worksheet = $spreadsheet->getActiveSheet();
-        $rows = $worksheet->toArray(null, true, true, true);
+            $file = $request->file('file');
+            $spreadsheet = IOFactory::load($file->getPathname());
+            $worksheet = $spreadsheet->getActiveSheet();
+            $rows = $worksheet->toArray(null, true, true, true);
 
-        $header = array_shift($rows);
+            $header = array_shift($rows);
 
-        $indexKodeKota = array_search('Kode Kota', $header);
-        $indexKodeKomoditas = array_search('Kode Komoditas', $header);
-        $indexFlag = array_search('Flag', $header);
-        $indexInflasiMtM = array_search('Inflasi MtM', $header);
-        $indexInflasiYtD = array_search('Inflasi YtD', $header);
-        $indexInflasiYoY = array_search('Inflasi YoY', $header);
-        $indexAndilMtM = array_search('Andil MtM', $header);
-        $indexAndilYtD = array_search('Andil YtD', $header);
-        $indexAndilYoY = array_search('Andil YoY', $header);
-
-        $insertedCount = 0;
-        $errorCount = 0;
-
-        foreach ($rows as $row) {
-            try {
-                detail_inflasi::create([
-                    'id_inflasi' => $dataInflasi->id,
-                    'id_wil' => $row[$indexKodeKota] ?? null,
-                    'id_kom' => sprintf('%s', $row[$indexKodeKomoditas] ?? ''),
-                    'id_flag' => $row[$indexFlag] ?? null,
-                    'inflasi_MtM' => isset($row[$indexInflasiMtM]) && is_numeric(trim($row[$indexInflasiMtM])) ? $this->truncateToTwoDecimals(floatval(trim($row[$indexInflasiMtM]))) : null,
-                    'inflasi_YtD' => isset($row[$indexInflasiYtD]) && is_numeric(trim($row[$indexInflasiYtD])) ? $this->truncateToTwoDecimals(floatval(trim($row[$indexInflasiYtD]))) : null,
-                    'inflasi_YoY' => isset($row[$indexInflasiYoY]) && is_numeric(trim($row[$indexInflasiYoY])) ? $this->truncateToTwoDecimals(floatval(trim($row[$indexInflasiYoY]))) : null,
-                    'andil_MtM' => isset($row[$indexAndilMtM]) && is_numeric(trim($row[$indexAndilMtM])) ? $this->truncateToTwoDecimals(floatval(trim($row[$indexAndilMtM]))) : null,
-                    'andil_YtD' => isset($row[$indexAndilYtD]) && is_numeric(trim($row[$indexAndilYtD])) ? $this->truncateToTwoDecimals(floatval(trim($row[$indexAndilYtD]))) : null,
-                    'andil_YoY' => isset($row[$indexAndilYoY]) && is_numeric(trim($row[$indexAndilYoY])) ? $this->truncateToTwoDecimals(floatval(trim($row[$indexAndilYoY]))) : null,
-                    'created_at' => now(),
-                ]);
-
-                $insertedCount++;
-            } catch (\Exception $e) {
-                $errorCount++;
-                \Log::error('Error inserting row: ' . $e->getMessage(), ['row' => $row]);
+            if (!in_array('Kode Kota', $header) || !in_array('Kode Komoditas', $header)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Format file tidak sesuai. Pastikan file memiliki kolom "Kode Kota" dan "Kode Komoditas".',
+                ], 422);
             }
-        }
 
-        if ($insertedCount > 0) {
+            $indexKodeKota = array_search('Kode Kota', $header);
+            $indexKodeKomoditas = array_search('Kode Komoditas', $header);
+            $indexFlag = array_search('Flag', $header);
+            $indexInflasiMtM = array_search('Inflasi MtM', $header);
+            $indexInflasiYtD = array_search('Inflasi YtD', $header);
+            $indexInflasiYoY = array_search('Inflasi YoY', $header);
+            $indexAndilMtM = array_search('Andil MtM', $header);
+            $indexAndilYtD = array_search('Andil YtD', $header);
+            $indexAndilYoY = array_search('Andil YoY', $header);
+
+            $insertedCount = 0;
+            $errorCount = 0;
+
+            foreach ($rows as $row) {
+                try {
+                    detail_inflasi::create([
+                        'id_inflasi' => $dataInflasi->id,
+                        'id_wil' => $row[$indexKodeKota] ?? null,
+                        'id_kom' => sprintf('%s', $row[$indexKodeKomoditas] ?? ''),
+                        'id_flag' => $row[$indexFlag] ?? null,
+                        'inflasi_MtM' => isset($row[$indexInflasiMtM]) && is_numeric(trim($row[$indexInflasiMtM])) ? $this->truncateToTwoDecimals(floatval(trim($row[$indexInflasiMtM]))) : null,
+                        'inflasi_YtD' => isset($row[$indexInflasiYtD]) && is_numeric(trim($row[$indexInflasiYtD])) ? $this->truncateToTwoDecimals(floatval(trim($row[$indexInflasiYtD]))) : null,
+                        'inflasi_YoY' => isset($row[$indexInflasiYoY]) && is_numeric(trim($row[$indexInflasiYoY])) ? $this->truncateToTwoDecimals(floatval(trim($row[$indexInflasiYoY]))) : null,
+                        'andil_MtM' => isset($row[$indexAndilMtM]) && is_numeric(trim($row[$indexAndilMtM])) ? $this->truncateToTwoDecimals(floatval(trim($row[$indexAndilMtM]))) : null,
+                        'andil_YtD' => isset($row[$indexAndilYtD]) && is_numeric(trim($row[$indexAndilYtD])) ? $this->truncateToTwoDecimals(floatval(trim($row[$indexAndilYtD]))) : null,
+                        'andil_YoY' => isset($row[$indexAndilYoY]) && is_numeric(trim($row[$indexAndilYoY])) ? $this->truncateToTwoDecimals(floatval(trim($row[$indexAndilYoY]))) : null,
+                        'created_at' => now(),
+                    ]);
+
+                    $insertedCount++;
+                } catch (\Exception $e) {
+                    $errorCount++;
+                }
+            }
+
             return response()->json([
                 'success' => true,
-                'message' => $errorCount > 0
-                    ? "Data berhasil diupload dengan beberapa error. Jumlah error: $errorCount"
-                    : "Semua data berhasil diupload.",
+                'message' => 'Data berhasil diupload.',
                 'redirect_url' => route('manajemen-data-inflasi.index'),
             ]);
-        } else {
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Tidak ada data yang berhasil diupload. Periksa format file Anda.',
-            ], 422);
+                'message' => 'Terjadi kesalahan saat memproses data: ' . $e->getMessage(),
+            ], 500);
         }
     }
 
