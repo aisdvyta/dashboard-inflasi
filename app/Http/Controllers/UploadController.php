@@ -8,6 +8,7 @@ use App\Models\master_inflasi;
 use App\Models\detail_inflasi;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class UploadController extends Controller
 {
@@ -57,6 +58,15 @@ class UploadController extends Controller
             : floor($number * 100) / 100; // Untuk angka positif
     }
 
+    private function processInflasiValue($value)
+    {
+        // Periksa apakah nilai ada dan merupakan angka
+        if (isset($value) && is_numeric(trim($value))) {
+            return $this->truncateToTwoDecimals(floatval(trim($value)));
+        }
+        return null;
+    }
+
     public function uploadInflasiAjax(Request $request)
     {
         $request->validate([
@@ -65,12 +75,16 @@ class UploadController extends Controller
             'file' => 'required|mimes:xlsx'
         ]);
 
-        $periode = Carbon::createFromFormat('Y-m', $request->periode)->startOfMonth()->toDateString();
+        $periode = Carbon::createFromFormat('Y-m', $request->periode, 'UTC')
+            ->startOfMonth()
+            ->setTimezone(config('app.timezone'))
+            ->toDateString();
+
         $jenisDataInflasi = $request->jenis_data_inflasi;
 
         $existingData = master_inflasi::where('periode', $periode)
             ->where('jenis_data_inflasi', $jenisDataInflasi)
-            ->first();
+            ->exists();
 
         if ($existingData) {
             return response()->json([
@@ -82,9 +96,12 @@ class UploadController extends Controller
             ], 422);
         }
 
-        try {
-            $nama = 'Data Inflasi ' . $jenisDataInflasi . ' ' . Carbon::createFromFormat('Y-m', $request->periode)->translatedFormat('F Y');
+        $nama = 'Data Inflasi ' . $jenisDataInflasi . ' ' . Carbon::createFromFormat('Y-m', $request->periode, 'UTC')
+            ->locale('id')
+            ->translatedFormat('F Y');
 
+        DB::beginTransaction();
+        try {
             $dataInflasi = master_inflasi::create([
                 'id_pengguna' => Auth::user()->id,
                 'nama' => $nama,
@@ -100,47 +117,37 @@ class UploadController extends Controller
 
             $header = array_shift($rows);
 
-            if (!in_array('Kode Kota', $header) || !in_array('Kode Komoditas', $header)) {
+            $requiredColumns = ['Kode Kota', 'Kode Komoditas', 'Flag', 'Inflasi MtM', 'Inflasi YtD', 'Inflasi YoY', 'Andil MtM', 'Andil YtD', 'Andil YoY'];
+            $indexes = array_map(fn($col) => array_search($col, $header), $requiredColumns);
+
+            if (in_array(false, $indexes, true)) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Format file tidak sesuai. Pastikan file memiliki kolom "Kode Kota" dan "Kode Komoditas".',
+                    'message' => 'Format file tidak sesuai. Pastikan file memiliki kolom yang diperlukan.',
                 ], 422);
             }
 
-            $indexKodeKota = array_search('Kode Kota', $header);
-            $indexKodeKomoditas = array_search('Kode Komoditas', $header);
-            $indexFlag = array_search('Flag', $header);
-            $indexInflasiMtM = array_search('Inflasi MtM', $header);
-            $indexInflasiYtD = array_search('Inflasi YtD', $header);
-            $indexInflasiYoY = array_search('Inflasi YoY', $header);
-            $indexAndilMtM = array_search('Andil MtM', $header);
-            $indexAndilYtD = array_search('Andil YtD', $header);
-            $indexAndilYoY = array_search('Andil YoY', $header);
-
-            $insertedCount = 0;
-            $errorCount = 0;
-
-            foreach ($rows as $row) {
-                try {
-                    detail_inflasi::create([
+            $dataToInsert = collect($rows)
+                ->filter(fn($row) => array_filter($row)) // <- Ini yang buang baris kosong
+                ->map(function ($row) use ($dataInflasi, $indexes) {
+                    return [
                         'id_inflasi' => $dataInflasi->id,
-                        'id_wil' => $row[$indexKodeKota] ?? null,
-                        'id_kom' => sprintf('%s', $row[$indexKodeKomoditas] ?? ''),
-                        'id_flag' => $row[$indexFlag] ?? null,
-                        'inflasi_MtM' => isset($row[$indexInflasiMtM]) && is_numeric(trim($row[$indexInflasiMtM])) ? $this->truncateToTwoDecimals(floatval(trim($row[$indexInflasiMtM]))) : null,
-                        'inflasi_YtD' => isset($row[$indexInflasiYtD]) && is_numeric(trim($row[$indexInflasiYtD])) ? $this->truncateToTwoDecimals(floatval(trim($row[$indexInflasiYtD]))) : null,
-                        'inflasi_YoY' => isset($row[$indexInflasiYoY]) && is_numeric(trim($row[$indexInflasiYoY])) ? $this->truncateToTwoDecimals(floatval(trim($row[$indexInflasiYoY]))) : null,
-                        'andil_MtM' => isset($row[$indexAndilMtM]) && is_numeric(trim($row[$indexAndilMtM])) ? $this->truncateToTwoDecimals(floatval(trim($row[$indexAndilMtM]))) : null,
-                        'andil_YtD' => isset($row[$indexAndilYtD]) && is_numeric(trim($row[$indexAndilYtD])) ? $this->truncateToTwoDecimals(floatval(trim($row[$indexAndilYtD]))) : null,
-                        'andil_YoY' => isset($row[$indexAndilYoY]) && is_numeric(trim($row[$indexAndilYoY])) ? $this->truncateToTwoDecimals(floatval(trim($row[$indexAndilYoY]))) : null,
+                        'id_wil' => $row[$indexes[0]] ?? null,
+                        'id_kom' => $row[$indexes[1]] ?? '',
+                        'id_flag' => $row[$indexes[2]] ?? null,
+                        'inflasi_MtM' => $this->processInflasiValue($row[$indexes[3]] ?? null),
+                        'inflasi_YtD' => $this->processInflasiValue($row[$indexes[4]] ?? null),
+                        'inflasi_YoY' => $this->processInflasiValue($row[$indexes[5]] ?? null),
+                        'andil_MtM' => $this->processInflasiValue($row[$indexes[6]] ?? null),
+                        'andil_YtD' => $this->processInflasiValue($row[$indexes[7]] ?? null),
+                        'andil_YoY' => $this->processInflasiValue($row[$indexes[8]] ?? null),
                         'created_at' => now(),
-                    ]);
+                    ];
+                })->toArray();
 
-                    $insertedCount++;
-                } catch (\Exception $e) {
-                    $errorCount++;
-                }
-            }
+            detail_inflasi::insert($dataToInsert);
+
+            DB::commit();
 
             return response()->json([
                 'success' => true,
@@ -148,12 +155,14 @@ class UploadController extends Controller
                 'redirect_url' => route('manajemen-data-inflasi.index'),
             ]);
         } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json([
                 'success' => false,
                 'message' => 'Terjadi kesalahan saat memproses data: ' . $e->getMessage(),
             ], 500);
         }
     }
+
 
     public function edit($id)
     {
