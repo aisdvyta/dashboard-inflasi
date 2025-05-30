@@ -192,6 +192,144 @@ class DashboardController extends Controller
         ));
     }
 
+    public function showInflasiSpasial(Request $request)
+    {
+        // Get jenis_data_inflasi from request, default to ATAP
+        $jenisDataInflasi = $request->input('jenis_data_inflasi', 'ATAP');
+
+        // Get bulan and tahun from request
+        $bulan = $request->input('bulan');
+        $tahun = $request->input('tahun');
+
+        // Get all available periods for the filter dropdown
+        $daftarPeriode = master_inflasi::where('jenis_data_inflasi', $jenisDataInflasi)
+            ->orderBy('periode', 'desc')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'bulan' => Carbon::parse($item->periode)->translatedFormat('F'),
+                    'tahun' => Carbon::parse($item->periode)->format('Y'),
+                ];
+            });
+
+        // If bulan and tahun are provided, use them
+        if ($bulan && $tahun) {
+            $bulanAngka = $this->bulanMap[$bulan] ?? null;
+            if (!$bulanAngka) {
+                // Try to convert English month to Indonesian
+                $bulanIndo = Carbon::createFromFormat('F', $bulan)->translatedFormat('F');
+                $bulanAngka = $this->bulanMap[$bulanIndo] ?? null;
+
+                if (!$bulanAngka) {
+                    abort(404, 'Bulan tidak valid');
+                }
+            }
+            $periode = Carbon::createFromDate($tahun, $bulanAngka, 1)->startOfMonth();
+        } else {
+            // Otherwise, get the most recent data for the selected jenis_data_inflasi
+            $latestData = master_inflasi::where('jenis_data_inflasi', $jenisDataInflasi)
+                ->orderBy('periode', 'desc')
+                ->first();
+
+            if (!$latestData) {
+                abort(404, 'Data tidak ditemukan untuk jenis data inflasi yang dipilih.');
+            }
+
+            $periode = Carbon::parse($latestData->periode);
+        }
+
+        // Get bulan and tahun from the selected period
+        $bulan = $periode->translatedFormat('F');
+        $tahun = $periode->format('Y');
+
+        // Get the highest and lowest contributing commodities
+        $komoditasTertinggi = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
+            ->join('master_komoditas as mk', 'detail_inflasis.id_kom', '=', 'mk.kode_kom')
+            ->where('detail_inflasis.id_flag', 3)
+            ->where('detail_inflasis.id_wil', 3500)
+            ->where('master_inflasis.periode', $periode)
+            ->where('master_inflasis.jenis_data_inflasi', $jenisDataInflasi)
+            ->orderByDesc('detail_inflasis.andil_mtm')
+            ->select('mk.nama_kom', 'detail_inflasis.andil_mtm')
+            ->first();
+
+        $komoditasTerendah = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
+            ->join('master_komoditas as mk', 'detail_inflasis.id_kom', '=', 'mk.kode_kom')
+            ->where('detail_inflasis.id_flag', 3)
+            ->where('detail_inflasis.id_wil', 3500)
+            ->where('master_inflasis.periode', $periode)
+            ->where('master_inflasis.jenis_data_inflasi', $jenisDataInflasi)
+            ->orderBy('detail_inflasis.andil_mtm')
+            ->select('mk.nama_kom', 'detail_inflasis.andil_mtm')
+            ->first();
+
+        $namaKomoditasTertinggi = optional($komoditasTertinggi)->nama_kom ?? '-';
+        $andilTertinggi = optional($komoditasTertinggi)->andil_mtm ?? 0;
+
+        $namaKomoditasTerendah = optional($komoditasTerendah)->nama_kom ?? '-';
+        $andilTerendah = optional($komoditasTerendah)->andil_mtm ?? 0;
+
+        // Get inflation values
+        $inflasiMtM = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
+            ->where('detail_inflasis.id_flag', 0)
+            ->where('detail_inflasis.id_wil', 3500)
+            ->where('master_inflasis.periode', $periode)
+            ->where('master_inflasis.jenis_data_inflasi', $jenisDataInflasi)
+            ->value('detail_inflasis.inflasi_mtm');
+
+        $inflasiYtD = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
+            ->where('detail_inflasis.id_flag', 0)
+            ->where('detail_inflasis.id_wil', 3500)
+            ->where('master_inflasis.periode', $periode)
+            ->where('master_inflasis.jenis_data_inflasi', $jenisDataInflasi)
+            ->value('detail_inflasis.inflasi_ytd');
+
+        $inflasiYoY = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
+            ->where('detail_inflasis.id_flag', 0)
+            ->where('detail_inflasis.id_wil', 3500)
+            ->where('master_inflasis.periode', $periode)
+            ->where('master_inflasis.jenis_data_inflasi', $jenisDataInflasi)
+            ->value('detail_inflasis.inflasi_yoy');
+
+        $isMtMNegative = $inflasiMtM < 0;
+        $isYtDNegative = $inflasiYtD < 0;
+        $isYoYNegative = $inflasiYoY < 0;
+
+        // Ambil data top inflasi
+        $topInflasiMtM = $this->getTopData($periode, $jenisDataInflasi, 'inflasi_mtm', 'andil_mtm', $isMtMNegative);
+        $topInflasiYtD = $this->getTopData($periode, $jenisDataInflasi, 'inflasi_ytd', 'andil_ytd', $isYtDNegative);
+        $topInflasiYoY = $this->getTopData($periode, $jenisDataInflasi, 'inflasi_yoy', 'andil_yoy', $isYoYNegative);
+
+        // Ambil data top andil
+        $topAndilMtM = $this->getTopData($periode, $jenisDataInflasi, 'inflasi_mtm', 'andil_mtm', $isMtMNegative);
+        $topAndilYtD = $this->getTopData($periode, $jenisDataInflasi, 'inflasi_ytd', 'andil_ytd', $isYtDNegative);
+        $topAndilYoY = $this->getTopData($periode, $jenisDataInflasi, 'inflasi_yoy', 'andil_yoy', $isYoYNegative);
+
+        // Ambil data wilayah untuk map
+        $wilayahs = DB::table('master_wilayahs')->get();
+
+        return view('dashboard.infSpasial', compact(
+            'bulan',
+            'tahun',
+            'daftarPeriode',
+            'namaKomoditasTertinggi',
+            'andilTertinggi',
+            'namaKomoditasTerendah',
+            'andilTerendah',
+            'inflasiMtM',
+            'inflasiYtD',
+            'inflasiYoY',
+            'topInflasiMtM',
+            'topInflasiYtD',
+            'topInflasiYoY',
+            'topAndilMtM',
+            'topAndilYtD',
+            'topAndilYoY',
+            'jenisDataInflasi',
+            'wilayahs'
+        ));
+    }
+
     public function exportExcel(Request $request)
     {
         $bulan = $request->query('bulan');
@@ -325,9 +463,4 @@ class DashboardController extends Controller
         exit;
     }
 
-    public function showMap()
-    {
-        $wilayahs = DB::table('master_wilayahs')->get();
-        return view('dashboard.infSpasial', compact('wilayahs'));
-    }
 }

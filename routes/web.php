@@ -84,8 +84,8 @@ Route::middleware(['auth'])->group(function () {
         return view('dashboard.infSeries');
     })->name('dashboard.series');
     Route::get('/dashboard/infbulanan', [DashboardController::class, 'showInflasiBulanan'])->name('dashboard.bulanan');
+    Route::get('/dashboard/infspasial', [DashboardController::class, 'showInflasiSpasial'])->name('dashboard.spasial');
     Route::get('/dashboard/export-excel', [DashboardController::class, 'exportExcel'])->name('dashboard.export-excel');
-    Route::get('/dashboard/infspasial', [DashboardController::class, 'showMap'])->name('dashboard.spasial');
 });
 Route::get('/login', [LoginController::class, 'index'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);

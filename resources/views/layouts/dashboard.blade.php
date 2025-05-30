@@ -16,9 +16,7 @@
             document.documentElement.classList.remove('dark')
         }
     </script>
-    <style>
-
-    </style>
+    @stack('head')
 </head>
 
 <body class="flex flex-col min-h-screen bg-abubiru">
