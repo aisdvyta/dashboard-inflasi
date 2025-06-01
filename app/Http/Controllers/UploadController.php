@@ -69,16 +69,24 @@ class UploadController extends Controller
 
     public function uploadInflasiAjax(Request $request)
     {
+
         $request->validate([
             'periode' => 'required|date_format:Y-m',
             'jenis_data_inflasi' => 'required|in:ASEM 1,ASEM 2,ASEM 3,ATAP',
             'file' => 'required|mimes:xlsx'
         ]);
 
-        $periode = Carbon::createFromFormat('Y-m', $request->periode, 'UTC')
-            ->startOfMonth()
-            ->setTimezone(config('app.timezone'))
-            ->toDateString();
+        $rawPeriode = trim($request->periode); // buang spasi
+        [$tahun, $bulan] = explode('-', $rawPeriode);
+
+        if (!checkdate($bulan, 1, $tahun)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Periode tidak valid.',
+            ], 422);
+        }
+
+        $periode = Carbon::createFromDate($tahun, $bulan, 1)->toDateString();
 
         $jenisDataInflasi = $request->jenis_data_inflasi;
 
@@ -96,12 +104,17 @@ class UploadController extends Controller
             ], 422);
         }
 
-        $nama = 'Data Inflasi ' . $jenisDataInflasi . ' ' . Carbon::createFromFormat('Y-m', $request->periode, 'UTC')
+        $carbonPeriode = Carbon::parse($request->periode . '-01', 'Asia/Jakarta')
+            ->startOfMonth();
+
+        $nama = 'Data Inflasi ' . $jenisDataInflasi . ' ' .
+            $carbonPeriode
             ->locale('id')
             ->translatedFormat('F Y');
 
         DB::beginTransaction();
         try {
+
             $dataInflasi = master_inflasi::create([
                 'id_pengguna' => Auth::user()->id,
                 'nama' => $nama,

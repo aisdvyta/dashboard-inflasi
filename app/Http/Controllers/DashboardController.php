@@ -38,12 +38,32 @@ class DashboardController extends Controller
         'December' => 12
     ];
 
-    private function getTopData($periode, $jenisDataInflasi, $columnInflasi, $columnAndil, $isNegative = false)
+    private function getTopDataSpasial($idwill, $periode, $jenisDataInflasi, $columnInflasi, $columnAndil, $isNegative = false)
     {
         $query = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
             ->join('master_komoditas as mk', 'detail_inflasis.id_kom', '=', 'mk.kode_kom')
             ->where('detail_inflasis.id_flag', 3)
-            ->where('detail_inflasis.id_wil', 3500)
+            ->where('detail_inflasis.id_wil', $idwill)
+            ->where('master_inflasis.periode', $periode)
+            ->where('master_inflasis.jenis_data_inflasi', $jenisDataInflasi)
+            ->select('mk.nama_kom', "detail_inflasis.{$columnInflasi} as inflasi", "detail_inflasis.{$columnAndil} as andil");
+
+        // Jika negatif, ambil 10 terbawah, jika positif ambil 10 teratas
+        if ($isNegative) {
+            $query->orderBy($columnAndil); // Terbawah
+        } else {
+            $query->orderByDesc($columnAndil); // Teratas
+        }
+
+        return $query->take(10)->get();
+    }
+
+    private function getTopData($periode, $jenisDataInflasi, $columnInflasi, $columnAndil, $isNegative = false, $idWil = 3500)
+    {
+        $query = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
+            ->join('master_komoditas as mk', 'detail_inflasis.id_kom', '=', 'mk.kode_kom')
+            ->where('detail_inflasis.id_flag', 3)
+            ->where('detail_inflasis.id_wil', $idWil)
             ->where('master_inflasis.periode', $periode)
             ->where('master_inflasis.jenis_data_inflasi', $jenisDataInflasi)
             ->select('mk.nama_kom', "detail_inflasis.{$columnInflasi} as inflasi", "detail_inflasis.{$columnAndil} as andil");
@@ -194,12 +214,24 @@ class DashboardController extends Controller
 
     public function showInflasiSpasial(Request $request)
     {
-        // Get jenis_data_inflasi from request, default to ATAP
         $jenisDataInflasi = $request->input('jenis_data_inflasi', 'ATAP');
-
-        // Get bulan and tahun from request
         $bulan = $request->input('bulan');
         $tahun = $request->input('tahun');
+        $daftarKomoditasUtama = [
+            'BERAS',
+            'CABAI RAWIT',
+            'CABAI MERAH',
+            'BAWANG MERAH',
+            'DAGING AYAM RAS',
+            'TELUR AYAM RAS'
+        ];
+        $komoditasUtama = $request->input('komoditas_utama') ?? 'BERAS';
+        $kabkota = $request->input('kabkota', '3500');
+        $idWil = $kabkota ?: '3500'; // default provinsi
+        $daftarKabKota = DB::table('master_wilayahs')
+            ->where('kode_wil', '!=', 3500)
+            ->orderBy('nama_wil')
+            ->get();
 
         // Get all available periods for the filter dropdown
         $daftarPeriode = master_inflasi::where('jenis_data_inflasi', $jenisDataInflasi)
@@ -242,11 +274,25 @@ class DashboardController extends Controller
         $bulan = $periode->translatedFormat('F');
         $tahun = $periode->format('Y');
 
+        $rankingKabKota = [];
+        if ($komoditasUtama && $periode) {
+            $rankingKabKota = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
+                ->join('master_wilayahs as mw', 'detail_inflasis.id_wil', '=', 'mw.kode_wil')
+                ->join('master_komoditas as mk', 'detail_inflasis.id_kom', '=', 'mk.kode_kom')
+                ->where('master_inflasis.periode', $periode)
+                ->where('master_inflasis.jenis_data_inflasi', $jenisDataInflasi)
+                ->where('detail_inflasis.id_flag', 3)
+                ->where('mk.nama_kom', $komoditasUtama)
+                ->orderByDesc('detail_inflasis.andil_mtm')
+                ->select('mw.nama_wil', 'detail_inflasis.andil_mtm', 'detail_inflasis.inflasi_mtm')
+                ->get();
+        }
+
         // Get the highest and lowest contributing commodities
         $komoditasTertinggi = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
             ->join('master_komoditas as mk', 'detail_inflasis.id_kom', '=', 'mk.kode_kom')
             ->where('detail_inflasis.id_flag', 3)
-            ->where('detail_inflasis.id_wil', 3500)
+            ->where('detail_inflasis.id_wil', $idWil)
             ->where('master_inflasis.periode', $periode)
             ->where('master_inflasis.jenis_data_inflasi', $jenisDataInflasi)
             ->orderByDesc('detail_inflasis.andil_mtm')
@@ -256,7 +302,7 @@ class DashboardController extends Controller
         $komoditasTerendah = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
             ->join('master_komoditas as mk', 'detail_inflasis.id_kom', '=', 'mk.kode_kom')
             ->where('detail_inflasis.id_flag', 3)
-            ->where('detail_inflasis.id_wil', 3500)
+            ->where('detail_inflasis.id_wil', $idWil)
             ->where('master_inflasis.periode', $periode)
             ->where('master_inflasis.jenis_data_inflasi', $jenisDataInflasi)
             ->orderBy('detail_inflasis.andil_mtm')
@@ -272,23 +318,20 @@ class DashboardController extends Controller
         // Get inflation values
         $inflasiMtM = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
             ->where('detail_inflasis.id_flag', 0)
-            ->where('detail_inflasis.id_wil', 3500)
+            ->where('detail_inflasis.id_wil', $idWil)
             ->where('master_inflasis.periode', $periode)
-            ->where('master_inflasis.jenis_data_inflasi', $jenisDataInflasi)
             ->value('detail_inflasis.inflasi_mtm');
 
         $inflasiYtD = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
             ->where('detail_inflasis.id_flag', 0)
-            ->where('detail_inflasis.id_wil', 3500)
+            ->where('detail_inflasis.id_wil', $idWil)
             ->where('master_inflasis.periode', $periode)
-            ->where('master_inflasis.jenis_data_inflasi', $jenisDataInflasi)
             ->value('detail_inflasis.inflasi_ytd');
 
         $inflasiYoY = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
             ->where('detail_inflasis.id_flag', 0)
-            ->where('detail_inflasis.id_wil', 3500)
+            ->where('detail_inflasis.id_wil', $idWil)
             ->where('master_inflasis.periode', $periode)
-            ->where('master_inflasis.jenis_data_inflasi', $jenisDataInflasi)
             ->value('detail_inflasis.inflasi_yoy');
 
         $isMtMNegative = $inflasiMtM < 0;
@@ -296,17 +339,44 @@ class DashboardController extends Controller
         $isYoYNegative = $inflasiYoY < 0;
 
         // Ambil data top inflasi
-        $topInflasiMtM = $this->getTopData($periode, $jenisDataInflasi, 'inflasi_mtm', 'andil_mtm', $isMtMNegative);
-        $topInflasiYtD = $this->getTopData($periode, $jenisDataInflasi, 'inflasi_ytd', 'andil_ytd', $isYtDNegative);
-        $topInflasiYoY = $this->getTopData($periode, $jenisDataInflasi, 'inflasi_yoy', 'andil_yoy', $isYoYNegative);
+        $topInflasiMtM = $this->getTopDataSpasial($idWil, $periode, $jenisDataInflasi, 'inflasi_mtm', 'andil_mtm', $isMtMNegative);
+        $topInflasiYtD = $this->getTopDataSpasial($idWil,$periode, $jenisDataInflasi, 'inflasi_ytd', 'andil_ytd', $isYtDNegative, $idWil);
+        $topInflasiYoY = $this->getTopDataSpasial($idWil,$periode, $jenisDataInflasi, 'inflasi_yoy', 'andil_yoy', $isYoYNegative, $idWil);
 
         // Ambil data top andil
-        $topAndilMtM = $this->getTopData($periode, $jenisDataInflasi, 'inflasi_mtm', 'andil_mtm', $isMtMNegative);
-        $topAndilYtD = $this->getTopData($periode, $jenisDataInflasi, 'inflasi_ytd', 'andil_ytd', $isYtDNegative);
-        $topAndilYoY = $this->getTopData($periode, $jenisDataInflasi, 'inflasi_yoy', 'andil_yoy', $isYoYNegative);
+        $topAndilMtM = $this->getTopDataSpasial($idWil,$periode, $jenisDataInflasi, 'inflasi_mtm', 'andil_mtm', $isMtMNegative, $idWil);
+        $topAndilYtD = $this->getTopDataSpasial($idWil,$periode, $jenisDataInflasi, 'inflasi_ytd', 'andil_ytd', $isYtDNegative, $idWil);
+        $topAndilYoY = $this->getTopDataSpasial($idWil,$periode, $jenisDataInflasi, 'inflasi_yoy', 'andil_yoy', $isYoYNegative, $idWil);
 
         // Ambil data wilayah untuk map
         $wilayahs = DB::table('master_wilayahs')->get();
+
+        $inflasiWilayah = \App\Models\detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
+            ->join('master_wilayahs as mw', 'detail_inflasis.id_wil', '=', 'mw.kode_wil')
+            ->where('master_inflasis.periode', $periode)
+            ->where('master_inflasis.jenis_data_inflasi', $jenisDataInflasi)
+            ->where('detail_inflasis.id_flag', 0)
+            ->select('mw.kode_wil', 'mw.nama_wil', 'detail_inflasis.inflasi_mtm')
+            ->get();
+
+        $inflasiKabKota = \App\Models\detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
+            ->join('master_wilayahs as mw', 'detail_inflasis.id_wil', '=', 'mw.kode_wil')
+            ->where('master_inflasis.periode', $periode)
+            ->where('master_inflasis.jenis_data_inflasi', $jenisDataInflasi)
+            ->where('detail_inflasis.id_flag', 0)
+            ->where('detail_inflasis.id_wil', '!=', 3500)
+            ->select('mw.kode_wil', 'mw.nama_wil', 'detail_inflasis.inflasi_mtm')
+            ->get();
+
+        // Hitung jumlah inflasi dan deflasi
+        $jumlahInflasi = $inflasiKabKota->where('inflasi_mtm', '>', 0)->count();
+        $jumlahDeflasi = $inflasiKabKota->where('inflasi_mtm', '<', 0)->count();
+
+        // Ranking inflasi: dari yang paling minus ke mendekati nol (inflasi > 0)
+        $rankingInflasi = $inflasiKabKota->where('inflasi_mtm', '>', 0)->sortByDesc('inflasi_mtm')->values();
+
+        // Ranking deflasi: dari yang paling tinggi (paling minus) ke mendekati nol (inflasi < 0)
+        $rankingDeflasi = $inflasiKabKota->where('inflasi_mtm', '<', 0)->sortBy('inflasi_mtm')->values();
 
         return view('dashboard.infSpasial', compact(
             'bulan',
@@ -326,7 +396,18 @@ class DashboardController extends Controller
             'topAndilYtD',
             'topAndilYoY',
             'jenisDataInflasi',
-            'wilayahs'
+            'wilayahs',
+            'daftarKomoditasUtama',
+            'komoditasUtama',
+            'rankingKabKota',
+            'daftarKabKota',
+            'idWil',
+            'kabkota',
+            'inflasiWilayah',
+            'jumlahInflasi',
+            'jumlahDeflasi',
+            'rankingInflasi',
+            'rankingDeflasi',
         ));
     }
 
@@ -462,5 +543,4 @@ class DashboardController extends Controller
         $writer->save('php://output');
         exit;
     }
-
 }
