@@ -5,7 +5,7 @@
         <!-- Background Image Kiri -->
         <div class="absolute left-0 top-0 w-3/5 h-full">
             <img src="{{ asset('images/login/bgSurabaya.svg') }}" alt="Background Monumen Surabaya"
-                class="w-full h-full object-cover bg-gradient-mask">
+                class="w-full h-full object-cover bg-gradient-mask-right">
         </div>
         <!-- Batik Kawung di kiri atas -->
         <div class="absolute top-10 right-52 -translate-x-80 -translate-y-24">
@@ -56,13 +56,6 @@
             </div>
         </div>
     @endsection
-
-    <style>
-        .bg-gradient-mask {
-            -webkit-mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 70%, rgba(0, 0, 0, 0) 100%);
-            mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 70%, rgba(0, 0, 0, 0) 100%);
-        }
-    </style>
 
     <script>
         function togglePassword() {

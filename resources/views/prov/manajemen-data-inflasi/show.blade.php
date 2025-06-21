@@ -3,55 +3,52 @@
 
 @section('body')
 <div class="container mx-auto p-6">
-    <h2 class="text-4xl font-bold text-biru4 mb-4">
-        <span class="text-biru1">Detail Data : </span>
-        {{ $upload->nama }}</h2>
+    <h2 class="text-4xl font-bold text-biru1 mb-4"> {{ $upload->nama }}</h2>
 
-    <div class="bg-white shadow-md rounded-lg p-4">
-        <p><strong>Uploader:</strong> {{ $upload->pengguna->nama ?? 'Tidak Diketahui' }}</p>
-        <p><strong>Periode:</strong> {{ \Carbon\Carbon::parse($upload->periode)->format('F Y') }}</p>
-        <p><strong>Kategori:</strong> {{ $upload->jenis_data_inflasi }}</p>
+    <div class="mt-4">
+        <form action="{{ route('manajemen-data-inflasi.show', $upload->nama) }}" method="GET"
+            class="flex items-center gap-2 px-4 py-2 bg-white rounded-lg shadow-lg w-80">
+            <img src="{{ asset('images/sidebar/searchIcon.svg') }}" alt="Ikon Search" class="h-5 w-5">
+            <input type="text" name="search" value="{{ $search ?? '' }}" placeholder="Cari disini"
+            class="text-sm w-full text-biru1 focus:outline-none" />
+            <button type="submit" class="hidden">Cari</button>
+        </form>
     </div>
 
-    <h3 class="text-2xl font-bold text-biru1 mt-6">Isi Data:</h3>
-    <div class="overflow-x-auto bg-white shadow-md rounded-lg p-4 mt-4">
-        <table class="w-full border-collapse border border-gray-300">
-            <thead>
-                <tr class="bg-gray-200">
-                    <th class="border border-gray-300 px-4 py-2">No</th>
-                    <th class="border border-gray-300 px-4 py-2">Tahun</th>
-                    <th class="border border-gray-300 px-4 py-2">Bulan</th>
-                    <th class="border border-gray-300 px-4 py-2">Kode Kota</th>
-                    <th class="border border-gray-300 px-4 py-2">Nama Kota</th>
-                    <th class="border border-gray-300 px-4 py-2">Kode Komoditas</th>
-                    <th class="border border-gray-300 px-4 py-2">Nama Komoditas</th>
-                    <th class="border border-gray-300 px-4 py-2">Flag</th>
-                    <th class="border border-gray-300 px-4 py-2">Inflasi MtM</th>
-                    <th class="border border-gray-300 px-4 py-2">Inflasi YtD</th>
-                    <th class="border border-gray-300 px-4 py-2">Inflasi YoY</th>
-                    <th class="border border-gray-300 px-4 py-2">Andil MtM</th>
-                    <th class="border border-gray-300 px-4 py-2">Andil YtD</th>
-                    <th class="border border-gray-300 px-4 py-2">Andil YoY</th>
+    <div class="overflow-x-auto bg-white shadow-md rounded-xl px-4 py-2 mt-4">
+        <table class="w-full">
+            <thead class="border-b border-gray-300">
+                <tr class="font-normal text-sm text-biru1">
+                    <th class="py-2">No</th>
+                    <th class="py-2">Kode Kota</th>
+                    <th class="py-2">Nama Kota</th>
+                    <th class="py-2">Kode Komoditas</th>
+                    <th class="py-2">Nama Komoditas</th>
+                    <th class="py-2">Flag</th>
+                    <th class="py-2">Tingkat Inflasi <br>(M-to-M)</th>
+                    <th class="py-2">Tingkat Inflasi <br>(Y-to-D)</th>
+                    <th class="py-2">Tingkat Inflasi <br>(Y-on-Y)</th>
+                    <th class=" py-2">Andil Inflasi <br>(M-to-M)</th>
+                    <th class=" py-2">Andil Inflasi <br>(Y-to-D)</th>
+                    <th class=" py-2">Andil Inflasi <br>(Y-on-Y)</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="mt-2 border-b border-gray-300">
                 @foreach ($details as $detail)
-                    <tr class="hover:bg-gray-100">
-                        <td class="border border-gray-300 px-4 py-2">
+                    <tr class="font-normal text-sm text-biru1 capitalize hover:bg-abubiru transition-colors duration-200">
+                        <td class="px-4 py-2">
                             {{ $loop->iteration + ($details->currentPage() - 1) * $details->perPage() }}</td>
-                        <td class="border border-gray-300 px-4 py-2">{{ \Carbon\Carbon::parse($upload->periode)->year }}</td>
-                        <td class="border border-gray-300 px-4 py-2">{{ \Carbon\Carbon::parse($upload->periode)->month }}</td>
-                        <td class="border border-gray-300 px-4 py-2">{{ $detail->id_wil }}</td>
-                        <td class="border border-gray-300 px-4 py-2">{{ $detail->satker->nama_satker ?? 'Tidak Diketahui' }}</td>
-                        <td class="border border-gray-300 px-4 py-2">{{ $detail->id_kom }}</td>
-                        <td class="border border-gray-300 px-4 py-2">{{ $detail->komoditas->nama_kom ?? 'Tidak Diketahui' }}</td>
-                        <td class="border border-gray-300 px-4 py-2">{{ $detail->id_flag }}</td>
-                        <td class="border border-gray-300 px-4 py-2">{{ $detail->inflasi_MtM }}</td>
-                        <td class="border border-gray-300 px-4 py-2">{{ $detail->inflasi_YtD }}</td>
-                        <td class="border border-gray-300 px-4 py-2">{{ $detail->inflasi_YoY }}</td>
-                        <td class="border border-gray-300 px-4 py-2">{{ $detail->andil_MtM }}</td>
-                        <td class="border border-gray-300 px-4 py-2">{{ $detail->andil_YtD }}</td>
-                        <td class="border border-gray-300 px-4 py-2">{{ $detail->andil_YoY }}</td>
+                        <td class="text-center px-4 py-2">{{ $detail->id_wil }}</td>
+                        <td class="px-4 py-2">{{ ucwords(strtolower($detail->satker->nama_satker ?? 'Tidak Diketahui')) }}</td>
+                        <td class="px-4 py-2">{{ $detail->id_kom }}</td>
+                        <td class="px-4 py-2">{{ ucwords(strtolower($detail->komoditas->nama_kom ?? 'Tidak Diketahui')) }}</td>
+                        <td class="text-center px-4 py-2">{{ $detail->id_flag }}</td>
+                        <td class="text-center px-4 py-2">{{ $detail->inflasi_MtM }}</td>
+                        <td class="text-center px-4 py-2">{{ $detail->inflasi_YtD }}</td>
+                        <td class="text-center px-4 py-2">{{ $detail->inflasi_YoY }}</td>
+                        <td class="text-center px-4 py-2">{{ $detail->andil_MtM }}</td>
+                        <td class="text-center px-4 py-2">{{ $detail->andil_YtD }}</td>
+                        <td class="text-center px-4 py-2">{{ $detail->andil_YoY }}</td>
                     </tr>
                 @endforeach
             </tbody>
@@ -64,3 +61,4 @@
     </div>
 </div>
 @endsection
+

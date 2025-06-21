@@ -203,9 +203,9 @@
                             <table class="w-full p-2 mx-auto text-sm text-left rounded-t-lg rtl:text-right">
                                 <thead class="text-xs text-white bg-biru1">
                                     <tr>
-                                        <th scope="col" class="px-2 py-2 text-center">{{ $jumlahInflasi }} Kab/Kot
+                                        <th scope="col" class="px-2 py-2 text-center">{{ $jumlahInflasi }} Kab/Kota
                                             Inflasi</th>
-                                        <th scope="col" class="px-2 py-2 text-center">{{ $jumlahDeflasi }} Kab/Kot
+                                        <th scope="col" class="px-2 py-2 text-center">{{ $jumlahDeflasi }} Kab/Kota
                                             Deflasi</th>
                                     </tr>
                                 </thead>
@@ -244,7 +244,7 @@
                 <!-- === JUDUL === -->
                 <div class="flex flex-col h-full gird grid-rows-2">
                     <div class="space-y-1 {{ $isBlackWhite ? 'grayscale' : '' }}">
-                        <h1 class="text-5xl font-bold md:text-5xl text-biru1">Tabel Peringkat Kab/Kot</h1>
+                        <h1 class="text-5xl font-bold md:text-5xl text-biru1">Tabel Peringkat Kab/Kota</h1>
                         <h1 class="text-5xl font-bold md:text-5xl text-biru4">Menurut Komoditas Utama</h1>
                         <h1 class="text-5xl flex justify-self-end font-bold text-biru1 mr-4">{{ $komoditasUtama }}</h1>
                     </div>

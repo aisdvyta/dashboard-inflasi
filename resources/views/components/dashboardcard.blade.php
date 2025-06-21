@@ -1,18 +1,18 @@
-<div id="main2" class="min-h-[110vh] relative mb-6">
-    <div class="relative w-full">
+<div id="main2" class="min-h-[110vh] mb-12 flex justify-center">
+    {{-- <div class="relative w-full">
         <img src="{{ asset('images/landingMain3/batasMain3.svg') }}" alt="Pattern Batas Main 3"
             class="w-full h-fit object-cover">
-    </div>
+    </div> --}}
 
-    <div class="container px-48">
+    <div class="container px-48 ">
         <div class="border-b-2 pb-4 border-biru5">
             <h1 class="text-3xl font-bold text-kuning1 text-start">Fitur <span class="text-biru1">yang tersedia</span>
             </h1>
         </div>
 
         <div class="relative mt-4 flex justify-start border-b-2 border-biru4">
-            <a href="#" onclick="showSection('dash')" 
-                class="flex items-center gap-2 px-4 py-2 rounded-t-xl hover:bg-biru4 group transition duration-300">
+            <a href="#" onclick="showSection('dash')"
+                class="flex items-center gap-2 px-4 py-2 rounded-t-xl hover:bg-biru1 group transition duration-300">
                 <img src="{{ asset('images/sidebar/bdashboardIcon.svg') }}" alt="Ikon Dashboard Inflasi"
                     class="h-6 w-6 icon group-hover:hidden transition duration-100"
                     data-hover="{{ asset('images/sidebar/pdashboardIcon.svg') }}"
@@ -23,8 +23,8 @@
                     class="menu-text text-biru1 font-semibold text-[15px] group-hover:text-white transition duration-100">
                     Dashboard Inflasi</span>
             </a>
-            <a href="#" onclick="showSection('table')" 
-                class="flex items-center gap-2 px-4 py-2 rounded-t-xl hover:bg-biru4 group transition duration-300">
+            <a href="#" onclick="showSection('table')"
+                class="flex items-center gap-2 px-4 py-2 rounded-t-xl hover:bg-biru1 group transition duration-300">
                 <img src="{{ asset('images/sidebar/bdataInflasiIcon.svg') }}" alt="Ikon Data Inflasi"
                     class="h-6 w-6 icon group-hover:hidden transition duration-100"
                     data-hover="{{ asset('images/sidebar/pdataInflasiIcon.svg') }}"
@@ -40,7 +40,7 @@
         <div name="dash" id="dash-section" class="block">
             <p class="mt-4 text-base text-biru1 text-start">Dashboard Inflasi menyajikan data inflasi terkini di wilayah
                 Provinsi Jawa Timur melalui visualisasi yang interaktif dan informatif.</p>
-    
+
             <div class="flex items-start gap-6 mt-6">
                 <div class="flex-row content-between">
                     <div class="bg-white shadow-xl rounded-lg p-4 mb-6">
@@ -55,7 +55,7 @@
                             </div>
                         </div>
                     </div>
-    
+
                     <div class="bg-white shadow-xl rounded-lg p-4">
                         <h2 class="text-lg text-biru1 font-semibold mt-2">Dashboard Inflasi Menurut Kelompok Pengeluaran
                         </h2>
@@ -70,7 +70,7 @@
                         </div>
                     </div>
                 </div>
-    
+
                 <div class="flex-row ">
                     <div class="bg-white shadow-xl rounded-lg p-4 mb-6">
                         <h2 class="text-lg text-biru1 font-semibold mt-2">Dashboard Inflasi Spasial Provinsi Jawa Timur</h2>
@@ -84,7 +84,7 @@
                             </div>
                         </div>
                     </div>
-    
+
                     <div class="bg-white shadow-xl rounded-lg p-4">
                         <h2 class="text-lg text-biru1 font-semibold mt-2">Dashboard Inflasi Series Provinsi Jawa Timur</h2>
                         <div class="flex items-center space-x-4 mt-2">
@@ -98,7 +98,7 @@
                         </div>
                     </div>
                 </div>
-            </div> 
+            </div>
         </div>
         <div name="table" id="table-section" class="hidden">
             <p class="mt-4 text-base text-biru1 text-start">Daftar Tabel Inflasi menampilkan daftar data inflasi terkini di wilayah Provinsi Jawa Timur.</p>
@@ -130,7 +130,7 @@
                                                 class="h-5 w-5">
                                             Lihat Data
                                         </a>
-            
+
                                         <!-- Tombol Unduh -->
                                         <button type="button" onclick="#"
                                             class="flex items-center gap-1 bg-hijau text-white px-3 py-1 rounded-lg shadow-lg hover:-translate-y-1 text-sm font-normal">
@@ -138,7 +138,7 @@
                                                 class="h-5 w-5">
                                             Unduh Data
                                         </button>
-            
+
                                         @include('components.modaKonfirmasiHapus', [
                                             'id' => $upload->id,
                                             'folderName' => 'manajemen-data-inflasi',
@@ -164,7 +164,7 @@
                     {{ $uploads->links('components.pagination') }}
                 </div>
             </div>
-    
+
         </div>
     </div>
 

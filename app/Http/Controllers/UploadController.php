@@ -109,8 +109,8 @@ class UploadController extends Controller
 
         $nama = 'Data Inflasi ' . $jenisDataInflasi . ' ' .
             $carbonPeriode
-            ->locale('id')
-            ->translatedFormat('F Y');
+                ->locale('id')
+                ->translatedFormat('F Y');
 
         DB::beginTransaction();
         try {
@@ -241,14 +241,33 @@ class UploadController extends Controller
         return redirect()->route('manajemen-data-inflasi.index')->with('success', 'Data berhasil diperbarui.');
     }
 
-    public function show($data_name)
+    public function show(Request $request, $data_name)
     {
         // Cari data berdasarkan nama file
         $upload = master_inflasi::where('nama', $data_name)->firstOrFail();
 
+        $search = $request->input('search');
+
         // Ambil data detail_inflasi yang terkait dengan master_inflasi
-        $details = detail_inflasi::with(['satker', 'komoditas'])
+        $details = detail_inflasi::with(['satker', 'komoditas', 'flag'])
             ->where('id_inflasi', $upload->id)
+            ->when($search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->orWhereHas('satker', function ($sq) use ($search) {
+                            $sq->where('nama_satker', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('komoditas', function ($sq) use ($search) {
+                            $sq->where('nama_kom', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('flag', function ($sq) use ($search) {
+                            $sq->where('flag', 'like', "%{$search}%");
+                        })
+                        // Jika ingin cari berdasarkan kode juga:
+                        ->orWhere('id_wil', 'like', "%{$search}%")
+                        ->orWhere('id_kom', 'like', "%{$search}%")
+                        ->orWhere('id_flag', 'like', "%{$search}%");
+                });
+            })
             ->orderBy('id_wil', 'asc')
             ->paginate(10);
 

@@ -10,9 +10,18 @@ class detail_inflasi extends Model
     use HasFactory;
 
     protected $fillable = [
-        'id_inflasi', 'id_satker','id_kom', 'id_wil', 'id_flag',
-        'inflasi_MtM', 'inflasi_YtD', 'inflasi_YoY',
-        'andil_MtM', 'andil_YtD', 'andil_YoY', 'created_at'
+        'id_inflasi',
+        'id_satker',
+        'id_kom',
+        'id_wil',
+        'id_flag',
+        'inflasi_MtM',
+        'inflasi_YtD',
+        'inflasi_YoY',
+        'andil_MtM',
+        'andil_YtD',
+        'andil_YoY',
+        'created_at'
     ];
 
     public $timestamps = false;

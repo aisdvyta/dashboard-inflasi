@@ -2,7 +2,7 @@
 
 @section('body')
     <!-- Ini Main 1 -->
-    <div id="main1" class="relative min-h-screen flex items-center justify-center bg-cover bg-center"
+    <div id="main1" class="relative min-h-screen flex items-center justify-center bg-cover bg-center bg-gradient-mask"
         style="background-image: url('{{ asset('images/backMain1.svg') }}');">
 
         <!-- Konten -->
@@ -27,14 +27,14 @@
     </div>
 
     <!-- Ini Main 2 -->
-    <div id="main2" class="min-h-[110vh] bg-putihbg py-12 relative">
+    <div id="main2" class="min-h-[110vh] bg-white py-12 relative">
         <!-- Elemen Batik -->
         <div class="absolute pt-10 top-30 left-10 ">
-            <img src="{{ asset('images/landingMain4/batikKawung2.svg') }}" alt="Batik Left" class="h-32 ">
+            <img src="{{ asset('images/landingMain4/batikKawung2.svg') }}" alt="Batik Left" class="h-28 ">
         </div>
         <div class="absolute pt-10 top-30 right-10">
             <img src="{{ asset('images/landingMain4/batikKawung2.svg') }}" alt="Batik Right"
-                class="h-32 transform scale-x-[-1]">
+                class="h-28 transform scale-x-[-1]">
         </div>
 
         <div class="container mx-auto text-center mt-14">
@@ -85,3 +85,20 @@
         </div>
     </div>
 @endsection
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        document.querySelector("a[href='#']").addEventListener("click", function(event) {
+            event.preventDefault();
+
+            let target = document.getElementById("main2");
+            if (target) {
+                target.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center"
+                });
+            }
+        });
+    });
+</script>
+

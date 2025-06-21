@@ -2,7 +2,7 @@
 
 @section('body')
     <!-- Ini Main 1 -->
-    <div id="main1" class="relative min-h-screen flex items-center justify-center bg-cover bg-center"
+    <div id="main1" class="relative min-h-screen flex items-center justify-center bg-cover bg-center bg-gradient-mask"
         style="background-image: url('{{ asset('images/landingMain1/backLandingPage.svg') }}');">
 
         <!-- Konten -->
@@ -27,36 +27,31 @@
     </div>
 
     <!-- Ini Main 2 -->
-    <!-- Section Dashboard -->
-    <div>
-        @include('components.dashboardcard')
-    </div>
+    <div id="main3" class="relative min-h-[70vh] pt-18 flex items-center justify-center overflow-hidden">
+        <!-- Batik Kawung Kiri Atas -->
+        <img src="{{ asset('images/landingMain4/batikKawung2.svg') }}" alt="Batik Kawung Kiri"
+            class="absolute top-10 left-12 h-28">
 
+        <!-- Batik Kawung Kanan Atas -->
+        <img src="{{ asset('images/landingMain4/batikKawung2.svg') }}" alt="Batik Kawung Kanan"
+            class="absolute transform scale-x-[-1] top-10 right-12 h-28">
 
-    <!-- Ini Main 3 -->
-    <div id="main3" class="min-h-[70vh] pt-32">
-        <div class="container mx-auto px-6 md:px-12 lg:px-24 flex flex-col md:flex-row items-center mt-8">
-            <!-- Image -->
-            <div class="w-full md:w-1/3 flex flex-col items-center -translate-y-8">
-                <img src="{{ asset('images/landingMain3/pakZulKartun.svg') }}" alt="Kepala BPS Provinsi Jawa Timur"
-                    class="w-80 h-auto object-cover">
-                <p class="mt-2 text-biru1 text-center">Bapak Dr. Zulkipli, M.Si.</p>
-                <p class="text-biru1 text-center  font-semibold">Kepala BPS Provinsi Jawa Timur</p>
-            </div>
-
-            <!-- Text -->
-            <div class="w-full md:w-2/3 md:pl-12">
+        <!-- Konten -->
+        <div class="container relative z-10 mx-auto px-6 md:px-12 lg:px-24">
+            <div class="w-full md:w-2/3 mx-auto text-center">
                 <h2 class="text-3xl font-bold text-biru1">
                     <span class="text-kuning1">Tentang</span> Kami
                 </h2>
-                <p class="mt-4 text-biru1 text-justify">
+
+                <p class="mt-4 text-biru1 text-justify indent-8">
                     <span class="font-bold">Dashboard Inflasi</span> adalah sistem informasi yang dikembangkan oleh BPS
                     Provinsi Jawa Timur untuk menyajikan data inflasi terkini, baik di tingkat provinsi maupun
                     kabupaten/kota yang masuk dalam cakupan IHK wilayah Jawa Timur. Data ini disajikan melalui visualisasi
                     yang interaktif dan informatif, sehingga memudahkan pengguna dalam memahami perkembangan inflasi.
                 </p>
-                <p class="mt-4 text-biru1 text-justify">
-                    Dashboard ini, terdiri atas Dashboard Inflasi Bulanan Provinsi Jawa Timur, Dashboard Inflasi Spasial,
+
+                <p class="mt-4 text-biru1 text-justify indent-8">
+                    Dashboard ini terdiri atas Dashboard Inflasi Bulanan Provinsi Jawa Timur, Dashboard Inflasi Spasial,
                     Dashboard Inflasi Menurut Kelompok Pengeluaran, dan Dashboard Series Inflasi. Dengan hadirnya sistem
                     ini, efisiensi dan akurasi dalam pengelolaan data inflasi di wilayah Provinsi Jawa Timur diharapkan
                     dapat meningkat secara signifikan.
@@ -65,24 +60,31 @@
         </div>
     </div>
 
+
+    <!-- Ini Main 3 -->
+    <!-- Section Dashboard -->
+    <div>
+        @include('components.dashboardcard')
+    </div>
+
     <!-- Ini Main 4 -->
     <div id="main4" class="bg-white py-16 px-5 min-h-[93vh]">
         <div class="max-w-7xl mx-auto h-fit bg-gray-100 rounded-3xl shadow-lg p-8 relative">
             <!-- Elemen Batik -->
             <div class="absolute top-10 left-10">
-                <img src="{{ asset('images/landingMain4/batikKawung2.svg') }}" alt="Batik Left" class="h-32">
+                <img src="{{ asset('images/landingMain4/batikKawung2.svg') }}" alt="Batik Left" class="h-28">
             </div>
             <div class="absolute top-10 right-10">
                 <img src="{{ asset('images/landingMain4/batikKawung2.svg') }}" alt="Batik Right"
-                    class="h-32 transform scale-x-[-1]">
+                    class="h-28 transform scale-x-[-1]">
             </div>
             <div class="absolute bottom-10 left-10">
                 <img src="{{ asset('images/landingMain4/batikKawung2.svg') }}" alt="Batik Left"
-                    class="h-32 transform scale-y-[-1]">
+                    class="h-28 transform scale-y-[-1]">
             </div>
             <div class="absolute bottom-10 right-10">
                 <img src="{{ asset('images/landingMain4/batikKawung2.svg') }}" alt="Batik Right"
-                    class="h-32 transform scale-x-[-1] scale-y-[-1]">
+                    class="h-28 transform scale-x-[-1] scale-y-[-1]">
             </div>
 
             <!-- Judul -->

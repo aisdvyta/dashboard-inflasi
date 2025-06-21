@@ -2,5 +2,44 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+    .font-outline-2 {
+        -webkit-text-stroke: 0.2px white;
+    }
+    .font-outline-4 {
+        -webkit-text-stroke: 4px white;
+    }
+    .capitalize {
+        text-transform: capitalize;
+    }
+    .bg-gradient-mask-right {
+        -webkit-mask-image: linear-gradient(
+            to right,
+            rgba(243, 248, 251, 1) 0%,
+            rgba(243, 248, 251, 1) 70%,
+            rgba(243, 248, 251, 0) 100%
 
+        );
+        mask-image: linear-gradient(
+            to right,
+            rgba(243, 248, 251, 1) 0%,
+            rgba(243, 248, 251, 1) 70%,
+            rgba(243, 248, 251, 0) 100%
+        );
+    }
+    .bg-gradient-mask {
+        -webkit-mask-image: linear-gradient(
+            to bottom,
+            rgba(243, 248, 251, 1) 0%,
+            rgba(243, 248, 251, 1) 70%,
+            rgba(243, 248, 251, 0) 100%
 
+        );
+        mask-image: linear-gradient(
+            to bottom,
+            rgba(243, 248, 251, 1) 0%,
+            rgba(243, 248, 251, 1) 70%,
+            rgba(243, 248, 251, 0) 100%
+        );
+    }
+}
