@@ -18,7 +18,7 @@ export default {
             colors: {
                 'merah1'    : '#B71C1C',
                 'merah1muda': '#BA5757',
-                'merah2'    : '#F44336',
+                'merah2'    : '#E82D1F',
                 'oren'      : '#F15A42',
                 'kuning1'   : '#F7B750',
                 'kuning2'   : '#FEE9A3',

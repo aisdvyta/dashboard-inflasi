@@ -77,9 +77,7 @@ Route::middleware(['auth'])->group(function () {
 
 
     // DASHBOARD //
-    Route::get('/dashboard/infkelompok', function () {
-        return view('dashboard.infKelompok');
-    })->name('dashboard.kelompok');
+    Route::get('/dashboard/infkelompok', [DashboardController::class, 'showInflasiKelompok'])->name('dashboard.kelompok');
     Route::get('/dashboard/infseries', function () {
         return view('dashboard.infSeries');
     })->name('dashboard.series');

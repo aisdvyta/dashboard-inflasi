@@ -340,13 +340,13 @@ class DashboardController extends Controller
 
         // Ambil data top inflasi
         $topInflasiMtM = $this->getTopDataSpasial($idWil, $periode, $jenisDataInflasi, 'inflasi_mtm', 'andil_mtm', $isMtMNegative);
-        $topInflasiYtD = $this->getTopDataSpasial($idWil,$periode, $jenisDataInflasi, 'inflasi_ytd', 'andil_ytd', $isYtDNegative, $idWil);
-        $topInflasiYoY = $this->getTopDataSpasial($idWil,$periode, $jenisDataInflasi, 'inflasi_yoy', 'andil_yoy', $isYoYNegative, $idWil);
+        $topInflasiYtD = $this->getTopDataSpasial($idWil, $periode, $jenisDataInflasi, 'inflasi_ytd', 'andil_ytd', $isYtDNegative, $idWil);
+        $topInflasiYoY = $this->getTopDataSpasial($idWil, $periode, $jenisDataInflasi, 'inflasi_yoy', 'andil_yoy', $isYoYNegative, $idWil);
 
         // Ambil data top andil
-        $topAndilMtM = $this->getTopDataSpasial($idWil,$periode, $jenisDataInflasi, 'inflasi_mtm', 'andil_mtm', $isMtMNegative, $idWil);
-        $topAndilYtD = $this->getTopDataSpasial($idWil,$periode, $jenisDataInflasi, 'inflasi_ytd', 'andil_ytd', $isYtDNegative, $idWil);
-        $topAndilYoY = $this->getTopDataSpasial($idWil,$periode, $jenisDataInflasi, 'inflasi_yoy', 'andil_yoy', $isYoYNegative, $idWil);
+        $topAndilMtM = $this->getTopDataSpasial($idWil, $periode, $jenisDataInflasi, 'inflasi_mtm', 'andil_mtm', $isMtMNegative, $idWil);
+        $topAndilYtD = $this->getTopDataSpasial($idWil, $periode, $jenisDataInflasi, 'inflasi_ytd', 'andil_ytd', $isYtDNegative, $idWil);
+        $topAndilYoY = $this->getTopDataSpasial($idWil, $periode, $jenisDataInflasi, 'inflasi_yoy', 'andil_yoy', $isYoYNegative, $idWil);
 
         // Ambil data wilayah untuk map
         $wilayahs = DB::table('master_wilayahs')->get();
@@ -408,6 +408,187 @@ class DashboardController extends Controller
             'jumlahDeflasi',
             'rankingInflasi',
             'rankingDeflasi',
+        ));
+    }
+
+    public function showInflasiKelompok(Request $request)
+    {
+        $jenisDataInflasi = $request->input('jenis_data_inflasi', 'ATAP');
+        $bulan = $request->input('bulan');
+        $tahun = $request->input('tahun');
+        $kabkota = $request->input('kabkota', '3500');
+        $idWil = $kabkota ?: '3500';
+
+        // Daftar kab/kota untuk filter
+        $daftarKabKota = DB::table('master_wilayahs')
+            ->where('kode_wil', '!=', 3500)
+            ->orderBy('nama_wil')
+            ->get();
+
+        // Daftar periode untuk filter
+        $daftarPeriode = master_inflasi::where('jenis_data_inflasi', $jenisDataInflasi)
+            ->orderBy('periode', 'desc')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'bulan' => Carbon::parse($item->periode)->translatedFormat('F'),
+                    'tahun' => Carbon::parse($item->periode)->format('Y'),
+                ];
+            });
+
+        // Pilih periode
+        if ($bulan && $tahun) {
+            $bulanAngka = $this->bulanMap[$bulan] ?? null;
+            if (!$bulanAngka) {
+                $bulanIndo = Carbon::createFromFormat('F', $bulan)->translatedFormat('F');
+                $bulanAngka = $this->bulanMap[$bulanIndo] ?? null;
+                if (!$bulanAngka)
+                    abort(404, 'Bulan tidak valid');
+            }
+            $periode = Carbon::createFromDate($tahun, $bulanAngka, 1)->startOfMonth();
+        } else {
+            $latestData = master_inflasi::where('jenis_data_inflasi', $jenisDataInflasi)
+                ->orderBy('periode', 'desc')
+                ->first();
+            if (!$latestData)
+                abort(404, 'Data tidak ditemukan.');
+            $periode = Carbon::parse($latestData->periode);
+        }
+        $bulan = $periode->translatedFormat('F');
+        $tahun = $periode->format('Y');
+
+        // Ambil data kelompok pengeluaran (bukan komoditas)
+        $topKelompokMtM = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
+            ->join('master_komoditas as mk', 'detail_inflasis.id_kom', '=', 'mk.kode_kom')
+            ->where('detail_inflasis.id_flag', 2) // 2 = kelompok pengeluaran
+            ->where('detail_inflasis.id_wil', $idWil)
+            ->where('master_inflasis.periode', $periode)
+            ->where('master_inflasis.jenis_data_inflasi', $jenisDataInflasi)
+            ->orderByDesc('detail_inflasis.andil_mtm')
+            ->select('mk.nama_kom as nama_kelompok', 'detail_inflasis.inflasi_mtm as inflasi', 'detail_inflasis.andil_mtm as andil')
+            ->take(10)
+            ->get();
+        $topKelompokYtD = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
+            ->join('master_komoditas as mk', 'detail_inflasis.id_kom', '=', 'mk.kode_kom')
+            ->where('detail_inflasis.id_flag', 2)
+            ->where('detail_inflasis.id_wil', $idWil)
+            ->where('master_inflasis.periode', $periode)
+            ->where('master_inflasis.jenis_data_inflasi', $jenisDataInflasi)
+            ->orderByDesc('detail_inflasis.andil_ytd')
+            ->select('mk.nama_kom as nama_kelompok', 'detail_inflasis.inflasi_ytd as inflasi', 'detail_inflasis.andil_ytd as andil')
+            ->take(10)
+            ->get();
+        $topKelompokYoY = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
+            ->join('master_komoditas as mk', 'detail_inflasis.id_kom', '=', 'mk.kode_kom')
+            ->where('detail_inflasis.id_flag', 2)
+            ->where('detail_inflasis.id_wil', $idWil)
+            ->where('master_inflasis.periode', $periode)
+            ->where('master_inflasis.jenis_data_inflasi', $jenisDataInflasi)
+            ->orderByDesc('detail_inflasis.andil_yoy')
+            ->select('mk.nama_kom as nama_kelompok', 'detail_inflasis.inflasi_yoy as inflasi', 'detail_inflasis.andil_yoy as andil')
+            ->take(10)
+            ->get();
+
+        // Nilai inflasi utama
+        $inflasiMtM = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
+            ->where('detail_inflasis.id_flag', 0)
+            ->where('detail_inflasis.id_wil', $idWil)
+            ->where('master_inflasis.periode', $periode)
+            ->where('master_inflasis.jenis_data_inflasi', $jenisDataInflasi)
+            ->value('detail_inflasis.inflasi_mtm');
+        $inflasiYtD = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
+            ->where('detail_inflasis.id_flag', 0)
+            ->where('detail_inflasis.id_wil', $idWil)
+            ->where('master_inflasis.periode', $periode)
+            ->where('master_inflasis.jenis_data_inflasi', $jenisDataInflasi)
+            ->value('detail_inflasis.inflasi_ytd');
+        $inflasiYoY = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
+            ->where('detail_inflasis.id_flag', 0)
+            ->where('detail_inflasis.id_wil', $idWil)
+            ->where('master_inflasis.periode', $periode)
+            ->where('master_inflasis.jenis_data_inflasi', $jenisDataInflasi)
+            ->value('detail_inflasis.inflasi_yoy');
+
+        // Ambil semua kelompok utama (flag 1)
+        $kelompokUtama = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
+            ->join('master_komoditas as mk', 'detail_inflasis.id_kom', '=', 'mk.kode_kom')
+            ->where('detail_inflasis.id_flag', 1)
+            ->where('detail_inflasis.id_wil', $idWil)
+            ->where('master_inflasis.periode', $periode)
+            ->where('master_inflasis.jenis_data_inflasi', $jenisDataInflasi)
+            ->orderBy('mk.kode_kom')
+            ->select(
+                'mk.kode_kom',
+                'mk.nama_kom',
+                'detail_inflasis.inflasi_mtm',
+                'detail_inflasis.andil_mtm',
+                'detail_inflasis.inflasi_ytd',
+                'detail_inflasis.andil_ytd',
+                'detail_inflasis.inflasi_yoy',
+                'detail_inflasis.andil_yoy'
+            )
+            ->get();
+
+        // Untuk setiap kelompok utama, ambil top 5 komoditas (flag 3) berdasarkan andil mtm
+        $top5KomoditasPerKelompok = [];
+        foreach ($kelompokUtama as $kelompok) {
+            $top5KomoditasPerKelompok[$kelompok->kode_kom] = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
+                ->join('master_komoditas as mk', 'detail_inflasis.id_kom', '=', 'mk.kode_kom')
+                ->where('detail_inflasis.id_flag', 3)
+                ->where('detail_inflasis.id_wil', $idWil)
+                ->where('master_inflasis.periode', $periode)
+                ->where('master_inflasis.jenis_data_inflasi', $jenisDataInflasi)
+                ->where('mk.kode_kom', 'like', $kelompok->kode_kom . '%')
+                ->orderByDesc('detail_inflasis.andil_mtm')
+                ->select(
+                    'mk.nama_kom',
+                    'detail_inflasis.inflasi_mtm',
+                    'detail_inflasis.andil_mtm',
+                    'detail_inflasis.inflasi_ytd',
+                    'detail_inflasis.andil_ytd',
+                    'detail_inflasis.inflasi_yoy',
+                    'detail_inflasis.andil_yoy'
+                )
+                ->take(5)
+                ->get();
+        }
+
+        // Data tabel kelompok: flag 0,1,2
+        $tabelKelompok = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
+            ->join('master_komoditas as mk', 'detail_inflasis.id_kom', '=', 'mk.kode_kom')
+            ->whereIn('detail_inflasis.id_flag', [0, 1, 2])
+            ->where('detail_inflasis.id_wil', $idWil)
+            ->where('master_inflasis.periode', $periode)
+            ->where('master_inflasis.jenis_data_inflasi', $jenisDataInflasi)
+            ->orderBy('mk.kode_kom')
+            ->select(
+                'mk.kode_kom',
+                'mk.nama_kom',
+                'detail_inflasis.inflasi_mtm',
+                'detail_inflasis.andil_mtm',
+                'detail_inflasis.inflasi_ytd',
+                'detail_inflasis.andil_ytd',
+                'detail_inflasis.inflasi_yoy',
+                'detail_inflasis.andil_yoy'
+            )
+            ->get();
+
+        return view('dashboard.infKelompok', compact(
+            'bulan',
+            'tahun',
+            'daftarPeriode',
+            'jenisDataInflasi',
+            'topKelompokMtM',
+            'topKelompokYtD',
+            'topKelompokYoY',
+            'inflasiMtM',
+            'inflasiYtD',
+            'inflasiYoY',
+            'daftarKabKota',
+            'kabkota',
+            'tabelKelompok',
+            'kelompokUtama',
+            'top5KomoditasPerKelompok'
         ));
     }
 

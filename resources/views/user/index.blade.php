@@ -43,18 +43,13 @@
                     <span class="text-kuning1">Tentang</span> Kami
                 </h2>
 
-                <p class="mt-4 text-biru1 text-justify indent-8">
+                <p class="mt-8 text-biru1 text-justify indent-8">
                     <span class="font-bold">Dashboard Inflasi</span> adalah sistem informasi yang dikembangkan oleh BPS
                     Provinsi Jawa Timur untuk menyajikan data inflasi terkini, baik di tingkat provinsi maupun
                     kabupaten/kota yang masuk dalam cakupan IHK wilayah Jawa Timur. Data ini disajikan melalui visualisasi
                     yang interaktif dan informatif, sehingga memudahkan pengguna dalam memahami perkembangan inflasi.
-                </p>
-
-                <p class="mt-4 text-biru1 text-justify indent-8">
-                    Dashboard ini terdiri atas Dashboard Inflasi Bulanan Provinsi Jawa Timur, Dashboard Inflasi Spasial,
-                    Dashboard Inflasi Menurut Kelompok Pengeluaran, dan Dashboard Series Inflasi. Dengan hadirnya sistem
-                    ini, efisiensi dan akurasi dalam pengelolaan data inflasi di wilayah Provinsi Jawa Timur diharapkan
-                    dapat meningkat secara signifikan.
+                    Dashboard ini terdiri atas Dashboard Inflasi Bulanan Provinsi Jawa Timur,
+                    Dashboard Inflasi Menurut Kelompok Pengeluaran, dan Dashboard Series Inflasi.
                 </p>
             </div>
         </div>
