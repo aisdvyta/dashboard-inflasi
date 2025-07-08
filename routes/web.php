@@ -33,12 +33,14 @@ Route::get('/MasterKomoditas', function () {
 
 // KABKOT //
 Route::get('/Kabkot', function () {
-    return view('kabkot.index');
+    return view('kabkot.dashboard');
 })->name('landingPageKabkot');
 
-// MANAJEMEN AKUN //
-Route::middleware(['auth'])->group(function () {
-    Route::get('/AdminProv', function () { return view('prov.index');})->name('landingPageProv');
+// ROUTES UNTUK ADMIN PROVINSI //
+Route::middleware(['auth', 'provinsi'])->group(function () {
+    Route::get('/AdminProv', function () {
+        return view('prov.index');
+    })->name('landingPageProv');
 
     // MANAGEMEN AKUN //
     Route::get('/ManajemenAkun', [ManajemenAkunController::class, 'index'])->name('manajemen-akun.index');
@@ -75,16 +77,34 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/MasterKomoditas/{kode_kom}/edit', [MasterKomoditasController::class, 'edit'])->name('master-komoditas.edit');
     Route::put('/MasterKomoditas/{kode_kom}', [MasterKomoditasController::class, 'update'])->name('master-komoditas.update');
 
+    // MASTER KOMODITAS UTAMA//
+    Route::get('/KomoditasUtama', function () {
+        return view('prov.komoditas-utama.index');
+    })->name('komoditas-utama.index');
+    Route::post('/KomoditasUtama', [MasterKomoditasController::class, 'storeKomUtama'])->name('komoditas-utama.storeKomUtama');
+
 
     // DASHBOARD //
     Route::get('/dashboard/infkelompok', [DashboardController::class, 'showInflasiKelompok'])->name('dashboard.kelompok');
-    Route::get('/dashboard/infseries', function () {
-        return view('dashboard.infSeries');
-    })->name('dashboard.series');
+    Route::get('/dashboard/infseries', [DashboardController::class, 'showSeriesKomoditas'])->name('dashboard.series');
     Route::get('/dashboard/infbulanan', [DashboardController::class, 'showInflasiBulanan'])->name('dashboard.bulanan');
     Route::get('/dashboard/infspasial', [DashboardController::class, 'showInflasiSpasial'])->name('dashboard.spasial');
     Route::get('/dashboard/export-excel', [DashboardController::class, 'exportExcel'])->name('dashboard.export-excel');
+    Route::get('/dashboard/spasial/komoditas-kabkota-data', [\App\Http\Controllers\DashboardController::class, 'getInflasiKomoditasKabKotaAjax']);
+    Route::get('/dashboard/series-komoditas', [DashboardController::class, 'showSeriesKomoditas'])->name('dashboard.series-komoditas');
 });
+
+// ROUTES UNTUK ADMIN KABKOT //
+Route::middleware(['auth', 'kabkot'])->group(function () {
+    // Route khusus untuk Admin Kabkot
+    Route::get('/KabkotDashboard', function () {
+        return view('kabkot.dashboard');
+    })->name('kabkot.dashboard');
+
+    // Route lain untuk Admin Kabkot bisa ditambahkan di sini
+});
+
+// AUTH ROUTES //
 Route::get('/login', [LoginController::class, 'index'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');

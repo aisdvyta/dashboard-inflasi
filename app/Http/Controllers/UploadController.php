@@ -9,6 +9,8 @@ use App\Models\detail_inflasi;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use App\Models\master_wilayah;
 
 class UploadController extends Controller
 {
@@ -18,7 +20,7 @@ class UploadController extends Controller
         $search = $request->input('search');
 
         $uploads = master_inflasi::with('pengguna')
-            ->where('jenis_data_inflasi', 'ATAP') // Tambahkan kondisi untuk hanya menampilkan "ATAP"
+            ->where('jenis_data_inflasi', 'ATAP')
             ->when($search, function ($query, $search) {
                 return $query->where(function ($query) use ($search) {
                     $query->where('nama', 'like', "%{$search}%")
@@ -54,13 +56,12 @@ class UploadController extends Controller
     private function truncateToTwoDecimals($number)
     {
         return $number < 0
-            ? ceil($number * 100) / 100 // Untuk angka negatif
-            : floor($number * 100) / 100; // Untuk angka positif
+            ? ceil($number * 100) / 100
+            : floor($number * 100) / 100;
     }
 
     private function processInflasiValue($value)
     {
-        // Periksa apakah nilai ada dan merupakan angka
         if (isset($value) && is_numeric(trim($value))) {
             return $this->truncateToTwoDecimals(floatval(trim($value)));
         }
@@ -69,6 +70,7 @@ class UploadController extends Controller
 
     public function uploadInflasiAjax(Request $request)
     {
+        ini_set('memory_limit', '512M'); // Tambahkan baris ini untuk menaikkan limit memori
 
         $request->validate([
             'periode' => 'required|date_format:Y-m',
@@ -76,7 +78,7 @@ class UploadController extends Controller
             'file' => 'required|mimes:xlsx'
         ]);
 
-        $rawPeriode = trim($request->periode); // buang spasi
+        $rawPeriode = trim($request->periode);
         [$tahun, $bulan] = explode('-', $rawPeriode);
 
         if (!checkdate($bulan, 1, $tahun)) {
@@ -109,8 +111,8 @@ class UploadController extends Controller
 
         $nama = 'Data Inflasi ' . $jenisDataInflasi . ' ' .
             $carbonPeriode
-                ->locale('id')
-                ->translatedFormat('F Y');
+            ->locale('id')
+            ->translatedFormat('F Y');
 
         DB::beginTransaction();
         try {
@@ -128,37 +130,189 @@ class UploadController extends Controller
             $worksheet = $spreadsheet->getActiveSheet();
             $rows = $worksheet->toArray(null, true, true, true);
 
+            // Hapus baris kosong di akhir file (trailing empty rows)
+            for ($i = count($rows) - 1; $i >= 0; $i--) {
+                if (!array_filter($rows[$i])) {
+                    unset($rows[$i]);
+                } else {
+                    break;
+                }
+            }
+            $rows = array_values($rows); // reindex array
+
             $header = array_shift($rows);
 
-            $requiredColumns = ['Kode Kota', 'Kode Komoditas', 'Flag', 'Inflasi MtM', 'Inflasi YtD', 'Inflasi YoY', 'Andil MtM', 'Andil YtD', 'Andil YoY'];
-            $indexes = array_map(fn($col) => array_search($col, $header), $requiredColumns);
+            // Penyesuaian header dan mapping kolom berdasarkan jenis data
+            $map = [];
+            $indexes = [];
+            if (str_starts_with($jenisDataInflasi, 'ASEM')) {
+                $requiredColumns = [
+                    'Tahun',
+                    'Bulan',
+                    'Kd.Kota',
+                    'Nama Kota',
+                    'Kode',
+                    'Nama',
+                    'Flag',
+                    'IHK',
+                    'INF(MOM)',
+                    'INF(YTD)',
+                    'INF(YOY)',
+                    'ANDIL(MOM)',
+                    'ANDIL(YTD)',
+                    'ANDIL(YOY)'
+                ];
+                $indexes = array_map(fn($col) => array_search($col, $header), $requiredColumns);
+                $map = [
+                    'kode_kota' => $indexes[2], // Kd.Kota
+                    'kode_komoditas' => $indexes[4], // Kode
+                    'flag' => $indexes[6], // Flag
+                    'inflasi_MtM' => $indexes[8], // INF(MOM)
+                    'inflasi_YtD' => $indexes[9], // INF(YTD)
+                    'inflasi_YoY' => $indexes[10], // INF(YOY)
+                    'andil_MtM' => $indexes[11], // ANDIL(MOM)
+                    'andil_YtD' => $indexes[12], // ANDIL(YTD)
+                    'andil_YoY' => $indexes[13], // ANDIL(YOY)
+                ];
+            } else { // ATAP
+                $requiredColumns = ['Kode Kota', 'Kode Komoditas', 'Flag', 'Inflasi MtM', 'Inflasi YtD', 'Inflasi YoY', 'Andil MtM', 'Andil YtD', 'Andil YoY'];
+                $indexes = array_map(fn($col) => array_search($col, $header), $requiredColumns);
+                $map = [
+                    'kode_kota' => $indexes[0],
+                    'kode_komoditas' => $indexes[1],
+                    'flag' => $indexes[2],
+                    'inflasi_MtM' => $indexes[3],
+                    'inflasi_YtD' => $indexes[4],
+                    'inflasi_YoY' => $indexes[5],
+                    'andil_MtM' => $indexes[6],
+                    'andil_YtD' => $indexes[7],
+                    'andil_YoY' => $indexes[8],
+                ];
+            }
 
             if (in_array(false, $indexes, true)) {
+                $missingColumns = [];
+                foreach ($requiredColumns as $i => $col) {
+                    if ($indexes[$i] === false) {
+                        $missingColumns[] = $col;
+                    }
+                }
+                $msg = 'Format file tidak sesuai. Kolom berikut kurang: ' . implode(', ', $missingColumns) . '. Pastikan file memiliki semua kolom yang diperlukan.';
                 return response()->json([
                     'success' => false,
-                    'message' => 'Format file tidak sesuai. Pastikan file memiliki kolom yang diperlukan.',
+                    'message' => $msg,
+                    'errors' => $missingColumns,
                 ], 422);
             }
 
+            Log::info('Header:', $header);
+            Log::info('Indexes:', $indexes);
+            Log::info('Rows:', $rows);
+
+            // --- AUTO-FIX DAN VALIDASI KODE KOMODITAS & WILAYAH ---
+            $errorRows = [];
+            $rowCount = count($rows);
             $dataToInsert = collect($rows)
-                ->filter(fn($row) => array_filter($row)) // <- Ini yang buang baris kosong
-                ->map(function ($row) use ($dataInflasi, $indexes) {
+                ->map(function ($row, $rowIndex) use ($dataInflasi, $map, $rows, $rowCount, $header, $jenisDataInflasi, &$errorRows) {
+                    // Skip baris kosong di tengah data (hanya error jika setelahnya masih ada data)
+                    if (!array_filter($row)) {
+                        if (($rowIndex + 1 < $rowCount) && array_filter($rows[$rowIndex + 1])) {
+                            $errorRows[] = "Baris ke-" . ($rowIndex + 2) . ": baris kosong.";
+                        }
+                        return null;
+                    }
+
+                    // --- Ambil kode kota dan komoditas ---
+                    $kodeKota = trim($row[$map['kode_kota']] ?? '');
+                    $kodeKomoditas = $row[$map['kode_komoditas']] ?? '';
+                    $flagKomoditas = $row[$map['flag']] ?? '';
+
+                    // --- Auto-fix kode kota ---
+                    if (str_starts_with($jenisDataInflasi, 'ASEM')) {
+                        if ($kodeKota === '35') {
+                            $kodeKota = '3500';
+                        }
+                    } else {
+                        if (is_numeric($kodeKota) && $kodeKota < 1000) {
+                            $kodeKota = str_pad($kodeKota, 4, '0', STR_PAD_RIGHT);
+                        }
+                    }
+
+                    // --- Auto-fix kode komoditas sesuai flag ---
+                    if ($flagKomoditas == '1' && strlen($kodeKomoditas) == 1) {
+                        $kodeKomoditas = '0' . $kodeKomoditas;
+                    }
+                    if ($flagKomoditas == '2' && strlen($kodeKomoditas) == 2) {
+                        $kodeKomoditas = '0' . $kodeKomoditas;
+                    }
+                    if ($flagKomoditas == '3' && strlen($kodeKomoditas) == 6) {
+                        $kodeKomoditas = '0' . $kodeKomoditas;
+                    }
+
+                    // --- Validasi master wilayah ---
+                    if (!\App\Models\master_wilayah::where('kode_wil', $kodeKota)->exists()) {
+                        $errorRows[] = "Baris ke-" . ($rowIndex + 2) . ": kode kota $kodeKota tidak ditemukan di master wilayah.";
+                        return null;
+                    }
+                    // --- Validasi master komoditas ---
+                    if (!\App\Models\master_komoditas::where('kode_kom', $kodeKomoditas)->exists()) {
+                        $errorRows[] = "Baris ke-" . ($rowIndex + 2) . ": kode komoditas $kodeKomoditas tidak ditemukan di master komoditas.";
+                        return null;
+                    }
+
+                    // --- Validasi kolom wajib ---
+                    foreach ($map as $key => $idx) {
+                        if (!isset($row[$idx]) || $row[$idx] === '' || $row[$idx] === null) {
+                            $errorRows[] = "Baris ke-" . ($rowIndex + 2) . ": kolom $key (" . ($header[$idx] ?? $key) . ") kosong.";
+                            return null;
+                        }
+                    }
+                    // --- Validasi angka ---
+                    foreach (['inflasi_MtM', 'inflasi_YtD', 'inflasi_YoY', 'andil_MtM', 'andil_YtD', 'andil_YoY'] as $key) {
+                        $val = $row[$map[$key]] ?? null;
+                        if (!is_null($val) && !is_numeric(trim($val))) {
+                            $errorRows[] = "Baris ke-" . ($rowIndex + 2) . ": nilai kolom $key (" . ($header[$map[$key]] ?? $key) . ") tidak valid (bukan angka): $val.";
+                            return null;
+                        }
+                    }
+
+                    // --- Return data siap insert ---
                     return [
                         'id_inflasi' => $dataInflasi->id,
-                        'id_wil' => $row[$indexes[0]] ?? null,
-                        'id_kom' => $row[$indexes[1]] ?? '',
-                        'id_flag' => $row[$indexes[2]] ?? null,
-                        'inflasi_MtM' => $this->processInflasiValue($row[$indexes[3]] ?? null),
-                        'inflasi_YtD' => $this->processInflasiValue($row[$indexes[4]] ?? null),
-                        'inflasi_YoY' => $this->processInflasiValue($row[$indexes[5]] ?? null),
-                        'andil_MtM' => $this->processInflasiValue($row[$indexes[6]] ?? null),
-                        'andil_YtD' => $this->processInflasiValue($row[$indexes[7]] ?? null),
-                        'andil_YoY' => $this->processInflasiValue($row[$indexes[8]] ?? null),
+                        'id_wil' => $kodeKota,
+                        'id_kom' => $kodeKomoditas,
+                        'id_flag' => $flagKomoditas,
+                        'inflasi_MtM' => $this->processInflasiValue($row[$map['inflasi_MtM']] ?? null),
+                        'inflasi_YtD' => $this->processInflasiValue($row[$map['inflasi_YtD']] ?? null),
+                        'inflasi_YoY' => $this->processInflasiValue($row[$map['inflasi_YoY']] ?? null),
+                        'andil_MtM' => $this->processInflasiValue($row[$map['andil_MtM']] ?? null),
+                        'andil_YtD' => $this->processInflasiValue($row[$map['andil_YtD']] ?? null),
+                        'andil_YoY' => $this->processInflasiValue($row[$map['andil_YoY']] ?? null),
                         'created_at' => now(),
                     ];
-                })->toArray();
+                })
+                ->filter()
+                ->toArray();
+            Log::info('Data to insert:', $dataToInsert);
+            if (!empty($errorRows)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Beberapa baris gagal diimport.',
+                    'errors' => $errorRows,
+                ], 422);
+            }
 
-            detail_inflasi::insert($dataToInsert);
+            try {
+                detail_inflasi::insert($dataToInsert);
+            } catch (\Exception $e) {
+                Log::error('Insert error: ' . $e->getMessage());
+                $errorRows[] = 'Gagal menyimpan ke database. Kemungkinan ada data yang tidak valid, duplikat, atau melanggar aturan database.';
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Gagal menyimpan ke database.',
+                    'errors' => $errorRows,
+                ], 500);
+            }
 
             DB::commit();
 
@@ -169,6 +323,7 @@ class UploadController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
+            Log::error('Upload error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Terjadi kesalahan saat memproses data: ' . $e->getMessage(),
@@ -193,17 +348,14 @@ class UploadController extends Controller
 
         $upload = master_inflasi::findOrFail($id);
 
-        // Update data master_inflasi
         $upload->update([
             'periode' => Carbon::createFromFormat('Y-m', $request->periode)->startOfMonth()->toDateString(),
             'jenis_data_inflasi' => $request->jenis_data_inflasi,
         ]);
 
         if ($request->hasFile('file')) {
-            // Hapus data lama di detail_inflasi
             detail_inflasi::where('id_inflasi', $upload->id)->delete();
 
-            // Proses file baru
             $file = $request->file('file');
             $spreadsheet = IOFactory::load($file->getPathname());
             $worksheet = $spreadsheet->getActiveSheet();
@@ -225,7 +377,7 @@ class UploadController extends Controller
                 detail_inflasi::create([
                     'id_inflasi' => $upload->id,
                     'id_wil' => $row[$indexKodeKota] ?? null,
-                    'id_kom' => sprintf('%s', $row[$indexKodeKomoditas] ?? ''), //rawan
+                    'id_kom' => sprintf('%s', $row[$indexKodeKomoditas] ?? ''),
                     'id_flag' => $row[$indexFlag] ?? null,
                     'inflasi_MtM' => isset($row[$indexInflasiMtM]) && is_numeric(trim($row[$indexInflasiMtM])) ? $this->truncateToTwoDecimals(floatval(trim($row[$indexInflasiMtM]))) : null,
                     'inflasi_YtD' => isset($row[$indexInflasiYtD]) && is_numeric(trim($row[$indexInflasiYtD])) ? $this->truncateToTwoDecimals(floatval(trim($row[$indexInflasiYtD]))) : null,
@@ -254,15 +406,14 @@ class UploadController extends Controller
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->orWhereHas('satker', function ($sq) use ($search) {
-                            $sq->where('nama_satker', 'like', "%{$search}%");
-                        })
+                        $sq->where('nama_satker', 'like', "%{$search}%");
+                    })
                         ->orWhereHas('komoditas', function ($sq) use ($search) {
                             $sq->where('nama_kom', 'like', "%{$search}%");
                         })
                         ->orWhereHas('flag', function ($sq) use ($search) {
                             $sq->where('flag', 'like', "%{$search}%");
                         })
-                        // Jika ingin cari berdasarkan kode juga:
                         ->orWhere('id_wil', 'like', "%{$search}%")
                         ->orWhere('id_kom', 'like', "%{$search}%")
                         ->orWhere('id_flag', 'like', "%{$search}%");

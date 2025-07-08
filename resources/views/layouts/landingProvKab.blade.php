@@ -25,6 +25,7 @@
         @yield('body')
     </div>
     @include('components.footer')
+    @include('components.modaAksesDitolak')
     @stack('scripts')
 </body>
 

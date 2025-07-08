@@ -153,16 +153,14 @@
     <div class="border-t-8 border-biru1">
         <div class="p-6 bg-white rounded-b-xl shadow-md {{ $isBlackWhite ? 'grayscale' : '' }}">
             <!-- === JUDUL === -->
-            <div class="grid items-start pb-6 pl-6 grid-rows-1 gap-4 md:grid-rows-2 {{ $isBlackWhite ? 'grayscale' : '' }}">
-                <div class="space-y-1 {{ $isBlackWhite ? 'grayscale' : '' }}">
-                    <h1 class="text-5xl font-bold md:text-5xl text-biru1">Dashboard <span class="text-biru4">Inflasi
-                            Bulanan</span></h1>
-                    <h1 class="text-5xl font-bold text-biru1">Provinsi Jawa Timur</h1>
-                </div>
-                <div class="grid items-start grid-cols-1 pt-1 md:grid-cols-2">
-                    {{-- judul --}}
-                    <div class=" {{ $isBlackWhite ? 'grayscale' : '' }}">
-                        <div class="flex flex-row gap-4 text-5xl leading-8 text-biru1 pr-36">
+            <div class="w-full max-w-7xl mx-auto flex flex-row gap-6 justify-between pb-8">
+                <div class="flex flex-col items-start gap-4 w-full {{ $isBlackWhite ? 'grayscale' : '' }}">
+                    <div class="space-y-1 {{ $isBlackWhite ? 'grayscale' : '' }}">
+                        <h1 class="text-5xl font-bold md:text-5xl text-biru1">Dashboard <span class="text-biru4">Inflasi Bulanan</span></h1>
+                        <h1 class="text-5xl font-bold text-biru1">Provinsi Jawa Timur</h1>
+                    </div>
+                    <div class="flex flex-row gap-4 pt-1 w-full">
+                        <div class="flex flex-row gap-4 text-5xl leading-8 text-biru1">
                             <div class="w-1 h-16 rounded-full bg-biru1"></div>
                             <div>
                                 <p class="text-lg text-biru1 opacity-80">Periode Waktu</p>
@@ -172,12 +170,70 @@
                         </div>
                     </div>
                 </div>
+                <div class=" flex flex-col items-center justify-end gap-4 pr-6 {{ $isBlackWhite ? 'grayscale' : '' }}">
+                    <!-- Filter Periode -->
+                    <form method="GET" action="{{ route('dashboard.spasial') }}">
+                        <input type="hidden" name="jenis_data_inflasi" value="{{ $jenisDataInflasi }}">
+                        <input type="hidden" name="kabkota" value="{{ $kabkota }}">
+                        <input type="hidden" name="komoditas_utama" value="{{ $komoditasUtama }}">
+                        {{-- Filter Bulan dan Tahun --}}
+                        <div class="flex gap-4 w-80">
+                            {{-- Bulan --}}
+                            <div class="relative w-1/2">
+                                <select id="bulan" name="bulan"
+                                    class="w-full px-6 py-2 pr-10 font-semibold text-white rounded-full shadow-md appearance-none bg-biru4 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                    onchange="this.form.submit()">
+                                    <option value="">Pilih Bulan</option>
+                                    @foreach ($daftarPeriode->pluck('bulan')->unique() as $bulanOption)
+                                        <option value="{{ $bulanOption }}"
+                                            {{ $bulanOption == $bulan ? 'selected' : '' }}>
+                                            {{ $bulanOption }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <div class="absolute inset-y-0 flex items-center pointer-events-none right-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        class="w-5 h-5 text-white transition-transform duration-200 rotate-180"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </div>
+                            </div>
+
+                            {{-- Tahun --}}
+                            <div class="relative w-1/2">
+                                <select id="tahun" name="tahun"
+                                    class="w-full px-6 py-2 pr-10 font-semibold text-white rounded-full shadow-md appearance-none bg-biru4 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                    onchange="this.form.submit()">
+                                    <option value="">Pilih Tahun</option>
+                                    @foreach ($daftarPeriode->pluck('tahun')->unique() as $tahunOption)
+                                        <option value="{{ $tahunOption }}"
+                                            {{ $tahunOption == $tahun ? 'selected' : '' }}>
+                                            {{ $tahunOption }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <div class="absolute inset-y-0 flex items-center pointer-events-none right-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        class="w-5 h-5 text-white transition-transform duration-200 rotate-180"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
 
-            <div class="flex flex-row gap-5">
+            <div class="flex flex-row gap-5 pb-8">
                 {{-- Tabel dan chloroplet --}}
                 <div class="w-full mx-auto max-w-7xl {{ $isBlackWhite ? 'grayscale' : '' }}">
-                    <div class="flex flex-col gap-6 max-w-7xl">
+                    <div class="flex flex-col gap-6">
                         <!-- Tabel -->
                         <div x-data="{ showModal: false }" class="relative flex flex-col border rounded-xl border-biru1">
                             <!-- Tombol Expand di kanan atas -->
@@ -213,7 +269,8 @@
                             <div x-show="showModal" x-cloak
                                 class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40"
                                 x-transition:enter="transition ease-out duration-200"
-                                x-transition:enter-start="opacity-0 scale-90" x-transition:enter-end="opacity-100 scale-100"
+                                x-transition:enter-start="opacity-0 scale-90"
+                                x-transition:enter-end="opacity-100 scale-100"
                                 x-transition:leave="transition ease-in duration-100"
                                 x-transition:leave-start="opacity-100 scale-100"
                                 x-transition:leave-end="opacity-0 scale-90">
@@ -299,154 +356,75 @@
                             </div>
                         </div>
 
-                        <!-- Filter -->
-                        <div>
-                            <form method="GET" action="{{ route('dashboard.spasial') }}"
-                                class="flex flex-col items-start gap-4 pr-8 pl-18">
-                                <input type="hidden" name="jenis_data_inflasi" value="{{ $jenisDataInflasi }}">
-                                <input type="hidden" name="kabkota" value="{{ $kabkota }}">
-                                <input type="hidden" name="komoditas_utama" value="{{ $komoditasUtama }}">
-                                {{-- Filter Bulan dan Tahun --}}
-                                <div class="grid w-full grid-cols-1 gap-4 mx-auto md:grid-cols-2 max-w-7xl">
-                                    {{-- Bulan --}}
-                                    <div class="relative">
-                                        <select id="bulan" name="bulan"
-                                            class="w-full px-6 py-2 pr-10 font-semibold text-white rounded-full shadow-md appearance-none bg-biru4 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                            onchange="this.form.submit()">
-                                            <option value="">Pilih Bulan</option>
-                                            @foreach ($daftarPeriode->pluck('bulan')->unique() as $bulanOption)
-                                                <option value="{{ $bulanOption }}"
-                                                    {{ $bulanOption == $bulan ? 'selected' : '' }}>
-                                                    {{ $bulanOption }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        <div class="absolute inset-y-0 flex items-center pointer-events-none right-3">
-                                            <svg xmlns="http://www.w3.org/2000/svg"
-                                                class="w-5 h-5 text-white transition-transform duration-200 rotate-180"
-                                                fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                                                stroke-width="2">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-                                            </svg>
-                                        </div>
-                                    </div>
-
-                                    {{-- Tahun --}}
-                                    <div class="relative">
-                                        <select id="tahun" name="tahun"
-                                            class="w-full px-6 py-2 pr-10 font-semibold text-white rounded-full shadow-md appearance-none bg-biru4 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                            onchange="this.form.submit()">
-                                            <option value="">Pilih Tahun</option>
-                                            @foreach ($daftarPeriode->pluck('tahun')->unique() as $tahunOption)
-                                                <option value="{{ $tahunOption }}"
-                                                    {{ $tahunOption == $tahun ? 'selected' : '' }}>
-                                                    {{ $tahunOption }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        <div class="absolute inset-y-0 flex items-center pointer-events-none right-3">
-                                            <svg xmlns="http://www.w3.org/2000/svg"
-                                                class="w-5 h-5 text-white transition-transform duration-200 rotate-180"
-                                                fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                                                stroke-width="2">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-                                            </svg>
-                                        </div>
-                                    </div>
-                                    {{-- Tombol Submit --}}
-                                </div>
-                            </form>
-                        </div>
-
                         <!-- Chloroplet -->
-                        <div>
-                            <div class="relative shadow-md map-container h-96 rounded-2xl">
-                                <div id="map" class="z-0 w-full h-full shadow-md rounded-xl"></div>
-                                <!-- Legend Choropleth -->
-                                <div class="absolute flex flex-col gap-1 px-3 py-2 text-xs bg-white rounded-md shadow left-4 bottom-4 bg-opacity-70"
-                                    style="z-index: 10;">
-                                    <div class="flex items-center gap-2">
-                                        <span class="inline-block w-4 h-4 rounded-sm" style="background:#E82D1F;"></span>
-                                        <span>Inflasi</span>
-                                    </div>
-                                    <div class="flex items-center gap-2">
-                                        <span class="inline-block w-4 h-4 rounded-sm" style="background:#388E3C;"></span>
-                                        <span>Deflasi</span>
-                                    </div>
+                        <div class="relative shadow-md map-container h-96 rounded-2xl">
+                            <div id="map" class="z-0 w-full h-full shadow-md rounded-xl"></div>
+                            <!-- Legend Choropleth -->
+                            <div class="absolute flex flex-col gap-1 px-3 py-2 text-xs bg-white rounded-md shadow left-4 bottom-4 bg-opacity-70"
+                                style="z-index: 10;">
+                                <div class="flex items-center gap-2">
+                                    <span class="inline-block w-4 h-4 rounded-sm" style="background:#E82D1F;"></span>
+                                    <span>Inflasi</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="inline-block w-4 h-4 rounded-sm" style="background:#388E3C;"></span>
+                                    <span>Deflasi</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                {{-- Tabel Komoditas - Improved Version --}}
-                <div class="w-full mx-auto max-w-7xl {{ $isBlackWhite ? 'grayscale' : '' }}">
-                    <!-- Header Section dengan Background -->
-                    <div class="relative p-8 mb-8 overflow-hidden bg-gray-100 shadow-lg rounded-xl">
-                        <div class="relative flex flex-col gap-8">
-                            <div>
-                                <!-- Title Section -->
-                                <div>
-                                    <h1 class="text-lg font-bold text-biru1 lg:text-xl">Tabel Peringkat Kabupaten/Kota</h1>
-                                    <h1 class="text-lg font-bold text-biru1 lg:text-xl">Menurut Komoditas Utama</h1>
-                                    <div class="flex items-center mt-4 font-bold text-biru1">
-                                        <div>
-                                            <p class="text-base">{{ $komoditasUtama }} -
-                                                {{ $bulan }}
-                                                {{ $tahun }}</p>
-                                        </div>
+            <div class="px-6 w-full mx-auto max-w-7xl {{ $isBlackWhite ? 'grayscale' : '' }}">
+                <div class="relative p-8 overflow-hidden bg-gray-100 shadow-lg rounded-xl">
+                    <div class="flex flex-row items-center justify-between w-full mb-6">
+                        <div>
+                            <h1 class="text-lg font-bold text-biru1 lg:text-xl">Tabel Peringkat Kabupaten/Kota</h1>
+                            <h1 class="text-lg font-bold text-biru1 lg:text-xl">Menurut Komoditas Utama</h1>
+                            <p class="text-base font-bold text-biru1">{{ $komoditasUtama }}</p>
+                        </div>
+                        <form method="GET" action="{{ route('dashboard.spasial') }}" class="flex items-end">
+                            <input type="hidden" name="jenis_data_inflasi" value="{{ $jenisDataInflasi }}">
+                            <input type="hidden" name="bulan" value="{{ $bulan }}">
+                            <input type="hidden" name="tahun" value="{{ $tahun }}">
+                            <input type="hidden" name="kabkota" value="{{ $kabkota }}">
+                            <div class="w-80">
+                                <div class="relative">
+                                    <select id="komoditas_utama" name="komoditas_utama"
+                                        class="w-full px-6 py-2 pr-10 font-semibold text-white rounded-full shadow-md appearance-none bg-biru4 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                        onchange="this.form.submit()">
+                                        <option value="">Pilih Komoditas</option>
+                                        @foreach ($daftarKomoditasUtama as $kom)
+                                            <option value="{{ $kom }}"
+                                                {{ ($komoditasUtama ?? 'BERAS') == $kom ? 'selected' : '' }}>
+                                                {{ $kom }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <div class="absolute inset-y-0 flex items-center pointer-events-none right-4">
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            class="w-5 h-5 text-white transition-transform duration-200"
+                                            fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                            stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M19 9l-7 7-7-7" />
+                                        </svg>
                                     </div>
                                 </div>
-
-                                <!-- Filter Section -->
-                                <div class="flex flex-col justify-end items-end">
-                                    <form method="GET" action="{{ route('dashboard.spasial') }}"
-                                        class="flex flex-col items-end gap-4">
-                                        <input type="hidden" name="jenis_data_inflasi" value="{{ $jenisDataInflasi }}">
-                                        <input type="hidden" name="bulan" value="{{ $bulan }}">
-                                        <input type="hidden" name="tahun" value="{{ $tahun }}">
-                                        <input type="hidden" name="kabkota" value="{{ $kabkota }}">
-
-                                        <div class="w-full max-w-sm">
-                                            <div class="relative">
-                                                <select id="komoditas_utama" name="komoditas_utama"
-                                                    class="px-6 py-2 pr-10 font-semibold text-white rounded-full shadow-md appearance-none w-80 bg-biru4 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                                    onchange="this.form.submit()">
-                                                    <option value="">Pilih Komoditas</option>
-                                                    @foreach ($daftarKomoditasUtama as $kom)
-                                                        <option value="{{ $kom }}"
-                                                            {{ ($komoditasUtama ?? 'BERAS') == $kom ? 'selected' : '' }}>
-                                                            {{ $kom }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                                <div
-                                                    class="absolute inset-y-0 flex items-center pointer-events-none right-4">
-                                                    <svg xmlns="http://www.w3.org/2000/svg"
-                                                        class="w-5 h-5 text-white transition-transform duration-200"
-                                                        fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                                                        stroke-width="2">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            d="M19 9l-7 7-7-7" />
-                                                    </svg>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
                             </div>
-
-                            {{-- Table Section --}}
-                            <div class="col-span-2 overflow-hidden bg-white border border-gray-100 shadow-xl rounded-xl">
-                                <!-- Table Content -->
+                        </form>
+                    </div>
+                    <div class="flex flex-row gap-6 w-full">
+                        <div class="flex-1 min-w-0">
+                            <div class="overflow-hidden bg-white border border-gray-100 shadow-xl rounded-xl">
                                 <div class="overflow-x-auto">
                                     <table class="w-full ">
                                         <thead class="text-sm border-b-2 bg-biru1 border-gray-50">
                                             <tr>
-                                                <th class="px-6 py-2 text-center" colspan="1">
+                                                <th class="px-6 py-2 text-center">
                                                     <div class="flex items-center justify-start gap-1">
-                                                        <span
-                                                            class="font-semibold tracking-wide text-white">Kabupaten/Kota</span>
+                                                        <span class="font-semibold tracking-wide text-white">Kabupaten/Kota</span>
                                                     </div>
                                                 </th>
                                                 <th class="px-3 py-2 text-center">
@@ -464,37 +442,31 @@
                                         <tbody class="text-sm text-center divide-y divide-gray-100">
                                             @foreach ($rankingKabKota as $index => $item)
                                                 <tr class="transition-colors duration-200 hover:bg-gray-50 group">
-                                                    <!-- Gabungan Ranking + Nama Wilayah -->
                                                     <td class="px-4 py-2 text-center">
                                                         <div class="flex items-center justify-start gap-2">
                                                             @if ($index < 3)
-                                                                <div
-                                                                    class="flex items-center justify-center w-6 h-6 rounded-full {{ $index === 0 ? 'bg-yellow-100 text-yellow-600' : ($index === 1 ? 'bg-gray-100 text-gray-600' : 'bg-orange-100 text-orange-600') }} font-bold ">
+                                                                <div class="flex items-center justify-center w-6 h-6 rounded-full {{ $index === 0 ? 'bg-yellow-100 text-yellow-600' : ($index === 1 ? 'bg-gray-100 text-gray-600' : 'bg-orange-100 text-orange-600') }} font-bold ">
                                                                     {{ $index + 1 }}
                                                                 </div>
                                                             @else
-                                                                <div
-                                                                    class="flex items-center justify-center w-6 h-6 font-medium rounded-full bg-blue-50 text-biru1">
+                                                                <div class="flex items-center justify-center w-6 h-6 font-medium rounded-full bg-blue-50 text-biru1">
                                                                     {{ $index + 1 }}
                                                                 </div>
                                                             @endif
-                                                            <span
-                                                                class="font-normal text-gray-900 transition-colors group-hover:text-biru1">
+                                                            <span class="font-normal text-gray-900 transition-colors group-hover:text-biru1 cursor-pointer nama-kabkota"
+                                                                data-kode-wil="{{ $item->kode_wil }}"
+                                                                data-nama-wil="{{ $item->nama_wil }}">
                                                                 {{ $item->nama_wil }}
                                                             </span>
                                                         </div>
                                                     </td>
-                                                    <!-- Andil MtM -->
                                                     <td class="px-3 py-2 text-center">
-                                                        <div
-                                                            class="inline-flex items-center px-2 py-0.5 rounded-full  font-semibold {{ getHeatClass($item->andil_mtm, $minAndilKab, $maxAndilKab, $maxAndilKab) }} transition-all duration-200 group-hover:scale-105">
+                                                        <div class="inline-flex items-center px-2 py-0.5 rounded-full font-semibold {{ getHeatClass($item->andil_mtm, $minAndilKab, $maxAndilKab, $maxAndilKab) }} transition-all duration-200 group-hover:scale-105">
                                                             {{ number_format($item->andil_mtm, 2, ',', '.') }}
                                                         </div>
                                                     </td>
-                                                    <!-- Inflasi MtM -->
                                                     <td class="px-3 py-2 text-center">
-                                                        <div
-                                                            class="inline-flex items-center px-2 py-0.5 rounded-full font-semibold {{ getinfClass($item->inflasi_mtm, $maxInflasiKab) }} transition-all duration-200 group-hover:scale-105 text-white">
+                                                        <div class="inline-flex items-center px-2 py-0.5 rounded-full font-semibold {{ getinfClass($item->inflasi_mtm, $maxInflasiKab) }} transition-all duration-200 group-hover:scale-105 text-white">
                                                             {{ number_format($item->inflasi_mtm, 2, ',', '.') }}
                                                         </div>
                                                     </td>
@@ -503,8 +475,6 @@
                                         </tbody>
                                     </table>
                                 </div>
-
-                                <!-- Table Footer -->
                                 <div class="px-6 py-4 border-t bg-gray-50">
                                     <div class="flex items-center justify-between text-sm text-gray-600">
                                         <div class="flex items-center gap-4">
@@ -524,11 +494,21 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="flex-1 min-w-0 flex flex-col justify-between">
+                            <div class="h-full bg-white border border-gray-100 shadow-xl rounded-xl flex flex-col justify-between">
+                                <div class="flex flex-col h-full">
+                                    <div class="flex items-center justify-between px-8 pt-8 pb-2">
+                                        <h2 id="judul-barchart-kota-teratas" class="text-lg font-bold text-biru1 lg:text-xl"></h2>
+                                    </div>
+                                    <div class="flex-1 flex items-center justify-center px-8 pb-8">
+                                        <div class="h-96 w-full" id="barchart-komoditas-kota-teratas"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-
             </div>
-
 
             {{-- ini buat dash spasialnya --}}
             <div>
@@ -788,6 +768,7 @@
     <script src="//unpkg.com/alpinejs" defer></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="{{ asset('js/dashboard/infBulananJatim.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
     <script>
         const topAndilMtM = @json($topAndilMtM);
         const topAndilYtD = @json($topAndilYtD);
@@ -796,12 +777,19 @@
         const topInflasiYtD = @json($topInflasiYtD);
         const topInflasiYoY = @json($topInflasiYoY);
         const inflasiWilayah = @json($inflasiWilayah);
+        // Data untuk barchart kabupaten/kota
+        const rankingKabKota = @json($rankingKabKota);
+        const inflasiKomoditasKotaTeratas = @json($inflasiKomoditasKotaTeratas);
+        const daftarKomoditasUtama = @json($daftarKomoditasUtama);
+        let currentNamaKota = window.rankingKabKota && window.rankingKabKota.length > 0 ? window.rankingKabKota[0].nama_wil : '';
+        let currentKodeKota = window.rankingKabKota && window.rankingKabKota.length > 0 ? window.rankingKabKota[0].kode_wil : '';
         window.topAndilMtM = topAndilMtM;
         window.topAndilYtD = topAndilYtD;
         window.topAndilYoY = topAndilYoY;
         window.topInflasiMtM = topInflasiMtM;
         window.topInflasiYtD = topInflasiYtD;
         window.topInflasiYoY = topInflasiYoY;
+        window.rankingKabKota = rankingKabKota;
         console.log("Top Andil MtM:", @json($topAndilMtM));
         console.log("Top Andil YtD:", @json($topAndilYtD));
         console.log("Top Andil YoY:", @json($topAndilYoY));
@@ -888,6 +876,145 @@
                     console.error('Gagal memuat atau memproses GeoJSON:', error);
                     map.setView([-7.6, 112.0], 8);
                 });
+
+            // Render barchart untuk kabupaten/kota
+            setTimeout(() => {
+                var chartDom = document.getElementById('barchart-komoditas-kabkota');
+                if (chartDom && window.rankingKabKota && window.rankingKabKota.length > 0) {
+                    var myChart = echarts.init(chartDom);
+                    var labels = window.rankingKabKota.map(item => item.nama_wil);
+                    var values = window.rankingKabKota.map(item => Number(item.andil_mtm));
+                    var option = {
+                        tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+                        grid: { left: '5%', right: '5%', bottom: '3%', top: '3%', containLabel: true },
+                        xAxis: { type: 'value', boundaryGap: [0, 0.01] },
+                        yAxis: {
+                            type: 'category',
+                            data: labels,
+                            inverse: true,
+                            axisLabel: { color: '#000000', fontSize: 12, fontWeight: 330 },
+                        },
+                        series: [{
+                            type: 'bar',
+                            data: values,
+                            itemStyle: { color: '#4C84B0' },
+                            label: {
+                                show: true,
+                                position: 'outside',
+                                color: '#063051',
+                                fontSize: 12,
+                                fontWeight: 350,
+                                formatter: function(params) { return params.value.toFixed(2); },
+                            },
+                        }],
+                    };
+                    myChart.setOption(option);
+                }
+                // Barchart komoditas utama pada kota teratas
+                var chartDom2 = document.getElementById('barchart-komoditas-kota-teratas');
+                if (chartDom2 && inflasiKomoditasKotaTeratas && inflasiKomoditasKotaTeratas.length > 0) {
+                    var myChart2 = echarts.init(chartDom2);
+                    var labels2 = inflasiKomoditasKotaTeratas.map(item => item.nama_kom);
+                    var values2 = inflasiKomoditasKotaTeratas.map(item => Number(item.inflasi_mtm));
+                    var option2 = {
+                        title: {
+                            
+                            left: 'center',
+                            top: 0,
+                            textStyle: { fontSize: 16, fontWeight: 600, color: '#063051' }
+                        },
+                        tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+                        grid: { left: '5%', right: '5%', bottom: '3%', top: 40, containLabel: true },
+                        xAxis: { type: 'value', boundaryGap: [0, 0.01] },
+                        yAxis: {
+                            type: 'category',
+                            data: labels2,
+                            inverse: true,
+                            axisLabel: { color: '#000000', fontSize: 12, fontWeight: 330 },
+                        },
+                        series: [{
+                            type: 'bar',
+                            data: values2,
+                            itemStyle: { color: '#E82D1F' },
+                            label: {
+                                show: true,
+                                position: 'outside',
+                                color: '#063051',
+                                fontSize: 12,
+                                fontWeight: 350,
+                                formatter: function(params) { return params.value.toFixed(2); },
+                            },
+                        }],
+                    };
+                    myChart2.setOption(option2);
+                }
+            }, 500);
+        });
+
+        async function fetchInflasiKomoditasKabKota(kodeWil) {
+            try {
+                const params = new URLSearchParams({
+                    kode_wil: kodeWil,
+                    periode: '{{ $bulan }} {{ $tahun }}',
+                    jenis_data_inflasi: '{{ $jenisDataInflasi }}',
+                });
+                const response = await fetch(`/dashboard/spasial/komoditas-kabkota-data?${params.toString()}`);
+                if (!response.ok) throw new Error('Gagal fetch data');
+                return await response.json();
+            } catch (e) {
+                return [];
+            }
+        }
+        function renderBarchartKomoditasKotaTeratas(data, namaKota) {
+            var chartDom2 = document.getElementById('barchart-komoditas-kota-teratas');
+            var judul = document.getElementById('judul-barchart-kota-teratas');
+            if (judul) {
+                judul.textContent = 'Inflasi MtM Komoditas Utama di ' + (namaKota || '-');
+            }
+            if (chartDom2 && data && data.length > 0) {
+                var myChart2 = echarts.init(chartDom2);
+                var labels2 = data.map(item => item.nama_kom);
+                var values2 = data.map(item => Number(item.inflasi_mtm));
+                var option2 = {
+                    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+                    grid: { left: '5%', right: '5%', bottom: '3%', top: 10, containLabel: true },
+                    xAxis: { type: 'value', boundaryGap: [0, 0.01] },
+                    yAxis: {
+                        type: 'category',
+                        data: labels2,
+                        inverse: true,
+                        axisLabel: { color: '#000000', fontSize: 12, fontWeight: 330 },
+                    },
+                    series: [{
+                        type: 'bar',
+                        data: values2,
+                        itemStyle: { color: '#E82D1F' },
+                        label: {
+                            show: true,
+                            position: 'outside',
+                            color: '#063051',
+                            fontSize: 12,
+                            fontWeight: 350,
+                            formatter: function(params) { return params.value.toFixed(2); },
+                        },
+                    }],
+                };
+                myChart2.setOption(option2);
+            }
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                renderBarchartKomoditasKotaTeratas(inflasiKomoditasKotaTeratas, currentNamaKota);
+                document.querySelectorAll('.nama-kabkota').forEach(function(el) {
+                    el.addEventListener('click', async function() {
+                        const kodeWil = this.getAttribute('data-kode-wil');
+                        const namaWil = this.getAttribute('data-nama-wil');
+                        // Fetch data via AJAX
+                        const data = await fetchInflasiKomoditasKabKota(kodeWil);
+                        renderBarchartKomoditasKotaTeratas(data, namaWil);
+                    });
+                });
+            }, 500);
         });
     </script>
 @endpush

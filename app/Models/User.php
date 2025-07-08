@@ -64,4 +64,20 @@ class User extends Authenticatable
     {
         return $this->attributes['nama'];
     }
+
+    // Helper methods untuk mengecek role
+    public function isProvinsi()
+    {
+        return $this->id_role === 1;
+    }
+
+    public function isKabkot()
+    {
+        return $this->id_role === 2;
+    }
+
+    public function getRoleName()
+    {
+        return $this->role ? $this->role->nama_role : 'Unknown';
+    }
 }

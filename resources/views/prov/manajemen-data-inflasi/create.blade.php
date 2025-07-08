@@ -1,19 +1,5 @@
 @extends('layouts.dashboard')
 
-@push('styles')
-    <style>
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-    </style>
-@endpush
-
 @section('body')
     <h2 class="p-10 pl-24 text-4xl font-bold text-biru1">Silahkan
         <span class="text-kuning1">isi form</span>
@@ -23,11 +9,6 @@
     <div class="max-w-lg p-6 ml-24 bg-white rounded-lg shadow-md">
         <form id="uploadForm" enctype="multipart/form-data" class="space-y-4">
             @csrf
-            {{-- <div class="mb-4 text-left">
-                <label for="nama" class="block font-semibold text-biru1">Username Upload</label>
-                <input type="text" id="nama" name="nama" value="{{ Auth::user()->nama }}" readonly
-                    class="w-full p-2 mt-1 bg-gray-100 border rounded-2xl border-biru5 focus:ring-biru5">
-            </div> --}}
 
             <div class="mb-4 text-left">
                 <label for="periode" class="block font-semibold text-biru1">
@@ -73,16 +54,9 @@
 
             <div class="mb-4">
                 <label class="block mb-1 font-medium text-biru1">Upload Data</label>
-                <input type="file" id="fileInput" name="file" accept=".xlsx" required
+                <input type="file" name="file" accept=".xlsx" required
                     class="w-full p-2 mt-1 border rounded-2xl border-biru5">
                 <label class="block mt-1 text-xs text-biru1">Pastikan file memiliki format excel (.xlsx)</label>
-            </div>
-
-            <!-- Progress bar -->
-            <div id="progressContainer" class="hidden w-full h-4 overflow-hidden bg-gray-200 rounded-full">
-                <div id="progressBar"
-                    class="h-4 text-xs leading-4 text-center text-white transition-all duration-300 ease-in-out bg-biru1"
-                    style="width: 0%">0%</div>
             </div>
 
             <button type="submit" id="submitBtn"
@@ -152,7 +126,7 @@
         }
 
         function openGagalModal(message) {
-            document.getElementById('modalGagalMessage').textContent = message || 'Terjadi kesalahan saat mengupload data.';
+            document.getElementById('modalGagalMessage').innerHTML = message || 'Terjadi kesalahan saat mengupload data.';
             document.getElementById('modalGagal').classList.remove('hidden');
         }
 
@@ -203,9 +177,26 @@
                         periodeError.textContent = response.errors.periode;
                         periodeError.classList.remove('hidden');
                     }
-                    openGagalModal('Validasi gagal: ' + (response.errors.periode || 'Periksa data Anda.'));
+                    let errorMsg = 'Validasi gagal.';
+                    if (response.errors && Array.isArray(response.errors)) {
+                        errorMsg += '<ul style="text-align:left;">';
+                        response.errors.forEach(function(err) {
+                            errorMsg += '<li>' + err + '</li>';
+                        });
+                        errorMsg += '</ul>';
+                    } else if (response.message) {
+                        errorMsg += ' ' + response.message;
+                    }
+                    openGagalModal(errorMsg);
                 } else {
-                    openGagalModal('Terjadi kesalahan jaringan. Silakan coba lagi.');
+                    let errorMsg = 'Terjadi kesalahan jaringan. Silakan coba lagi.';
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        if (response && response.message) {
+                            errorMsg = response.message;
+                        }
+                    } catch (e) {}
+                    openGagalModal(errorMsg);
                 }
             };
 

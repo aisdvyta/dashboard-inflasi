@@ -28,6 +28,11 @@
                         {{ $errors->first('login') }}
                     </div>
                 @endif
+                @if ($errors->has('access'))
+                    <div class="font-semibold mb-4 text-merah2">
+                        {{ $errors->first('access') }}
+                    </div>
+                @endif
                 <form action="{{ route('login') }}" method="POST">
                     @csrf
                     <div class="mb-4 text-left">

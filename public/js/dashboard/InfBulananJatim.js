@@ -22,7 +22,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
         var komoditas = data.map((item) => {
             return item.nama_kom.length > 17
-                ? item.nama_kom.substring(0, 17) + "\n" + item.nama_kom.substring(17)
+                ? item.nama_kom.substring(0, 17) +
+                      "\n" +
+                      item.nama_kom.substring(17)
                 : item.nama_kom;
         });
 

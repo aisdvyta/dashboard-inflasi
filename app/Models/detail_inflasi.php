@@ -11,7 +11,6 @@ class detail_inflasi extends Model
 
     protected $fillable = [
         'id_inflasi',
-        'id_satker',
         'id_kom',
         'id_wil',
         'id_flag',
@@ -38,11 +37,11 @@ class detail_inflasi extends Model
 
     public function komoditas()
     {
-        return $this->belongsTo(master_komoditas::class, 'id_kom');
+        return $this->belongsTo(master_komoditas::class, 'id_kom', 'kode_kom');
     }
 
     public function flag()
     {
-        return $this->belongsTo(master_komoditas::class, 'id_flag');
+        return $this->belongsTo(master_komoditas::class, 'id_flag', 'flag');
     }
 }

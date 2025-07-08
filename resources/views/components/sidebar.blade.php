@@ -102,10 +102,10 @@
                 <ul id="dropdownMenuManajemenAkun" class="hidden mt-2 ml-4 space-y-2 bg-white border-l-2 border-biru5">
                     <li><a href="{{ route('manajemen-akun.index') }}"
                             class="flex items-center px-2 py-2 ml-8 font-normal text-[15px] hover:bg-biru5 rounded-lg menu-text"
-                            data-page="inflasi-bulanan">Tabel Manajemen Akun</a></li>
+                            data-page="manajemen-akun">Tabel Manajemen Akun</a></li>
                     <li><a href="{{ route('master-satker.index') }}"
                             class="flex items-center px-2 py-2 ml-8 font-normal text-[15px] hover:bg-biru5 rounded-lg menu-text"
-                            data-page="inflasi-spasial">Master Satker</a></li>
+                            data-page="manajemen-satker">Master Satker</a></li>
                 </ul>
             </li>
             <li class="relative">
@@ -125,10 +125,17 @@
                 <ul id="dropdownMenuManajemenData" class="hidden mt-2 ml-4 space-y-2 bg-white border-l-2 border-biru5">
                     <li><a href="{{ route('manajemen-data-inflasi.index') }}"
                             class="flex items-center px-2 py-2 ml-8 font-normal text-[15px] hover:bg-biru5 rounded-lg menu-text"
-                            data-page="inflasi-bulanan">Tabel Manajemen Data Inflasi</a></li>
-                    <li><a href="{{ route('master-komoditas.index') }}"
+                            data-page="manajemen-data-inflasi.index">Tabel Manajemen Data Inflasi</a></li>
+                    <li>
+                        <a href="{{ route('master-komoditas.index') }}"
                             class="flex items-center px-2 py-2 ml-8 font-normal text-[15px] hover:bg-biru5 rounded-lg menu-text"
-                            data-page="inflasi-spasial">Master Komoditas</a></li>
+                            data-page="master-komoditas.index">Master Komoditas</a>
+                    </li>
+                    <li>
+                        <a href="{{ route('komoditas-utama.index') }}"
+                            class="flex items-center px-2 py-2 ml-8 font-normal text-[15px] hover:bg-biru5 rounded-lg menu-text"
+                            data-page="komoditas-utama.index">Master Komoditas Utama</a>
+                    </li>
                 </ul>
             </li>
 
@@ -149,7 +156,7 @@
                 <ul id="dropdownMenuDashboard" class="hidden mt-2 ml-4 space-y-2 bg-white border-l-2 border-biru5">
                     <li><a href="{{ route('dashboard.bulanan') }}"
                             class="flex items-center px-2 py-2 ml-8 font-normal text-[15px] hover:bg-biru5 rounded-lg menu-text"
-                            data-page="inflasi-bulanan">Inflasi Bulanan</a></li>
+                            data-page="dashboard.bulanan">Inflasi Bulanan</a></li>
                     <li><a href="{{ route('dashboard.spasial') }}"
                             class="flex items-center px-2 py-2 ml-8 font-normal text-[15px] hover:bg-biru5 rounded-lg menu-text"
                             data-page="inflasi-spasial">Inflasi Spasial</a></li>

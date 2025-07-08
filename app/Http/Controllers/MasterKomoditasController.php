@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 class MasterKomoditasController extends Controller
 {
+    //BUAT KOMODITAS BIASA
     public function index(Request $request)
     {
         $search = $request->input('search'); // Ambil input pencarian
@@ -67,12 +68,16 @@ class MasterKomoditasController extends Controller
         $komoditas = master_komoditas::where('kode_kom', $kode_kom)->firstOrFail();
 
         $request->validate([
-            'kode_kom' => ['required', 'string', function ($attribute, $value, $fail) use ($kode_kom) {
-                $expectedLength = strlen($kode_kom);
-                if (strlen($value) !== $expectedLength) {
-                    $fail("Kode komoditas harus memiliki panjang $expectedLength digit.");
+            'kode_kom' => [
+                'required',
+                'string',
+                function ($attribute, $value, $fail) use ($kode_kom) {
+                    $expectedLength = strlen($kode_kom);
+                    if (strlen($value) !== $expectedLength) {
+                        $fail("Kode komoditas harus memiliki panjang $expectedLength digit.");
+                    }
                 }
-            }],
+            ],
             'nama_kom' => 'required|string|max:255',
         ]);
 
@@ -84,10 +89,34 @@ class MasterKomoditasController extends Controller
         return redirect()->route('master-komoditas.index')->with('success', 'Data komoditas berhasil diperbarui.');
     }
 
-    
+
     public function destroy(master_komoditas $komoditas)
     {
         $komoditas->delete();
         return redirect()->route('master-komoditas.index')->with('success', 'Komoditas berhasil dihapus.');
+    }
+
+    //BUAT KOMODITAS UTAMA
+    public function storeKomUtama(Request $request)
+    {
+        $request->validate([
+            'komoditas_id' => 'required|exists:master_komoditas,id',
+        ], [
+            'komoditas_id.required' => 'Silakan pilih komoditas utama.',
+            'komoditas_id.exists' => 'Komoditas tidak ditemukan.',
+        ]);
+
+        // Ambil data dari master_komoditas
+        $komoditas = master_komoditas::findOrFail($request->komoditas_id);
+
+        // Simpan ke tabel master_kom_utama
+        MasterKomUtama::create([
+            'kode_kom' => $komoditas->kode_kom,
+            'nama_kom' => $komoditas->nama_kom,
+            'flag' => $komoditas->flag,
+            // tambahkan kolom lain jika ada di tabel master_kom_utama
+        ]);
+
+        return redirect()->route('komoditas-utama.index')->with('success', 'Komoditas utama berhasil ditambahkan.');
     }
 }

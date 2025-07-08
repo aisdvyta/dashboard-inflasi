@@ -26,7 +26,20 @@ class LoginController extends Controller
             $loginType => $request->input('nama'),
             'password' => $request->input('password')
         ])) {
-            return redirect()->intended('/AdminProv');
+            // Redirect berdasarkan role
+            $user = Auth::user();
+
+            if ($user->id_role == 1) {
+                // Admin Provinsi
+                return redirect()->intended('/AdminProv');
+            } elseif ($user->id_role == 2) {
+                // Admin Kabkot
+                return redirect()->intended('/Kabkot');
+            } else {
+                // Role tidak dikenal
+                Auth::logout();
+                return redirect()->back()->withErrors(['login' => 'Role tidak valid!']);
+            }
         }
 
         return redirect()->back()->withErrors(['login' => 'Gagal login, periksa kembali username/email dan password Anda!']);
