@@ -57,8 +57,9 @@
                 @php
                     $tabs = ['ASEM 1', 'ASEM 2', 'ASEM 3', 'ATAP'];
                 @endphp
+                @auth
                 @foreach ($tabs as $tab)
-                    <a href="{{ route('dashboard.spasial', ['jenis_data_inflasi' => $tab]) }}"
+                        <a href="{{ route('dashboard.kelompok', ['jenis_data_inflasi' => $tab]) }}"
                         class="tab-link flex items-center px-14 py-2 transition-all duration-300 rounded-t-xl {{ $jenisDataInflasi === $tab ? 'bg-biru1 text-white' : 'bg-biru4 text-white' }} hover:bg-biru1 group"
                         data-tab="{{ $tab }}" id="tab-{{ strtolower(str_replace(' ', '-', $tab)) }}">
                         <span class="menu-text text-[15px] font-medium transition duration-100">
@@ -66,6 +67,16 @@
                         </span>
                     </a>
                 @endforeach
+                @endauth
+                @guest
+                    <a href="{{ route('dashboard.kelompok', ['jenis_data_inflasi' => 'ATAP']) }}"
+                        class="tab-link flex items-center px-14 py-2 transition-all duration-300 rounded-t-xl bg-biru1 text-white group"
+                        data-tab="ATAP" id="tab-atap">
+                        <span class="menu-text text-[15px] font-medium transition duration-100">
+                            ATAP
+                        </span>
+                    </a>
+                @endguest
             </div>
 
             <div class="flex gap-2 items-start">
@@ -115,23 +126,40 @@
                         <input type="hidden" name="jenis_data_inflasi" value="{{ $jenisDataInflasi }}">
                         <div class="flex relative mb-2 w-full">
                             <div class="relative w-full">
-                                <select id="kabkota" name="kabkota"
-                                    class="px-6 py-2 w-full font-semibold text-white rounded-full shadow appearance-none bg-biru4 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                    onchange="this.form.submit()">
-                                    <option value="">Pilih Kabupaten/Kota</option>
-                                    <option value="3500" {{ ($kabkota ?? '') == '3500' ? 'selected' : '' }}>Provinsi
-                                        Jawa Timur</option>
-                                    @foreach ($daftarKabKota as $kabkotaOption)
-                                        <option value="{{ $kabkotaOption->kode_wil }}"
-                                            {{ ($kabkota ?? '') == $kabkotaOption->kode_wil ? 'selected' : '' }}>
-                                            {{ $kabkotaOption->nama_wil }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                <svg class="absolute right-6 top-1/2 w-5 h-5 text-white -translate-y-1/2 pointer-events-none"
-                                    fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-                                </svg>
+                                @php
+                                    $user = Auth::user();
+                                    $isKabkot = $user && $user->id_role == 2;
+                                    $isAsem = in_array($jenisDataInflasi, ['ASEM 1', 'ASEM 2', 'ASEM 3']);
+                                    $shouldRestrict = $isKabkot && $isAsem;
+                                @endphp
+
+                                @if($shouldRestrict && $daftarKabKota->count() == 1)
+                                    {{-- Show as text when only one option --}}
+                                    <div class="px-6 py-2 w-full font-semibold text-white rounded-full shadow bg-biru4">
+                                        {{ $daftarKabKota->first()->nama_wil }}
+                                    </div>
+                                    <input type="hidden" name="kabkota" value="{{ $daftarKabKota->first()->kode_wil }}">
+                                @else
+                                    <select id="kabkota" name="kabkota"
+                                        class="px-6 py-2 w-full font-semibold text-white rounded-full shadow appearance-none bg-biru4 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                        onchange="this.form.submit()">
+                                        @if(!$shouldRestrict)
+                                            <option value="">Pilih Kabupaten/Kota</option>
+                                            <option value="3500" {{ ($kabkota ?? '') == '3500' ? 'selected' : '' }}>Provinsi
+                                                Jawa Timur</option>
+                                        @endif
+                                        @foreach ($daftarKabKota as $kabkotaOption)
+                                            <option value="{{ $kabkotaOption->kode_wil }}"
+                                                {{ ($kabkota ?? '') == $kabkotaOption->kode_wil ? 'selected' : '' }}>
+                                                {{ $kabkotaOption->nama_wil }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <svg class="absolute right-6 top-1/2 w-5 h-5 text-white -translate-y-1/2 pointer-events-none"
+                                        fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                @endif
                             </div>
                         </div>
                         <div class="flex relative gap-2 w-full">
@@ -491,34 +519,75 @@
             const chartDom = document.getElementById('andilKelompokBar');
             if (chartDom) {
                 const myChart = echarts.init(chartDom);
+
+                // Ambil juga nilai inflasi untuk tooltip
+                const inflasiValues = kelompokData.map(item => parseFloat(item.inflasi_mtm ?? item.inflasi_MtM ??
+                    0) || 0);
+
+                // Fungsi untuk memecah label jadi dua baris jika terlalu panjang
+                function wrapLabel(label, maxLen = 20) {
+                    if (label.length <= maxLen) return label;
+                    // Pecah di spasi terdekat sebelum maxLen
+                    let idx = label.lastIndexOf(' ', maxLen);
+                    if (idx === -1) idx = maxLen;
+                    return label.slice(0, idx) + '\n' + label.slice(idx + 1);
+                }
+
                 const option = {
                     grid: {
-                        left: 150,
-                        right: 40,
-                        top: 20,
-                        bottom: 30
+                        left: 130,
+                        right: 20,
+                        top: 10,
+                        bottom: 20
+                    },
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'shadow',
+                            z: 100, // pointer di atas elemen lain
+                            label: {
+                                show: false
+                            }
+                        },
+                        formatter: function(params) {
+                            const p = Array.isArray(params) ? params[0] : params;
+                            const idx = p.dataIndex;
+                            const andil = p.value.toFixed(2).replace('.', ',');
+
+                            const inflasi = (inflasiValues[idx] ?? 0).toFixed(2).replace('.', ',');
+
+                            return `<b style="color:#063051;font-size:14px;">${labels[idx]}</b><br/>
+                                <span style="font-size:14px;"> Andil Inflasi: ${andil}<br/>
+                                <span style="font-size:14px;"> Inflasi: ${inflasi}`;
+                        }
                     },
                     xAxis: {
                         type: 'value',
                         axisLabel: {
                             fontWeight: 'semibold',
-                            color: '#3B4A6B'
+                            color: '#3B4A6B',
+                            formatter: function(value) {
+                                return value.toFixed(2).replace('.', ',');
+                            }
                         },
                         splitLine: {
-                            show: false
+                            show: false,
                         }
                     },
                     yAxis: {
                         type: 'category',
-                        data: labels,
+                        data: labels.map(l => wrapLabel(l)),
                         axisLabel: {
                             fontWeight: 'semibold',
-                            color: '#3B4A6B',
-                            fontSize: 16
+                            color: '#063051',
+                            fontSize: 18,
+                            lineHeight: 12
                         },
                         axisTick: {
                             show: false
-                        }
+                        },
+                        // Tambahkan ini agar area hover seluruh baris y aktif
+                        triggerEvent: true
                     },
                     series: [{
                         type: 'bar',
@@ -527,17 +596,20 @@
                             show: true,
                             position: 'right',
                             fontWeight: 'semibold',
-                            fontSize: 16,
-                            color: '#3B4A6B',
+                            fontSize: 12,
+                            color: '#063051',
                             formatter: function(params) {
-                                return params.value.toFixed(2);
+                                // Format angka dengan koma
+                                return params.value.toFixed(2).replace('.', ',');
                             }
                         },
                         itemStyle: {
-                            color: '#4C84B0',
-                            borderRadius: [0, 8, 8, 0]
+                            color: '#4C84B0'
                         },
-                        barWidth: 24
+                        barWidth: 24,
+                        emphasis: {
+                            focus: 'series'
+                        }
                     }]
                 };
                 myChart.setOption(option);

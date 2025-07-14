@@ -19,6 +19,17 @@
 
         <!-- Konten -->
         <div class="translate-x-72 translate-y-10">
+                        <!-- Tombol Kembali -->
+            <div class="mb-4">
+                <a href="{{ route('landingPage') }}"
+                   class="inline-flex items-center gap-2 text-biru1 hover:text-biru4 transition-colors duration-200">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                    Kembali ke Beranda
+                </a>
+            </div>
+
             <h2 class="text-4xl font-bold text-biru1 pb-6">Silahkan <span class="text-kuning1">Login</span> Terlebih Dahulu!
             </h2>
 

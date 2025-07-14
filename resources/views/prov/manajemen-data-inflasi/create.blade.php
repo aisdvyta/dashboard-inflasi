@@ -162,8 +162,8 @@
                 if (xhr.status === 200) {
                     try {
                         const response = JSON.parse(xhr.responseText);
-                        if (response.success) {
-                            openBerhasilModal(response.message || 'Data berhasil diupload!');
+                        if (response.success && response.redirect_url) {
+                            window.location.href = response.redirect_url + '?status=success';
                         } else {
                             openGagalModal(response.message || 'Terjadi kesalahan saat mengupload data.');
                         }

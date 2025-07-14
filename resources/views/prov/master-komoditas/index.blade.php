@@ -4,8 +4,8 @@
 @section('body')
     <div class="container mx-auto p-6 relative">
         <div class="flex-col justify-between items-center mb-4">
-            <h2 class="text-3xl font-bold text-biru1 mb-4">Tabel
-                <span class="font-bold text-kuning1">Manajemen Master Komoditas</span>
+            <h2 class="text-3xl font-bold text-biru1 mb-4">Tabel Manajemen
+                <span class="font-bold text-kuning1">Master Komoditas</span>
             </h2>
 
             <div class="flex items-center justify-between gap-4">

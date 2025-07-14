@@ -18,7 +18,7 @@
                 Provinsi Jawa Timur melalui visualisasi yang interaktif dan informatif.
             </p>
             <a href="#"
-                class="inline-flex items-center rounded-2xl gap-4 mt-5 pr-2 pl-4 py-1 bg-biru4 text-white font-semibold rounded-lg transition-all duration-300 hover:bg-biru1 hover:translate-x-2">
+                class="inline-flex items-center rounded-2xl gap-4 mt-5 pr-2 pl-4 py-1 bg-biru4 text-white font-semibold transition-all duration-300 hover:bg-biru1 hover:translate-x-2">
                 Cari tau lebih lanjut
                 <img src="{{ asset('images/landingMain1/arrowRight.svg') }}" alt="panah kanan icon">
                 <span class="text-lg"></span>
@@ -59,7 +59,7 @@
     <!-- Ini Main 3 -->
     <!-- Section Dashboard -->
     <div>
-        @include('components.dashboardcard')
+        @include('components.dashboardcard', ['uploads' => $uploads, 'search' => $search])
     </div>
 
     <!-- Ini Main 4 -->

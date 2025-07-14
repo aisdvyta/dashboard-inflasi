@@ -6,35 +6,45 @@ use App\Http\Controllers\MasterKomoditasController;
 use App\Http\Controllers\UploadController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\DaftarTabelInflasiController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\MasterKomUtamaController;
 
 
 // USER //
 Route::get('/', [UploadController::class, 'landing'])->name('landingPage');
 
-Route::get('/DaftarTabelInflasi', function () {
-    return view('user.daftar-tabel-inflasi.index');
-})->name('daftar-tabel-inlfasi.index');
+Route::get('/DaftarTabelInflasi', [DaftarTabelInflasiController::class, 'index'])->name('daftar-tabel-inflasi.index');
+Route::get('/DaftarTabelInflasi/{id}', [DaftarTabelInflasiController::class, 'show'])->name('daftar-tabel-inflasi.show');
+Route::get('/DaftarTabelInflasi/{id}/download', [DaftarTabelInflasiController::class, 'download'])->name('daftar-tabel-inflasi.download');
 
 // PROV //
-
 Route::get('/check-auth', function () {
     return dd(Auth::user());
 });
 
-Route::get('/ManajemenDataInflasi', function () {
-    return view('prov.manajemen-data-inflasi.index');
-})->name('manajemen-data.index');
-Route::get('/MasterKomoditas', function () {
-    return view('prov.master-komoditas.index');
-})->name('master-komoditas.index');
-
 // KABKOT //
 Route::get('/Kabkot', function () {
-    return view('kabkot.dashboard');
+    return view('kabkot.index');
 })->name('landingPageKabkot');
+
+// DASHBOARD //
+Route::get('/dashboard/infkelompok', [DashboardController::class, 'showInflasiKelompok'])->name('dashboard.kelompok');
+Route::get('/dashboard/infseries', [DashboardController::class, 'showSeriesInflasi'])->name('dashboard.series');
+Route::get('/dashboard/infbulanan', [DashboardController::class, 'showInflasiBulanan'])->name('dashboard.bulanan');
+Route::get('/dashboard/infspasial', [DashboardController::class, 'showInflasiSpasial'])->name('dashboard.spasial');
+Route::get('/dashboard/export-excel', [DashboardController::class, 'exportExcel'])->name('dashboard.export-excel');
+Route::get('/dashboard/spasial/komoditas-kabkota-data', [DashboardController::class, 'getInflasiKomoditasKabKotaAjax']);
+
+// ROUTE MANAJEMEN DATA INFLASI YANG BISA DIAKSES SEMUA YANG LOGIN
+Route::middleware(['auth'])->group(function () {
+    Route::get('/TabelDataInflasi', [UploadController::class, 'index'])->name('manajemen-data-inflasi.index');
+    // Route yang lebih spesifik harus diletakkan sebelum route dengan parameter
+    Route::get('/TabelDataInflasi/import', [UploadController::class, 'create'])->name('manajemen-data-inflasi.create');
+    Route::get('/TabelDataInflasi/{data_name}', [UploadController::class, 'show'])->name('manajemen-data-inflasi.show');
+});
 
 // ROUTES UNTUK ADMIN PROVINSI //
 Route::middleware(['auth', 'provinsi'])->group(function () {
@@ -57,12 +67,9 @@ Route::middleware(['auth', 'provinsi'])->group(function () {
     Route::get('/MasterSatker/{kode_satker}/edit', [MasterSatkerController::class, 'edit'])->name('master-satker.edit');
     Route::put('/MasterSatker/{kode_satker}', [MasterSatkerController::class, 'update'])->name('master-satker.update');
 
-
-    // MANAJEMEN DATA INFLASI //
-    Route::get('/TabelDataInflasi', [UploadController::class, 'index'])->name('manajemen-data-inflasi.index');
-    Route::get('/TabelDataInflasi/import', [UploadController::class, 'create'])->name('manajemen-data-inflasi.create');
+    // MANAJEMEN DATA INFLASI (KHUSUS PROVINSI)
     Route::post('/upload-inflasi', [UploadController::class, 'uploadInflasiAjax'])->name('upload.inflasi.ajax');
-    Route::get('/TabelDataInflasi/{data_name}', [UploadController::class, 'show'])->name('manajemen-data-inflasi.show');
+    Route::post('/update-inflasi/{id}', [UploadController::class, 'updateInflasiAjax'])->name('update.inflasi.ajax');
     Route::delete('/TabelDataInflasi/{id}', [UploadController::class, 'destroy'])->name('manajemen-data-inflasi.destroy');
     Route::get('/TabelDataInflasi/{id}/edit', [UploadController::class, 'edit'])->name('manajemen-data-inflasi.edit');
     Route::put('/TabelDataInflasi/{id}', [UploadController::class, 'update'])->name('manajemen-data-inflasi.update');
@@ -77,29 +84,17 @@ Route::middleware(['auth', 'provinsi'])->group(function () {
     Route::get('/MasterKomoditas/{kode_kom}/edit', [MasterKomoditasController::class, 'edit'])->name('master-komoditas.edit');
     Route::put('/MasterKomoditas/{kode_kom}', [MasterKomoditasController::class, 'update'])->name('master-komoditas.update');
 
-    // MASTER KOMODITAS UTAMA//
-    Route::get('/KomoditasUtama', function () {
-        return view('prov.komoditas-utama.index');
-    })->name('komoditas-utama.index');
+    // MASTER KOMODITAS UTAMA
+    Route::get('/KomoditasUtama', [MasterKomoditasController::class, 'indexKomUtama'])->name('komoditas-utama.index');
     Route::post('/KomoditasUtama', [MasterKomoditasController::class, 'storeKomUtama'])->name('komoditas-utama.storeKomUtama');
-
-
-    // DASHBOARD //
-    Route::get('/dashboard/infkelompok', [DashboardController::class, 'showInflasiKelompok'])->name('dashboard.kelompok');
-    Route::get('/dashboard/infseries', [DashboardController::class, 'showSeriesKomoditas'])->name('dashboard.series');
-    Route::get('/dashboard/infbulanan', [DashboardController::class, 'showInflasiBulanan'])->name('dashboard.bulanan');
-    Route::get('/dashboard/infspasial', [DashboardController::class, 'showInflasiSpasial'])->name('dashboard.spasial');
-    Route::get('/dashboard/export-excel', [DashboardController::class, 'exportExcel'])->name('dashboard.export-excel');
-    Route::get('/dashboard/spasial/komoditas-kabkota-data', [\App\Http\Controllers\DashboardController::class, 'getInflasiKomoditasKabKotaAjax']);
-    Route::get('/dashboard/series-komoditas', [DashboardController::class, 'showSeriesKomoditas'])->name('dashboard.series-komoditas');
+    Route::get('/KomoditasUtama/search', [MasterKomoditasController::class, 'searchKomUtama'])->name('komoditas-utama.searchKomUtama');
+    Route::get('/KomoditasUtama/{kode_kom}/edit', [MasterKomoditasController::class, 'editKomUtama'])->name('komoditas-utama.editKomUtama');
+    Route::put('/KomoditasUtama/{kode_kom}', [MasterKomoditasController::class, 'updateKomUtama'])->name('komoditas-utama.updateKomUtama');
+    Route::delete('/KomoditasUtama/{kode_kom}', [MasterKomoditasController::class, 'destroyKomUtama'])->name('komoditas-utama.destroyKomUtama');
 });
 
 // ROUTES UNTUK ADMIN KABKOT //
 Route::middleware(['auth', 'kabkot'])->group(function () {
-    // Route khusus untuk Admin Kabkot
-    Route::get('/KabkotDashboard', function () {
-        return view('kabkot.dashboard');
-    })->name('kabkot.dashboard');
 
     // Route lain untuk Admin Kabkot bisa ditambahkan di sini
 });
@@ -108,8 +103,3 @@ Route::middleware(['auth', 'kabkot'])->group(function () {
 Route::get('/login', [LoginController::class, 'index'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-
-// COBA //
-Route::get('/coba', function () {
-    return view('cobabuat-moda');
-})->name('inicobabuatmoda');

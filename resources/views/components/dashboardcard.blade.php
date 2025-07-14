@@ -51,7 +51,7 @@
                             <div>
                                 <p class="text-base text-biru1 mt-1">Dashboard yang menyajikan hasil visualisasi data
                                     inflasi bulanan di wilayah Provinsi Jawa Timur</p>
-                                <a href="#" class="text-base text-biru4 mt-2 inline-block">Lihat Selengkapnya →</a>
+                                <a href="{{ route('dashboard.bulanan') }}" class="text-base text-biru4 mt-2 inline-block">Lihat Selengkapnya →</a>
                             </div>
                         </div>
                     </div>
@@ -65,7 +65,7 @@
                             <div>
                                 <p class="text-base text-biru1 mt-1">Dashboard yang menyajikan hasil visualisasi data
                                     inflasi bulanan menurut kelompok pengeluaran.</p>
-                                <a href="#" class="text-base text-biru4 mt-2 inline-block">Lihat Selengkapnya →</a>
+                                <a href="{{ route('dashboard.spasial') }}" class="text-base text-biru4 mt-2 inline-block">Lihat Selengkapnya →</a>
                             </div>
                         </div>
                     </div>
@@ -80,7 +80,7 @@
                             <div>
                                 <p class="text-base text-biru1 mt-1">Dashboard yang menyajikan hasil visualisasi data
                                     inflasi bulanan di Kab/Kota IHK wilayah Provinsi Jawa Timur.</p>
-                                <a href="#" class="text-base text-biru4 mt-2 inline-block">Lihat Selengkapnya →</a>
+                                <a href="{{ route('dashboard.kelompok') }}" class="text-base text-biru4 mt-2 inline-block">Lihat Selengkapnya →</a>
                             </div>
                         </div>
                     </div>
@@ -93,7 +93,7 @@
                             <div>
                                 <p class="text-base text-biru1 mt-1">Dashboard yang menyajikan hasil visualisasi data series
                                     inflasi di wilayah Provinsi Jawa Timur.</p>
-                                <a href="#" class="text-base text-biru4 mt-2 inline-block">Lihat Selengkapnya →</a>
+                                <a href="{{ route('dashboard.series') }}" class="text-base text-biru4 mt-2 inline-block">Lihat Selengkapnya →</a>
                             </div>
                         </div>
                     </div>
@@ -101,13 +101,13 @@
             </div>
         </div>
         <div name="table" id="table-section" class="hidden">
-            <p class="mt-4 text-base text-biru1 text-start">Daftar Tabel Inflasi menampilkan daftar data inflasi terkini di wilayah Provinsi Jawa Timur.</p>
+            <p class="mt-4 text-base text-biru1 text-start">Daftar Tabel Inflasi menampilkan daftar data inflasi ATAP terkini di wilayah Provinsi Jawa Timur.</p>
 
             <div class="bg-white shadow-md rounded-xl p-4 z-10 mt-3">
                 <table class="w-full">
                     <thead class="w-5/6 mx-auto border-b border-abubiru mb-10 mt-10">
                         <tr class="text-biru1">
-                            <th class="px-4 py-2 text-left">No.</th>
+                            <th class="px-4 py-2 text-center">No.</th>
                             <th class="px-4 py-2 text-left">Nama Data</th>
                             <th class="px-4 py-2 text-center">Aksi</th>
                         </tr>
@@ -116,55 +116,34 @@
                         @forelse ($uploads as $index => $upload)
                             <tr>
                                 <td class="px-4 py-4 text-center">{{ $index + 1 }}</td>
-                                <td class="px-4 py-2 hover:underline hover:text-biru4">
-                                    <a href="{{ route('manajemen-data-inflasi.show', $upload->nama) }}">
-                                        {{ $upload->nama }}
-                                    </a>
-                                </td>
+                                <td class="px-4 py-2 hover:underline hover:text-biru4">{{ $upload->display_name }}</td>
                                 <td class="px-4 py-2">
                                     <div class="flex place-content-center gap-3">
-                                        <!-- Tombol Lihat -->
-                                        <a href="#"
-                                            class="flex items-center gap-1 bg-biru1 text-white px-3 py-1 rounded-lg shadow-lg hover:-translate-y-1 text-sm font-normal">
-                                            <img src="{{ asset('images/eyeIcon.svg') }}" alt="Lihat Icon"
+                                        <a href="{{ route('daftar-tabel-inflasi.show', $upload->id) }}"
+                                            class="flex items-center gap-1 bg-biru4 text-white px-3 py-1 rounded-lg shadow-lg hover:-translate-y-1">
+                                            <img src="{{ asset('images/eyeIcon.svg') }}" alt="View Icon"
                                                 class="h-5 w-5">
                                             Lihat Data
                                         </a>
-
-                                        <!-- Tombol Unduh -->
-                                        <button type="button" onclick="#"
-                                            class="flex items-center gap-1 bg-hijau text-white px-3 py-1 rounded-lg shadow-lg hover:-translate-y-1 text-sm font-normal">
-                                            <img src="{{ asset('images/excelIcon.svg') }}" alt="Excel Icon"
+                                        <a href="{{ route('daftar-tabel-inflasi.download', $upload->id) }}"
+                                            class="flex items-center gap-1 bg-hijaumuda text-white px-3 py-1 rounded-lg shadow-lg hover:-translate-y-1">
+                                            <img src="{{ asset('images/excelIcon.svg') }}" alt="Download Icon"
                                                 class="h-5 w-5">
                                             Unduh Data
-                                        </button>
-
-                                        @include('components.modaKonfirmasiHapus', [
-                                            'id' => $upload->id,
-                                            'folderName' => 'manajemen-data-inflasi',
-                                            'formAction' => route('manajemen-data-inflasi.destroy', $upload->id),
-                                        ])
+                                        </a>
                                     </div>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="text-center py-4">
-                                    @if ($search)
-                                        Tidak ada hasil untuk pencarian "{{ $search }}".
-                                    @else
-                                        Tidak ada data komoditas.
-                                    @endif
+                                <td colspan="3" class="px-4 py-4 text-center text-gray-500">
+                                    Belum ada data inflasi ATAP yang tersedia.
                                 </td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
-                <div class="mt-4">
-                    {{ $uploads->links('components.pagination') }}
-                </div>
             </div>
-
         </div>
     </div>
 

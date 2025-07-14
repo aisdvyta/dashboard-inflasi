@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\master_komoditas;
 use Illuminate\Http\Request;
+use App\Models\MasterKomUtama;
 
 class MasterKomoditasController extends Controller
 {
@@ -97,26 +98,96 @@ class MasterKomoditasController extends Controller
     }
 
     //BUAT KOMODITAS UTAMA
+    public function indexKomUtama(Request $request)
+    {
+        $search = $request->input('search');
+        $komoditasUtama = MasterKomUtama::query()
+            ->when($search, function ($query, $search) {
+                return $query->where('kode_kom', 'like', "%{$search}%")
+                    ->orWhere('nama_kom', 'like', "%{$search}%");
+            })
+            ->orderBy('kode_kom', 'asc')
+            ->paginate(10);
+
+        return view('prov.komoditas-utama.index', compact('komoditasUtama', 'search'));
+    }
+
+    // Simpan komoditas utama (multi pilih)
     public function storeKomUtama(Request $request)
     {
         $request->validate([
-            'komoditas_id' => 'required|exists:master_komoditas,id',
-        ], [
-            'komoditas_id.required' => 'Silakan pilih komoditas utama.',
-            'komoditas_id.exists' => 'Komoditas tidak ditemukan.',
+            'komoditas' => 'required|exists:master_komoditas,kode_kom',
         ]);
 
-        // Ambil data dari master_komoditas
-        $komoditas = master_komoditas::findOrFail($request->komoditas_id);
+        // Cek apakah sudah ada di master_kom_utama
+        if (MasterKomUtama::where('kode_kom', $request->komoditas)->exists()) {
+            return redirect()->route('komoditas-utama.index')
+                ->with('error_kom_utama', 'Komoditas utama sudah ada!');
+        }
 
-        // Simpan ke tabel master_kom_utama
-        MasterKomUtama::create([
+        $komoditas = master_komoditas::where('kode_kom', $request->komoditas)->first();
+
+        if ($komoditas) {
+            MasterKomUtama::create([
+                'kode_kom' => $komoditas->kode_kom,
+                'nama_kom' => $komoditas->nama_kom
+            ]);
+        }
+
+        return redirect()->route('komoditas-utama.index')->with('success', 'Komoditas utama berhasil disimpan.');
+    }
+
+    // Autocomplete search komoditas utama
+    public function searchKomUtama(Request $request)
+    {
+        $query = $request->input('q');
+        $results = master_komoditas::where('nama_kom', 'like', "%{$query}%")
+            ->orWhere('kode_kom', 'like', "%{$query}%")
+            ->limit(10)
+            ->get(['kode_kom', 'nama_kom']);
+        return response()->json($results);
+    }
+
+    // Edit komoditas utama (return data JSON)
+    public function editKomUtama($kode_kom)
+    {
+        $komoditas = MasterKomUtama::where('kode_kom', $kode_kom)->firstOrFail();
+        return response()->json([
             'kode_kom' => $komoditas->kode_kom,
             'nama_kom' => $komoditas->nama_kom,
-            'flag' => $komoditas->flag,
-            // tambahkan kolom lain jika ada di tabel master_kom_utama
+        ]);
+    }
+
+    // Update komoditas utama
+    public function updateKomUtama(Request $request, $kode_kom)
+    {
+        $request->validate([
+            'kode_kom' => 'required|exists:master_komoditas,kode_kom',
         ]);
 
-        return redirect()->route('komoditas-utama.index')->with('success', 'Komoditas utama berhasil ditambahkan.');
+        // Cek jika kode_kom baru sudah ada di master_kom_utama (dan bukan yang sedang diedit)
+        if (MasterKomUtama::where('kode_kom', $request->kode_kom)->where('kode_kom', '!=', $kode_kom)->exists()) {
+            return redirect()->route('komoditas-utama.index')
+                ->with('error_kom_utama', 'Komoditas utama sudah ada!');
+        }
+
+        $komoditas = master_komoditas::where('kode_kom', $request->kode_kom)->first();
+        $utama = MasterKomUtama::where('kode_kom', $kode_kom)->firstOrFail();
+
+        if ($komoditas) {
+            $utama->kode_kom = $komoditas->kode_kom;
+            $utama->nama_kom = $komoditas->nama_kom;
+            $utama->save();
+        }
+
+        return redirect()->route('komoditas-utama.index')->with('success', 'Komoditas utama berhasil diperbarui.');
+    }
+
+    // Hapus komoditas utama
+    public function destroyKomUtama($kode_kom)
+    {
+        $komoditas = MasterKomUtama::where('kode_kom', $kode_kom)->firstOrFail();
+        $komoditas->delete();
+        return redirect()->route('komoditas-utama.index')->with('success', 'Komoditas utama berhasil dihapus.');
     }
 }

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\data_inflasi;
+use App\Models\detail_inflasi;
 use Illuminate\Support\Facades\Storage;
 use League\Csv\Reader;
 
@@ -11,7 +11,7 @@ class ChartController extends Controller
 {
     public function index()
     {
-        $uploads = data_inflasi::orderBy('created_at', 'desc')->get();
+        $uploads = detail_inflasi::orderBy('created_at', 'desc')->get();
         $chartsData = [];
 
         foreach ($uploads as $upload) {

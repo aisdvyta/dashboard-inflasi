@@ -6,7 +6,9 @@
             <h2 class="text-3xl font-bold text-biru4"><span class="font-bold text-biru1">Tabel</span> Data Inflasi</h2>
             <div class="flex items-center gap-2 px-4 py-1 bg-white rounded-xl shadow-lg">
                 <img src="{{ asset('images/sidebar/searchIcon.svg') }}" alt="Search Icon" class="h-5 w-10">
-                <input type="text" name="search" placeholder="Cari disini">
+                <form method="GET" action="{{ route('daftar-tabel-inflasi.index') }}" class="flex items-center">
+                    <input type="text" name="search" placeholder="Cari disini" value="{{ $search }}" class="border-none outline-none bg-transparent">
+                </form>
             </div>
         </div>
 
@@ -20,19 +22,19 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @for ($i = 1; $i <= 10; $i++)
+                    @forelse ($uploads as $index => $upload)
                         <tr>
-                            <td class="px-4 py-4 text-center">{{ $i }}</td>
-                            <td class="px-4 py-2 hover:underline hover:text-biru4">Data Inflasi Provinsi Jawa Timur Menurut Kelompok Pengeluaran Bulan Januari 2025</td>
+                            <td class="px-4 py-4 text-center">{{ $uploads->firstItem() + $index }}</td>
+                            <td class="px-4 py-2 hover:underline hover:text-biru4">{{ $upload->display_name }}</td>
                             <td class="px-4 py-2">
                                 <div class="flex place-content-center gap-3">
-                                    <a href="#"
+                                    <a href="{{ route('daftar-tabel-inflasi.show', $upload->id) }}"
                                         class="flex items-center gap-1 bg-biru4 text-white px-3 py-1 rounded-lg shadow-lg hover:-translate-y-1">
                                         <img src="{{ asset('images/eyeIcon.svg') }}" alt="View Icon"
                                             class="h-5 w-5">
                                         Lihat Data
                                     </a>
-                                    <a href="#"
+                                    <a href="{{ route('daftar-tabel-inflasi.download', $upload->id) }}"
                                         class="flex items-center gap-1 bg-hijaumuda text-white px-3 py-1 rounded-lg shadow-lg hover:-translate-y-1">
                                         <img src="{{ asset('images/excelIcon.svg') }}" alt="Download Icon"
                                             class="h-5 w-5">
@@ -41,13 +43,21 @@
                                 </div>
                             </td>
                         </tr>
-                    @endfor
+                    @empty
+                        <tr>
+                            <td colspan="3" class="px-4 py-4 text-center text-gray-500">
+                                Belum ada data inflasi ATAP yang tersedia.
+                            </td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
 
-            {{-- @if ($uploads->isEmpty())
-                <p class="text-center text-gray-500 mt-4">Belum ada data yang diupload.</p>
-            @endif --}}
+            @if ($uploads->hasPages())
+                <div class="mt-4">
+                    {{ $uploads->appends(['search' => $search])->links() }}
+                </div>
+            @endif
         </div>
     </div>
 @endsection

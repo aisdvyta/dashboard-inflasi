@@ -122,15 +122,26 @@
                 @php
                     $tabs = ['ASEM 1', 'ASEM 2', 'ASEM 3', 'ATAP'];
                 @endphp
-                @foreach ($tabs as $tab)
-                    <a href="{{ route('dashboard.spasial', ['jenis_data_inflasi' => $tab]) }}"
-                        class="tab-link flex items-center px-14 py-2 transition-all duration-300 rounded-t-xl {{ $jenisDataInflasi === $tab ? 'bg-biru1 text-white' : 'bg-biru4 text-white' }} hover:bg-biru1 group"
-                        data-tab="{{ $tab }}" id="tab-{{ strtolower(str_replace(' ', '-', $tab)) }}">
+                @auth
+                    @foreach ($tabs as $tab)
+                        <a href="{{ route('dashboard.spasial', ['jenis_data_inflasi' => $tab]) }}"
+                            class="tab-link flex items-center px-14 py-2 transition-all duration-300 rounded-t-xl {{ $jenisDataInflasi === $tab ? 'bg-biru1 text-white' : 'bg-biru4 text-white' }} hover:bg-biru1 group"
+                            data-tab="{{ $tab }}" id="tab-{{ strtolower(str_replace(' ', '-', $tab)) }}">
+                            <span class="menu-text text-[15px] font-medium transition duration-100">
+                                {{ $tab }}
+                            </span>
+                        </a>
+                    @endforeach
+                @endauth
+                @guest
+                    <a href="{{ route('dashboard.spasial', ['jenis_data_inflasi' => 'ATAP']) }}"
+                        class="tab-link flex items-center px-14 py-2 transition-all duration-300 rounded-t-xl bg-biru1 text-white group"
+                        data-tab="ATAP" id="tab-atap">
                         <span class="menu-text text-[15px] font-medium transition duration-100">
-                            {{ $tab }}
+                            ATAP
                         </span>
                     </a>
-                @endforeach
+                @endguest
             </div>
 
             <div class="flex items-start gap-2 ">
@@ -156,12 +167,13 @@
             <div class="w-full max-w-7xl mx-auto flex flex-row gap-6 justify-between pb-8">
                 <div class="flex flex-col items-start gap-4 w-full {{ $isBlackWhite ? 'grayscale' : '' }}">
                     <div class="space-y-1 {{ $isBlackWhite ? 'grayscale' : '' }}">
-                        <h1 class="text-5xl font-bold md:text-5xl text-biru1">Dashboard <span class="text-biru4">Inflasi Bulanan</span></h1>
+                        <h1 class="text-5xl font-bold md:text-5xl text-biru1">Dashboard <span class="text-kuning1">Inflasi
+                                Bulanan</span></h1>
                         <h1 class="text-5xl font-bold text-biru1">Provinsi Jawa Timur</h1>
                     </div>
                     <div class="flex flex-row gap-4 pt-1 w-full">
                         <div class="flex flex-row gap-4 text-5xl leading-8 text-biru1">
-                            <div class="w-1 h-16 rounded-full bg-biru1"></div>
+                            <div class="w-1 h-16 rounded-full bg-biru4"></div>
                             <div>
                                 <p class="text-lg text-biru1 opacity-80">Periode Waktu</p>
                                 <span class="text-right">{{ $bulan }}</span>
@@ -194,10 +206,8 @@
                                 <div class="absolute inset-y-0 flex items-center pointer-events-none right-3">
                                     <svg xmlns="http://www.w3.org/2000/svg"
                                         class="w-5 h-5 text-white transition-transform duration-200 rotate-180"
-                                        fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                                        stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M19 9l-7 7-7-7" />
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                                     </svg>
                                 </div>
                             </div>
@@ -218,10 +228,8 @@
                                 <div class="absolute inset-y-0 flex items-center pointer-events-none right-3">
                                     <svg xmlns="http://www.w3.org/2000/svg"
                                         class="w-5 h-5 text-white transition-transform duration-200 rotate-180"
-                                        fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                                        stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M19 9l-7 7-7-7" />
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                                     </svg>
                                 </div>
                             </div>
@@ -404,11 +412,9 @@
                                     </select>
                                     <div class="absolute inset-y-0 flex items-center pointer-events-none right-4">
                                         <svg xmlns="http://www.w3.org/2000/svg"
-                                            class="w-5 h-5 text-white transition-transform duration-200"
-                                            fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                                            stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                d="M19 9l-7 7-7-7" />
+                                            class="w-5 h-5 text-white transition-transform duration-200" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                                         </svg>
                                     </div>
                                 </div>
@@ -424,17 +430,20 @@
                                             <tr>
                                                 <th class="px-6 py-2 text-center">
                                                     <div class="flex items-center justify-start gap-1">
-                                                        <span class="font-semibold tracking-wide text-white">Kabupaten/Kota</span>
+                                                        <span
+                                                            class="font-semibold tracking-wide text-white">Kabupaten/Kota</span>
                                                     </div>
                                                 </th>
                                                 <th class="px-3 py-2 text-center">
                                                     <div class="flex items-center justify-center gap-1">
-                                                        <span class="font-semibold tracking-wide text-white">Andil MtM (%)</span>
+                                                        <span class="font-semibold tracking-wide text-white">Andil MtM
+                                                            (%)</span>
                                                     </div>
                                                 </th>
                                                 <th class="px-3 py-2 text-center">
                                                     <div class="flex items-center justify-center gap-1">
-                                                        <span class="font-semibold tracking-wide text-white">Inflasi MtM (%)</span>
+                                                        <span class="font-semibold tracking-wide text-white">Inflasi MtM
+                                                            (%)</span>
                                                     </div>
                                                 </th>
                                             </tr>
@@ -445,15 +454,18 @@
                                                     <td class="px-4 py-2 text-center">
                                                         <div class="flex items-center justify-start gap-2">
                                                             @if ($index < 3)
-                                                                <div class="flex items-center justify-center w-6 h-6 rounded-full {{ $index === 0 ? 'bg-yellow-100 text-yellow-600' : ($index === 1 ? 'bg-gray-100 text-gray-600' : 'bg-orange-100 text-orange-600') }} font-bold ">
+                                                                <div
+                                                                    class="flex items-center justify-center w-6 h-6 rounded-full {{ $index === 0 ? 'bg-yellow-100 text-yellow-600' : ($index === 1 ? 'bg-gray-100 text-gray-600' : 'bg-orange-100 text-orange-600') }} font-bold ">
                                                                     {{ $index + 1 }}
                                                                 </div>
                                                             @else
-                                                                <div class="flex items-center justify-center w-6 h-6 font-medium rounded-full bg-blue-50 text-biru1">
+                                                                <div
+                                                                    class="flex items-center justify-center w-6 h-6 font-medium rounded-full bg-blue-50 text-biru1">
                                                                     {{ $index + 1 }}
                                                                 </div>
                                                             @endif
-                                                            <span class="font-normal text-gray-900 transition-colors group-hover:text-biru1 cursor-pointer nama-kabkota"
+                                                            <span
+                                                                class="font-normal text-gray-900 transition-colors group-hover:text-biru1 cursor-pointer nama-kabkota"
                                                                 data-kode-wil="{{ $item->kode_wil }}"
                                                                 data-nama-wil="{{ $item->nama_wil }}">
                                                                 {{ $item->nama_wil }}
@@ -461,12 +473,14 @@
                                                         </div>
                                                     </td>
                                                     <td class="px-3 py-2 text-center">
-                                                        <div class="inline-flex items-center px-2 py-0.5 rounded-full font-semibold {{ getHeatClass($item->andil_mtm, $minAndilKab, $maxAndilKab, $maxAndilKab) }} transition-all duration-200 group-hover:scale-105">
+                                                        <div
+                                                            class="inline-flex items-center px-2 py-0.5 rounded-full font-semibold {{ getHeatClass($item->andil_mtm, $minAndilKab, $maxAndilKab, $maxAndilKab) }} transition-all duration-200 group-hover:scale-105">
                                                             {{ number_format($item->andil_mtm, 2, ',', '.') }}
                                                         </div>
                                                     </td>
                                                     <td class="px-3 py-2 text-center">
-                                                        <div class="inline-flex items-center px-2 py-0.5 rounded-full font-semibold {{ getinfClass($item->inflasi_mtm, $maxInflasiKab) }} transition-all duration-200 group-hover:scale-105 text-white">
+                                                        <div
+                                                            class="inline-flex items-center px-2 py-0.5 rounded-full font-semibold {{ getinfClass($item->inflasi_mtm, $maxInflasiKab) }} transition-all duration-200 group-hover:scale-105 text-white">
                                                             {{ number_format($item->inflasi_mtm, 2, ',', '.') }}
                                                         </div>
                                                     </td>
@@ -495,10 +509,12 @@
                             </div>
                         </div>
                         <div class="flex-1 min-w-0 flex flex-col justify-between">
-                            <div class="h-full bg-white border border-gray-100 shadow-xl rounded-xl flex flex-col justify-between">
+                            <div
+                                class="h-full bg-white border border-gray-100 shadow-xl rounded-xl flex flex-col justify-between">
                                 <div class="flex flex-col h-full">
                                     <div class="flex items-center justify-between px-8 pt-8 pb-2">
-                                        <h2 id="judul-barchart-kota-teratas" class="text-lg font-bold text-biru1 lg:text-xl"></h2>
+                                        <h2 id="judul-barchart-kota-teratas"
+                                            class="text-lg font-bold text-biru1 lg:text-xl"></h2>
                                     </div>
                                     <div class="flex-1 flex items-center justify-center px-8 pb-8">
                                         <div class="h-96 w-full" id="barchart-komoditas-kota-teratas"></div>
@@ -517,8 +533,8 @@
                         class="grid items-start grid-cols-1 gap-10 md:grid-cols-2 {{ $isBlackWhite ? 'grayscale' : '' }}">
                         {{-- judul --}}
                         <div class="space-y-1 {{ $isBlackWhite ? 'grayscale' : '' }}">
-                            <h1 class="text-5xl font-bold md:text-4xl text-biru4">INFLASI BULANAN WILAYAH</h1>
-                            <h1 class="text-5xl font-bold text-biru1">
+                            <h1 class="text-5xl font-bold md:text-5xl text-biru1">Inflasi Bulanan</h1>
+                            <h1 class="text-5xl text-nowrap font-bold text-biru4"> Wilayah
                                 {{ ($kabkota ?? '3500') == '3500' ? 'Provinsi Jawa Timur' : $daftarKabKota->firstWhere('kode_wil', $kabkota)->nama_wil ?? 'Provinsi Jawa Timur' }}
                             </h1>
                         </div>
@@ -533,27 +549,44 @@
                                     <input type="hidden" name="tahun" value="{{ $tahun }}">
                                     <input type="hidden" name="komoditas_utama" value="{{ $komoditasUtama }}">
                                     <div class="relative w-72">
-                                        <select id="kabkota" name="kabkota"
-                                            class="w-full px-6 py-2 pr-10 font-semibold text-white rounded-full shadow-md appearance-none bg-biru4 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                            onchange="this.form.submit()">
-                                            <option value="">Pilih Kab/Kota</option>
-                                            <option value="3500" {{ ($kabkota ?? '') == '3500' ? 'selected' : '' }}>
-                                                Provinsi Jawa Timur</option>
-                                            @foreach ($daftarKabKota as $kabkotaOption)
-                                                <option value="{{ $kabkotaOption->kode_wil }}"
-                                                    {{ ($kabkota ?? '') == $kabkotaOption->kode_wil ? 'selected' : '' }}>
-                                                    {{ $kabkotaOption->nama_wil }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        <div class="absolute inset-y-0 flex items-center pointer-events-none right-3">
-                                            <svg xmlns="http://www.w3.org/2000/svg"
-                                                class="w-5 h-5 text-white transition-transform duration-200 rotate-180"
-                                                fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                                                stroke-width="2">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-                                            </svg>
-                                        </div>
+                                        @php
+                                            $user = Auth::user();
+                                            $isKabkot = $user && $user->id_role == 2;
+                                            $isAsem = in_array($jenisDataInflasi, ['ASEM 1', 'ASEM 2', 'ASEM 3']);
+                                            $shouldRestrict = $isKabkot && $isAsem;
+                                        @endphp
+
+                                        @if($shouldRestrict && $daftarKabKota->count() == 1)
+                                            {{-- Show as text when only one option --}}
+                                            <div class="w-full px-6 py-2 font-semibold text-white rounded-full shadow-md bg-biru4">
+                                                {{ $daftarKabKota->first()->nama_wil }}
+                                            </div>
+                                            <input type="hidden" name="kabkota" value="{{ $daftarKabKota->first()->kode_wil }}">
+                                        @else
+                                            <select id="kabkota" name="kabkota"
+                                                class="w-full px-6 py-2 pr-10 font-semibold text-white rounded-full shadow-md appearance-none bg-biru4 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                                onchange="this.form.submit()">
+                                                @if(!$shouldRestrict)
+                                                    <option value="">Pilih Kab/Kota</option>
+                                                    <option value="3500" {{ ($kabkota ?? '') == '3500' ? 'selected' : '' }}>
+                                                        Provinsi Jawa Timur</option>
+                                                @endif
+                                                @foreach ($daftarKabKota as $kabkotaOption)
+                                                    <option value="{{ $kabkotaOption->kode_wil }}"
+                                                        {{ ($kabkota ?? '') == $kabkotaOption->kode_wil ? 'selected' : '' }}>
+                                                        {{ $kabkotaOption->nama_wil }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            <div class="absolute inset-y-0 flex items-center pointer-events-none right-3">
+                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                    class="w-5 h-5 text-white transition-transform duration-200 rotate-180"
+                                                    fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                                    stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                                                </svg>
+                                            </div>
+                                        @endif
                                     </div>
                                 </form>
                             </div>
@@ -564,20 +597,46 @@
                 <div class="grid grid-cols-3 gap-4 mt-2">
                     <div class="flex items-stretch col-span-3 gap-4">
                         {{-- MtM --}}
-                        <div class="flex flex-col flex-1 gap-2">
-                            <div class="text-xs italic leading-tight text-white">
-                                <span class="text-biru4">Nilai inflasi pada Bulan saat ini terhadap Bulan sebelumnya</span>
-                            </div>
+                        <div class="flex flex-col flex-1">
                             <div
-                                class="flex flex-col justify-between flex-1 h-full px-4 py-2 text-white shadow-lg bg-biru1 rounded-2xl">
-                                <div class="flex items-end justify-between">
-                                    <div class="text-sm font-bold">
-                                        Nilai Inflasi Bulanan<br>
-                                        <span class="text-xs italic font-normal">(M-to-M, %)</span>
+                                class="flex overflow-hidden relative flex-col p-0 rounded-2xl border border-biru1 shadow-lg">
+                                {{-- Bagian atas: label --}}
+                                <div class="flex flex-col p-4 items-left bg-biru1">
+                                    <div class="text-base font-bold text-white">Inflasi Bulanan (M-to-M, %)</div>
+                                    <div class="text-xs italic text-white opacity-80">Perubahan nilai IHK pada Bulan saat
+                                        ini terhadap Bulan sebelumnya</div>
+                                </div>
+                                <div class="border-b border-white opacity-40"></div>
+                                {{-- Bagian bawah: badge dan angka utama --}}
+                                <div class="relative px-4 pb-4 bg-white rounded-b-2xl">
+                                    <div class="absolute top-4 left-4">
+                                        @if ($inflasiMtM < 0)
+                                            <span
+                                                class="inline-flex items-center px-2 py-1 text-xs font-bold text-hijau bg-green-100 rounded-full">
+                                                <svg class="mr-1 w-4 h-4" fill="none" stroke="currentColor"
+                                                    stroke-width="2" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M19 9l-7 7-7-7" />
+                                                </svg>
+                                                Deflasi
+                                            </span>
+                                        @else
+                                            <span
+                                                class="inline-flex items-center px-2 py-1 text-xs font-bold text-merah2 bg-red-100 rounded-full">
+                                                <svg class="mr-1 w-4 h-4" fill="none" stroke="currentColor"
+                                                    stroke-width="2" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M5 15l7-7 7 7" />
+                                                </svg>
+                                                Inflasi
+                                            </span>
+                                        @endif
                                     </div>
-                                    <div id="inflasiMtM"
-                                        class="text-5xl font-semibold {{ $inflasiMtM < 0 ? 'text-hijau' : 'text-merah2' }} {{ $isBlackWhite ? 'text-white' : '' }}">
-                                        {{ number_format($inflasiMtM, 2, ',', '.') }}
+                                    <div class="flex flex-row justify-end">
+                                        <span id="inflasiMtM"
+                                            class="text-6xl font-bold tracking-tight {{ $inflasiMtM < 0 ? 'text-hijau' : 'text-merah2' }}">
+                                            {{ number_format($inflasiMtM, 2, ',', '.') }}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -585,19 +644,46 @@
 
                         {{-- YtD --}}
                         <div class="flex flex-col flex-1 gap-2">
-                            <div class="text-xs italic leading-tight text-biru4">
-                                Nilai inflasi pada Bulan saat ini terhadap Bulan Desember Tahun sebelumnya
-                            </div>
                             <div
-                                class="flex flex-col justify-between flex-1 h-full px-4 py-2 text-white shadow-lg bg-biru1 rounded-2xl">
-                                <div class="flex items-end justify-between">
-                                    <div class="text-sm font-bold">
-                                        Nilai Inflasi Tahun Kalender<br>
-                                        <span class="text-xs italic font-normal">(Y-to-D, %)</span>
+                                class="flex overflow-hidden relative flex-col p-0 rounded-2xl border border-biru1 shadow-lg">
+                                {{-- Bagian atas: label --}}
+                                <div class="flex flex-col p-4 items-left bg-biru1">
+                                    <div class="text-base font-bold text-white">Inflasi Tahun Kalender (Y-to-D, %)</div>
+                                    <div class="text-xs italic text-white opacity-80">Perubahan nilai IHK pada Bulan saat
+                                        ini terhadap Bulan Desember Tahun sebelumnya</div>
+                                    {{-- <span class="text-xs italic font-normal text-white">(Y-to-D, %)</span> --}}
+                                </div>
+                                <div class="border-b border-white opacity-40"></div>
+                                {{-- Bagian bawah: badge dan angka utama --}}
+                                <div class="relative px-4 pb-4 bg-white rounded-b-2xl">
+                                    <div class="absolute top-4 left-4">
+                                        @if ($inflasiYtD < 0)
+                                            <span
+                                                class="inline-flex items-center px-2 py-1 text-xs font-bold text-green-700 bg-green-100 rounded-full">
+                                                <svg class="mr-1 w-4 h-4" fill="none" stroke="currentColor"
+                                                    stroke-width="2" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M19 9l-7 7-7-7" />
+                                                </svg>
+                                                Deflasi
+                                            </span>
+                                        @else
+                                            <span
+                                                class="inline-flex items-center px-2 py-1 text-xs font-bold text-red-700 bg-red-100 rounded-full">
+                                                <svg class="mr-1 w-4 h-4" fill="none" stroke="currentColor"
+                                                    stroke-width="2" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M5 15l7-7 7 7" />
+                                                </svg>
+                                                Inflasi
+                                            </span>
+                                        @endif
                                     </div>
-                                    <div id="inflasiYtD"
-                                        class="text-5xl font-semibold {{ $inflasiYtD < 0 ? 'text-hijau' : 'text-merah2' }} {{ $isBlackWhite ? 'text-white' : '' }}">
-                                        {{ number_format($inflasiYtD, 2, ',', '.') }}
+                                    <div class="flex flex-row justify-end">
+                                        <span id="inflasiYtD"
+                                            class="text-6xl font-bold tracking-tight {{ $inflasiYtD < 0 ? 'text-hijau' : 'text-merah2' }}">
+                                            {{ number_format($inflasiYtD, 2, ',', '.') }}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -605,19 +691,46 @@
 
                         {{-- YoY --}}
                         <div class="flex flex-col flex-1 gap-2">
-                            <div class="text-xs italic leading-tight text-biru4">
-                                Nilai inflasi pada Bulan ini di Tahun saat ini terhadap Bulan ini di Tahun sebelumnya
-                            </div>
                             <div
-                                class="flex flex-col justify-between flex-1 h-full px-4 py-2 text-white shadow-lg bg-biru1 rounded-2xl">
-                                <div class="flex items-end justify-between">
-                                    <div class="text-sm font-bold">
-                                        Nilai Inflasi Tahunan<br>
-                                        <span class="text-xs italic font-normal">(Y-to-Y, %)</span>
+                                class="flex overflow-hidden relative flex-col p-0 rounded-2xl border border-biru1 shadow-lg">
+                                {{-- Bagian atas: label --}}
+                                <div class="flex flex-col p-4 items-left bg-biru1">
+                                    <div class="text-base font-bold text-white">Inflasi Tahunan (Y-to-Y, %)</div>
+                                    <div class="text-xs italic text-white opacity-80">Perubahan nilai IHK pada Bulan ini di
+                                        Tahun saat ini terhadap Bulan ini di Tahun sebelumnya</div>
+                                    {{-- <span class="text-xs italic font-normal text-white">(Y-to-Y, %)</span> --}}
+                                </div>
+                                <div class="border-b border-white opacity-40"></div>
+                                {{-- Bagian bawah: badge dan angka utama --}}
+                                <div class="relative px-4 pb-4 bg-white rounded-b-2xl">
+                                    <div class="absolute top-4 left-4">
+                                        @if ($inflasiYoY < 0)
+                                            <span
+                                                class="inline-flex items-center px-2 py-1 text-xs font-bold text-green-700 bg-green-100 rounded-full">
+                                                <svg class="mr-1 w-4 h-4" fill="none" stroke="currentColor"
+                                                    stroke-width="2" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M19 9l-7 7-7-7" />
+                                                </svg>
+                                                Deflasi
+                                            </span>
+                                        @else
+                                            <span
+                                                class="inline-flex items-center px-2 py-1 text-xs font-bold text-red-700 bg-red-100 rounded-full">
+                                                <svg class="mr-1 w-4 h-4" fill="none" stroke="currentColor"
+                                                    stroke-width="2" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M5 15l7-7 7 7" />
+                                                </svg>
+                                                Inflasi
+                                            </span>
+                                        @endif
                                     </div>
-                                    <div id="inflasiYoY"
-                                        class="text-5xl font-semibold {{ $inflasiYoY < 0 ? 'text-hijau' : 'text-merah2' }} {{ $isBlackWhite ? 'text-white' : '' }}">
-                                        {{ number_format($inflasiYoY, 2, ',', '.') }}
+                                    <div class="flex flex-row justify-end">
+                                        <span id="inflasiYoY"
+                                            class="text-6xl font-bold tracking-tight {{ $inflasiYoY < 0 ? 'text-hijau' : 'text-merah2' }}">
+                                            {{ number_format($inflasiYoY, 2, ',', '.') }}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -802,7 +915,7 @@
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>'
             }).addTo(map);
 
-            // Load GeoJSON
+            // MAP GeoJSON
             fetch('/data/east-java-districts.geojson')
                 .then(response => response.json())
                 .then(data => {
@@ -876,81 +989,9 @@
                     console.error('Gagal memuat atau memproses GeoJSON:', error);
                     map.setView([-7.6, 112.0], 8);
                 });
-
-            // Render barchart untuk kabupaten/kota
-            setTimeout(() => {
-                var chartDom = document.getElementById('barchart-komoditas-kabkota');
-                if (chartDom && window.rankingKabKota && window.rankingKabKota.length > 0) {
-                    var myChart = echarts.init(chartDom);
-                    var labels = window.rankingKabKota.map(item => item.nama_wil);
-                    var values = window.rankingKabKota.map(item => Number(item.andil_mtm));
-                    var option = {
-                        tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-                        grid: { left: '5%', right: '5%', bottom: '3%', top: '3%', containLabel: true },
-                        xAxis: { type: 'value', boundaryGap: [0, 0.01] },
-                        yAxis: {
-                            type: 'category',
-                            data: labels,
-                            inverse: true,
-                            axisLabel: { color: '#000000', fontSize: 12, fontWeight: 330 },
-                        },
-                        series: [{
-                            type: 'bar',
-                            data: values,
-                            itemStyle: { color: '#4C84B0' },
-                            label: {
-                                show: true,
-                                position: 'outside',
-                                color: '#063051',
-                                fontSize: 12,
-                                fontWeight: 350,
-                                formatter: function(params) { return params.value.toFixed(2); },
-                            },
-                        }],
-                    };
-                    myChart.setOption(option);
-                }
-                // Barchart komoditas utama pada kota teratas
-                var chartDom2 = document.getElementById('barchart-komoditas-kota-teratas');
-                if (chartDom2 && inflasiKomoditasKotaTeratas && inflasiKomoditasKotaTeratas.length > 0) {
-                    var myChart2 = echarts.init(chartDom2);
-                    var labels2 = inflasiKomoditasKotaTeratas.map(item => item.nama_kom);
-                    var values2 = inflasiKomoditasKotaTeratas.map(item => Number(item.inflasi_mtm));
-                    var option2 = {
-                        title: {
-                            
-                            left: 'center',
-                            top: 0,
-                            textStyle: { fontSize: 16, fontWeight: 600, color: '#063051' }
-                        },
-                        tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-                        grid: { left: '5%', right: '5%', bottom: '3%', top: 40, containLabel: true },
-                        xAxis: { type: 'value', boundaryGap: [0, 0.01] },
-                        yAxis: {
-                            type: 'category',
-                            data: labels2,
-                            inverse: true,
-                            axisLabel: { color: '#000000', fontSize: 12, fontWeight: 330 },
-                        },
-                        series: [{
-                            type: 'bar',
-                            data: values2,
-                            itemStyle: { color: '#E82D1F' },
-                            label: {
-                                show: true,
-                                position: 'outside',
-                                color: '#063051',
-                                fontSize: 12,
-                                fontWeight: 350,
-                                formatter: function(params) { return params.value.toFixed(2); },
-                            },
-                        }],
-                    };
-                    myChart2.setOption(option2);
-                }
-            }, 500);
         });
 
+        //BARCHART KOMODITAS UTAMA
         async function fetchInflasiKomoditasKabKota(kodeWil) {
             try {
                 const params = new URLSearchParams({
@@ -995,7 +1036,7 @@
                             color: '#063051',
                             fontSize: 12,
                             fontWeight: 350,
-                            formatter: function(params) { return params.value.toFixed(2); },
+                            formatter: function(params) { return params.value.toFixed(2).replace('.', ','); },
                         },
                     }],
                 };

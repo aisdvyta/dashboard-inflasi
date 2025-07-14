@@ -8,14 +8,9 @@
 
     <div class="max-w-lg bg-white shadow-md rounded-lg p-6 ml-24">
         <form action="{{ route('manajemen-data-inflasi.update', $upload->id) }}" method="POST" enctype="multipart/form-data"
-            class="space-y-4">
+            class="space-y-4" id="editForm">
             @csrf
             @method('PUT')
-            <div class="mb-4 text-left">
-                <label for="nama" class="block text-biru1 font-semibold">Username Upload</label>
-                <input type="text" id="nama" name="nama" value="{{ $upload->pengguna->nama }}" readonly
-                    class="w-full mt-1 p-2 rounded-2xl border border-biru5 bg-gray-100 focus:ring-biru5">
-            </div>
 
             <div class="mb-4 text-left">
                 <label for="periode" class="block text-biru1 font-semibold">
@@ -73,4 +68,21 @@
             </button>
         </form>
     </div>
+
+    <!-- Spinner Overlay -->
+    <div id="spinnerOverlay" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-black bg-opacity-40">
+        <div class="flex flex-col items-center">
+            <div class="w-16 h-16 border-4 border-t-4 rounded-full border-biru1 animate-spin"
+                style="border-top-color: transparent;"></div>
+            <span class="mt-4 text-lg font-semibold text-white">Memperbarui data...</span>
+        </div>
+    </div>
 @endsection
+
+@push('scripts')
+<script>
+    document.getElementById('editForm').addEventListener('submit', function(e) {
+        document.getElementById('spinnerOverlay').classList.remove('hidden');
+    });
+</script>
+@endpush

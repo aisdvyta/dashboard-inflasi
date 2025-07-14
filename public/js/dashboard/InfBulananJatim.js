@@ -22,9 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         var komoditas = data.map((item) => {
             return item.nama_kom.length > 17
-                ? item.nama_kom.substring(0, 17) +
-                      "\n" +
-                      item.nama_kom.substring(17)
+                ? item.nama_kom.substring(0, 17) + "\n" + item.nama_kom.substring(17)
                 : item.nama_kom;
         });
 
@@ -32,23 +30,39 @@ document.addEventListener("DOMContentLoaded", function () {
         var values = data.map((item) => Number(item.andil));
 
         var option = {
-            tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
+            tooltip: {
+                trigger: "axis",
+                axisPointer: {
+                    type: "shadow"
+                }
+            },
             grid: {
-                left: "5%",
+                left: "3%",
                 right: "5%",
                 bottom: "3%",
                 top: "3%",
                 containLabel: true,
             },
-            xAxis: { type: "value", boundaryGap: [0, 0.01] },
+            xAxis: {
+                type: "value",
+                boundaryGap: [0, 0.01],
+                axisLabel: {
+                    color: "#063051",
+                    fontSize: 12,
+                    fontWeight: 'semibold',
+                    formatter: function (value) {
+                        return value.toFixed(2).replace('.', ',');
+                    },
+                },
+            },
             yAxis: {
                 type: "category",
                 data: komoditas,
                 inverse: true,
                 axisLabel: {
-                    color: "#000000",
+                    color: "#063051",
                     fontSize: 12,
-                    fontWeight: 330,
+                    fontWeight: 'semibold',
                 },
             },
             series: [
@@ -65,7 +79,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         fontSize: 12,
                         fontWeight: 350,
                         formatter: function (params) {
-                            return params.value.toFixed(2);
+                            return params.value.toFixed(2).replace('.', ',');
                         },
                     },
                 },

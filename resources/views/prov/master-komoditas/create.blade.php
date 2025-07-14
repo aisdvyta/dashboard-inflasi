@@ -2,7 +2,7 @@
 
 @section('body')
     <h2 class="text-4xl font-bold text-biru1 p-10 pl-24">
-        Tambah <span class="text-kuning1">Komoditas</span>
+        Silahkan <span class="text-kuning1">Tambah Komoditas</span>
     </h2>
 
     <div class="max-w-2xl bg-white shadow-md rounded-lg p-6 ml-24">

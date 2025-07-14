@@ -3,8 +3,8 @@
 @section('body')
     <div class="container mx-auto p-6 relative">
         <div class="flex-col justify-between items-center mb-4">
-            <h2 class="text-3xl font-bold text-biru1 mb-4">Tabel <span class="font-bold text-kuning1">Manajemen Data</span>
-                Inflasi</h2>
+            <h2 class="text-3xl font-bold text-biru1 mb-4">Tabel Manajemen <span class="font-bold text-kuning1"> Data Inflasi</span>
+            </h2>
             <div class="flex items-center justify-between gap-4">
                 <form action="{{ route('manajemen-data-inflasi.index') }}" method="GET"
                     class="flex items-center gap-2 px-4 py-2 bg-white rounded-lg shadow-lg w-80">
@@ -13,6 +13,7 @@
                         class="text-sm w-full text-biru1 focus:outline-none" />
                     <button type="submit" class="hidden">Cari</button>
                 </form>
+                @if(Auth::user()->id_role == 1)
                 <a href="{{ route('manajemen-data-inflasi.create') }}"
                     class="flex items-center gap-2 px-2 py-2 rounded-lg bg-kuning1 text-biru1 hover:bg-biru4 hover:text-white group transition duration-300"
                     data-page="tabel">
@@ -23,9 +24,9 @@
                     <img src="{{ asset('images/adminProv/paddDataIcon.svg') }}" alt="Ikon Data Inflasi Hover"
                         class="h-6 w-6 hidden group-hover:block transition duration-100">
                     <span
-                        class="menu-text text-biru1 font-semibold text-[15px] group-hover:text-white transition duration-100">Tambah
-                        Data Inflasi</span>
+                        class="menu-text text-biru1 font-semibold text-[15px] group-hover:text-white transition duration-100">Tambah Data Inflasi</span>
                 </a>
+                @endif
             </div>
         </div>
 
@@ -38,7 +39,9 @@
                         <th class="px-4 py-2 text-center">Kategori</th>
                         <th class="px-4 py-2 text-center">Tanggal Upload</th>
                         <th class="px-4 py-2 text-center">Username Upload</th>
+                        @if(Auth::user()->id_role == 1)
                         <th class="px-4 py-2 text-center">Aksi</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody>
@@ -67,7 +70,7 @@
                                         class="text-sm font-semibold"></span>{{ $upload->pengguna->nama ?? 'Tidak Diketahui' }}</span>
                                 </div>
                             </td>
-
+                            @if(Auth::user()->id_role == 1)
                             <td class="px-4 py-2">
                                 <div class="flex place-content-center gap-3">
                                     <!-- Tombol Edit -->
@@ -93,6 +96,7 @@
                                     ])
                                 </div>
                             </td>
+                            @endif
                         </tr>
                     @empty
                         <tr>
@@ -113,6 +117,46 @@
         </div>
     </div>
 @endsection
+
+<div id="modalBerhasil" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-black bg-opacity-50">
+    <div class="p-6 bg-white shadow-lg rounded-xl w-fit">
+        <div class="flex justify-center mb-2">
+            <img src="{{ asset('images/moda/berhasilIcon.svg') }}" alt="Berhasil Icon" class="w-8 h-8">
+        </div>
+        <h2 class="text-2xl font-[650] text-biru1 text-center">Yay <span class="text-hijau">Berhasil</span></h2>
+                    <div class="mt-2 mb-6">
+                <p class="mt-2 text-base text-center text-biru1">
+                    {{ session('message', 'Data berhasil diupload!') }}
+                </p>
+            </div>
+        <div class="flex justify-center mt-4">
+            <button
+                class="px-8 py-2 font-normal text-white transition-all duration-200 rounded-lg shadow-lg bg-hijau hover:-translate-y-1"
+                onclick="document.getElementById('modalBerhasil').classList.add('hidden')">Oke</button>
+        </div>
+    </div>
+</div>
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Cek query string status=success
+        if (new URLSearchParams(window.location.search).get('status') === 'success') {
+            document.getElementById('modalBerhasil').classList.remove('hidden');
+            // Hapus query string agar modal tidak muncul lagi saat reload
+            if (window.history.replaceState) {
+                const url = window.location.origin + window.location.pathname;
+                window.history.replaceState({}, document.title, url);
+            }
+        }
+
+        // Cek session status untuk update berhasil
+        @if(session('status') === 'success')
+            document.getElementById('modalBerhasil').classList.remove('hidden');
+        @endif
+    });
+</script>
+@endpush
 
 
 <script>

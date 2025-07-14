@@ -11,14 +11,14 @@
             <h1 class="text-4xl md:text-5xl font-bold text-biru1">
                 Selamat Datang,
                 <span class="text-kuning1">Admin</span>
-                <br><span class="text-biru4 text-2xl pt-5">di Manajemen Dashboard Inflasi BPS Kabupaten/Kota Jawa Timur</span>
+                <br><span class="text-biru4 text-2xl pt-5">di Manajemen Dashboard Inflasi BPS Kab/Kot Jawa Timur</span>
             </h1>
             <p class="text-gray-700 text-base mt-5">
                 <span class="font-bold text-biru2">Manajemen Dashboard Inflasi</span> berfungsi untuk membantu manajemen data
                 inflasi secara efisien.
             </p>
             <a href="#"
-                class="inline-flex items-center rounded-2xl gap-4 mt-5 pr-2 pl-4 py-1 bg-biru4 text-white font-semibold rounded-lg transition-all hover:bg-biru1 hover:translate-x-2">
+                class="inline-flex items-center rounded-2xl gap-4 mt-5 pr-2 pl-4 py-1 bg-biru4 text-white font-semibold  transition-all hover:bg-biru1 hover:translate-x-2">
                 Cari tau lebih lanjut
                 <img src="{{ asset('images/landingMain1/arrowRight.svg') }}" alt="panah kanan icon">
                 <span class="text-lg"></span>
@@ -50,16 +50,6 @@
         </div>
 
         <div class="flex flex-wrap justify-center gap-12 mt-24">
-            <!-- Manajemen Akun -->
-            <div class="bg-white p-6 rounded-2xl shadow-lg w-80 flex flex-col items-stretch text-start">
-                <img src="{{ asset('images/adminProv/manajemenAkun.svg') }}" alt="Manajemen Akun"
-                    class="self-center w-40 h-60 mb-4">
-                <h2 class="text-biru1 text-lg font-semibold">Manajemen Akun</h2>
-                <p class="text-biru1 text-sm mt-2 flex-grow">Melakukan penambahan, pengeditan, atau penghapusan akun Tim
-                    Harga BPS Kab/Kota IHK</p>
-                <a href="{{ route('manajemen-akun.index') }}"
-                    class="text-biru4 mt-3 transition-transform duration-200 hover:translate-x-2 inline-block">Lakukan →</a>
-            </div>
 
             <!-- Manajemen Data Inflasi -->
             <div class="bg-white p-6 rounded-2xl shadow-lg w-80 flex flex-col items-stretch text-start">

@@ -53,26 +53,31 @@
 
 @section('body')
     <div>
-        <div class="px-4 py-4 ">
-            <p class="text-[2.5rem] font-bold text-biru1">
-                <span class="text-kuning1">Jenis</span> Data Inflasi
-            </p>
-        </div>
-
         <div class="flex flex-col items-center justify-between md:flex-row ">
             <div class="relative flex justify-start mt-7">
                 @php
                     $tabs = ['ASEM 1', 'ASEM 2', 'ASEM 3', 'ATAP'];
                 @endphp
-                @foreach ($tabs as $tab)
-                    <a href="{{ route('dashboard.bulanan', ['jenis_data_inflasi' => $tab]) }}"
-                        class="tab-link flex items-center px-14 py-2 transition-all duration-300 rounded-t-xl {{ $jenisDataInflasi === $tab ? 'bg-biru1 text-white' : 'bg-biru4 text-white' }} hover:bg-biru1 group"
-                        data-tab="{{ $tab }}" id="tab-{{ strtolower(str_replace(' ', '-', $tab)) }}">
+                @auth
+                    @foreach ($tabs as $tab)
+                        <a href="{{ route('dashboard.bulanan', ['jenis_data_inflasi' => $tab]) }}"
+                            class="tab-link flex items-center px-14 py-2 transition-all duration-300 rounded-t-xl {{ $jenisDataInflasi === $tab ? 'bg-biru1 text-white' : 'bg-biru4 text-white' }} hover:bg-biru1 group"
+                            data-tab="{{ $tab }}" id="tab-{{ strtolower(str_replace(' ', '-', $tab)) }}">
+                            <span class="menu-text text-[15px] font-medium transition duration-100">
+                                {{ $tab }}
+                            </span>
+                        </a>
+                    @endforeach
+                @endauth
+                @guest
+                    <a href="{{ route('dashboard.bulanan', ['jenis_data_inflasi' => 'ATAP']) }}"
+                        class="tab-link flex items-center px-14 py-2 transition-all duration-300 rounded-t-xl bg-biru1 text-white group"
+                        data-tab="ATAP" id="tab-atap">
                         <span class="menu-text text-[15px] font-medium transition duration-100">
-                            {{ $tab }}
+                            ATAP
                         </span>
                     </a>
-                @endforeach
+                @endguest
             </div>
 
             <div class="flex items-start gap-2 ">
