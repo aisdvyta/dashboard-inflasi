@@ -71,11 +71,24 @@
         </div>
         <div class="my-2 border-b-2 shadow-lg"></div>
         <ul class="space-y-3">
-            <li>
+            @auth
+                @if(Auth::user()->id_role == 1)
+                    {{-- Admin Provinsi --}}
+                    <a href="{{ route('prov.index') }}" class="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-biru4 hover:text-white group">
+                @elseif(Auth::user()->id_role == 2)
+                    {{-- Admin Kab/Kota --}}
+                    <a href="{{ route('kabkot.index') }}" class="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-biru4 hover:text-white group">
+                @else
+                    {{-- Role lain, fallback ke landingPage --}}
+                    <a href="{{ route('landingPage') }}" class="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-biru4 hover:text-white group">
+                @endif
+            @else
+                {{-- Guest --}}
                 <a href="{{ route('landingPage') }}" class="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-biru4 hover:text-white group">
-                    <img src="{{ asset('images/sidebar/bhomeIcon.svg') }}" alt="Ikon Beranda" class="w-6 h-6 icon" data-hover="{{ asset('images/sidebar/phomeIcon.svg') }}" data-default="{{ asset('images/sidebar/bhomeIcon.svg') }}">
-                    <span class="menu-text font-medium text-[15px]">Beranda</span>
-                </a>
+            @endauth
+                <img src="{{ asset('images/sidebar/bhomeIcon.svg') }}" alt="Ikon Beranda" class="w-6 h-6 icon" data-hover="{{ asset('images/sidebar/phomeIcon.svg') }}" data-default="{{ asset('images/sidebar/bhomeIcon.svg') }}">
+                <span class="menu-text font-medium text-[15px]">Beranda</span>
+            </a>
             </li>
             @auth
             @if(Auth::user()->id_role != 2)
@@ -116,7 +129,7 @@
                 </ul>
             </li>
             @endauth
-                        <li class="relative">
+            <li class="relative">
                 <a id="dropdownToggleDashboard" class="flex items-center justify-between w-full gap-3 px-2 py-2 rounded-lg hover:bg-biru4 hover:text-white group">
                     <div class="flex items-center">
                         <img src="{{ asset('images/sidebar/bdashboardIcon.svg') }}" alt="Ikon Dashboard Inflasi" class="w-6 h-6 icon" data-hover="{{ asset('images/sidebar/pdashboardIcon.svg') }}" data-default="{{ asset('images/sidebar/bdashboardIcon.svg') }}">
@@ -127,7 +140,7 @@
                     </svg>
                 </a>
                 <ul id="dropdownMenuDashboard" class="hidden mt-2 ml-4 space-y-2 bg-white border-l-2 border-biru5">
-                    <li><a href="{{ route('dashboard.bulanan') }}" class="flex items-center px-2 py-2 ml-8 font-normal text-[15px] hover:bg-biru5 rounded-lg menu-text" data-page="dashboard.bulanan">Inflasi Bulanan</a></li>
+                    {{-- <li><a href="{{ route('dashboard.bulanan') }}" class="flex items-center px-2 py-2 ml-8 font-normal text-[15px] hover:bg-biru5 rounded-lg menu-text" data-page="dashboard.bulanan">Inflasi Bulanan</a></li> --}}
                     <li><a href="{{ route('dashboard.spasial') }}" class="flex items-center px-2 py-2 ml-8 font-normal text-[15px] hover:bg-biru5 rounded-lg menu-text" data-page="inflasi-spasial">Inflasi Spasial</a></li>
                     <li><a href="{{ route('dashboard.kelompok') }}" class="flex items-center px-2 py-2 ml-8 font-normal text-[15px] hover:bg-biru5 rounded-lg menu-text" data-page="inflasi-kelompok">Kelompok Pengeluaran</a></li>
                     <li><a href="{{ route('dashboard.series') }}" class="flex items-center px-2 py-2 ml-8 font-normal text-[15px] hover:bg-biru5 rounded-lg menu-text" data-page="inflasi-series">Series Inflasi</a></li>

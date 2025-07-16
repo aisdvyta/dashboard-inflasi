@@ -1,32 +1,22 @@
 document.addEventListener("DOMContentLoaded", function () {
-
     function renderChart(id, data, inflationValue) {
         if (!data || data.length === 0) {
-            console.warn("Data for chart is empty or undefined.");
             return;
         }
-
         let numericValue = parseFloat(
             inflationValue.textContent.replace(",", ".").trim()
         );
-
         var chartDom = document.getElementById(id);
         if (!chartDom) {
-            console.error("Element ${id} not found");
             return;
         }
-
         var myChart = echarts.init(chartDom);
-
         var komoditas = data.map((item) => {
             return item.nama_kom.length > 17
                 ? item.nama_kom.substring(0, 17) + "\n" + item.nama_kom.substring(17)
                 : item.nama_kom;
         });
-
-        // konversi nilai andil ke angka
         var values = data.map((item) => Number(item.andil));
-
         var option = {
             tooltip: {
                 trigger: "axis",
@@ -83,17 +73,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 },
             ],
         };
-
         myChart.setOption(option);
     }
-
-    // Tunggu 0.5 detik untuk pastikan window.* sudah tersedia
     setTimeout(() => {
-        // Get the elements containing inflation values
         const inflasiMtM = document.getElementById("inflasiMtM");
         const inflasiYtD = document.getElementById("inflasiYtD");
         const inflasiYoY = document.getElementById("inflasiYoY");
-
         renderChart("andilmtm", window.topAndilMtM, inflasiMtM);
         renderChart("andilytd", window.topAndilYtD, inflasiYtD);
         renderChart("andilyoy", window.topAndilYoY, inflasiYoY);

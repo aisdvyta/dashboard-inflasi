@@ -1,37 +1,10 @@
 @extends('layouts.dashboard')
 
+@push('head')
+    <link rel="stylesheet" href="{{ asset('css/dashboard/infkelompok.css') }}" />
+@endpush
+
 @php
-    function getHeatClass($value, $min, $max, $top)
-    {
-        $isPositive = $top > 0;
-        if ($isPositive) {
-            $percentage = $max - $min != 0 ? ($value - $min) / ($max - $min) : 0;
-            if ($percentage >= 0.8) {
-                return 'bg-biru2 text-white';
-            } elseif ($percentage >= 0.6) {
-                return 'bg-biru3 text-white';
-            } elseif ($percentage >= 0.4) {
-                return 'bg-biru4 text-white';
-            } elseif ($percentage >= 0.2) {
-                return 'bg-biru5';
-            } else {
-                return 'bg-white';
-            }
-        } else {
-            $percentage = $min - $max != 0 ? ($value - $max) / ($min - $max) : 0;
-            if ($percentage >= 0.8) {
-                return 'bg-biru2 text-white';
-            } elseif ($percentage >= 0.6) {
-                return 'bg-biru3 text-white';
-            } elseif ($percentage >= 0.4) {
-                return 'bg-biru4 text-white';
-            } elseif ($percentage >= 0.2) {
-                return 'bg-biru5';
-            } else {
-                return 'bg-white';
-            }
-        }
-    }
     $minMtM = $topKelompokMtM->min('inflasi');
     $maxMtM = $topKelompokMtM->max('inflasi');
     $minYtD = $topKelompokYtD->min('inflasi');
@@ -51,53 +24,23 @@
 @endphp
 
 @section('body')
-    <div class="mx-auto w-full max-w-7xl">
-        <div class="flex flex-col justify-between items-center md:flex-row">
-            <div class="flex relative justify-start mt-7">
-                @php
-                    $tabs = ['ASEM 1', 'ASEM 2', 'ASEM 3', 'ATAP'];
-                @endphp
-                @auth
-                @foreach ($tabs as $tab)
-                        <a href="{{ route('dashboard.kelompok', ['jenis_data_inflasi' => $tab]) }}"
-                        class="tab-link flex items-center px-14 py-2 transition-all duration-300 rounded-t-xl {{ $jenisDataInflasi === $tab ? 'bg-biru1 text-white' : 'bg-biru4 text-white' }} hover:bg-biru1 group"
-                        data-tab="{{ $tab }}" id="tab-{{ strtolower(str_replace(' ', '-', $tab)) }}">
-                        <span class="menu-text text-[15px] font-medium transition duration-100">
-                            {{ $tab }}
-                        </span>
-                    </a>
-                @endforeach
-                @endauth
-                @guest
-                    <a href="{{ route('dashboard.kelompok', ['jenis_data_inflasi' => 'ATAP']) }}"
-                        class="tab-link flex items-center px-14 py-2 transition-all duration-300 rounded-t-xl bg-biru1 text-white group"
-                        data-tab="ATAP" id="tab-atap">
-                        <span class="menu-text text-[15px] font-medium transition duration-100">
-                            ATAP
-                        </span>
-                    </a>
-                @endguest
-            </div>
-
-            <div class="flex gap-2 items-start">
-                <button id="exportExcel"
-                    class="flex gap-2 items-start py-2 pr-5 pl-2 rounded-xl shadow-xl transition duration-300 bg-hijau hover:bg-hijau2 hover:-translate-y-1 group">
-                    <img src="{{ asset('images/excelIcon.svg') }}" alt="Ikon Eksport Excel" class="w-6 h-6 icon">
-                    <span class="menu-text text-white text-[15px] transition duration-100">
-                        Export Excel</span>
-                </button>
-                <button id="exportPdf"
-                    class="flex gap-2 items-end py-2 pr-5 pl-2 rounded-xl shadow-xl transition duration-300 bg-merah1 hover:bg-merah1muda hover:-translate-y-1 group">
-                    <img src="{{ asset('images/pdfIcon.svg') }}" alt="Ikon Eksport PDF" class="w-6 h-6 icon">
-                    <span class="menu-text text-white text-[15px] transition duration-100">
-                        Export PDF</span>
-                </button>
-            </div>
-        </div>
+    <div>
+        <x-dash-header
+            :tabs="['ASEM 1', 'ASEM 2', 'ASEM 3', 'ATAP']"
+            :activeTab="$jenisDataInflasi"
+            routeName="dashboard.kelompok"
+            :routeParams="['bulan' => $bulan, 'tahun' => $tahun, 'kabkota' => $kabkota]"
+            :showDropdown="false"
+            :showExcel="true"
+            :showPng="true"
+            exportExcelId="exportExcelKelompok"
+            exportPngId="exportPNG"
+            class="mb-4"
+        />
     </div>
 
     <div class="border-t-8 border-biru1">
-        <div class="p-6 bg-white rounded-b-xl shadow-md {{ $isBlackWhite ? 'grayscale' : '' }}">
+        <div id="main-dashboard-content" class="p-6 bg-white rounded-b-xl shadow-md {{ $isBlackWhite ? 'grayscale' : '' }}">
             <div class="flex flex-row flex-wrap gap-6 justify-between pb-6">
                 <div class="flex flex-col pl-6">
                     <div class="space-y-1 text-biru1">
@@ -486,135 +429,16 @@
 @endsection
 
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="{{ asset('js/dashboard/export-png.js') }}"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Ambil data dari tabelKelompok (hanya yang bukan 'umum')
-            let kelompokData = @json(
-                $tabelKelompok->filter(function ($row) {
-                        return strtolower(trim($row->nama_kom)) !== 'umum';
-                    })->values());
-
-            // Debug: cek isi data
-            console.log('kelompokData:', kelompokData);
-            if (kelompokData.length > 0) {
-                console.log('Field keys:', Object.keys(kelompokData[0]));
-            }
-
-            // Urutkan dari terendah ke tertinggi berdasarkan andil_mtm (atau andil_MtM)
-            kelompokData = kelompokData.slice().sort((a, b) => {
-                const aVal = parseFloat(a.andil_mtm ?? a.andil_MtM ?? 0) || 0;
-                const bVal = parseFloat(b.andil_mtm ?? b.andil_MtM ?? 0) || 0;
-                return aVal - bVal;
-            });
-
-            // Label: nama kelompok, Data: andil_mtm (atau andil_MtM jika key beda, pastikan number)
-            const labels = kelompokData.map(item => item.nama_kom);
-            const values = kelompokData.map(item => parseFloat(item.andil_mtm ?? item.andil_MtM ?? 0) || 0);
-            // Debug: tampilkan data yang akan dipakai chart
-            console.log('Barchart labels:', labels);
-            console.log('Barchart values:', values);
-
-            const chartDom = document.getElementById('andilKelompokBar');
-            if (chartDom) {
-                const myChart = echarts.init(chartDom);
-
-                // Ambil juga nilai inflasi untuk tooltip
-                const inflasiValues = kelompokData.map(item => parseFloat(item.inflasi_mtm ?? item.inflasi_MtM ??
-                    0) || 0);
-
-                // Fungsi untuk memecah label jadi dua baris jika terlalu panjang
-                function wrapLabel(label, maxLen = 20) {
-                    if (label.length <= maxLen) return label;
-                    // Pecah di spasi terdekat sebelum maxLen
-                    let idx = label.lastIndexOf(' ', maxLen);
-                    if (idx === -1) idx = maxLen;
-                    return label.slice(0, idx) + '\n' + label.slice(idx + 1);
-                }
-
-                const option = {
-                    grid: {
-                        left: 130,
-                        right: 20,
-                        top: 10,
-                        bottom: 20
-                    },
-                    tooltip: {
-                        trigger: 'axis',
-                        axisPointer: {
-                            type: 'shadow',
-                            z: 100, // pointer di atas elemen lain
-                            label: {
-                                show: false
-                            }
-                        },
-                        formatter: function(params) {
-                            const p = Array.isArray(params) ? params[0] : params;
-                            const idx = p.dataIndex;
-                            const andil = p.value.toFixed(2).replace('.', ',');
-
-                            const inflasi = (inflasiValues[idx] ?? 0).toFixed(2).replace('.', ',');
-
-                            return `<b style="color:#063051;font-size:14px;">${labels[idx]}</b><br/>
-                                <span style="font-size:14px;"> Andil Inflasi: ${andil}<br/>
-                                <span style="font-size:14px;"> Inflasi: ${inflasi}`;
-                        }
-                    },
-                    xAxis: {
-                        type: 'value',
-                        axisLabel: {
-                            fontWeight: 'semibold',
-                            color: '#3B4A6B',
-                            formatter: function(value) {
-                                return value.toFixed(2).replace('.', ',');
-                            }
-                        },
-                        splitLine: {
-                            show: false,
-                        }
-                    },
-                    yAxis: {
-                        type: 'category',
-                        data: labels.map(l => wrapLabel(l)),
-                        axisLabel: {
-                            fontWeight: 'semibold',
-                            color: '#063051',
-                            fontSize: 18,
-                            lineHeight: 12
-                        },
-                        axisTick: {
-                            show: false
-                        },
-                        // Tambahkan ini agar area hover seluruh baris y aktif
-                        triggerEvent: true
-                    },
-                    series: [{
-                        type: 'bar',
-                        data: values,
-                        label: {
-                            show: true,
-                            position: 'right',
-                            fontWeight: 'semibold',
-                            fontSize: 12,
-                            color: '#063051',
-                            formatter: function(params) {
-                                // Format angka dengan koma
-                                return params.value.toFixed(2).replace('.', ',');
-                            }
-                        },
-                        itemStyle: {
-                            color: '#4C84B0'
-                        },
-                        barWidth: 24,
-                        emphasis: {
-                            focus: 'series'
-                        }
-                    }]
-                };
-                myChart.setOption(option);
-                window.addEventListener('resize', () => myChart.resize());
-            }
-        });
+        // Push variabel blade ke window agar bisa diakses JS eksternal
+        window.tabelKelompok = @json($tabelKelompok);
+        window.top5KomoditasPerKelompok = @json($top5KomoditasPerKelompok);
+        window.jenisDataInflasi = "{{ $jenisDataInflasi }}";
+        window.kabkota = "{{ $kabkota }}";
+        window.bulan = "{{ $bulan }}";
+        window.tahun = "{{ $tahun }}";
     </script>
+    <script src="{{ asset('js/dashboard/infkelompok-page.js') }}"></script>
 @endpush

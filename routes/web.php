@@ -20,15 +20,18 @@ Route::get('/DaftarTabelInflasi', [DaftarTabelInflasiController::class, 'index']
 Route::get('/DaftarTabelInflasi/{id}', [DaftarTabelInflasiController::class, 'show'])->name('daftar-tabel-inflasi.show');
 Route::get('/DaftarTabelInflasi/{id}/download', [DaftarTabelInflasiController::class, 'download'])->name('daftar-tabel-inflasi.download');
 
-// PROV //
+
 Route::get('/check-auth', function () {
     return dd(Auth::user());
 });
 
-// KABKOT //
+
 Route::get('/Kabkot', function () {
     return view('kabkot.index');
-})->name('landingPageKabkot');
+})->name('kabkot.index');
+Route::get('/Prov', function () {
+    return view('prov.index');
+})->name('prov.index');
 
 // DASHBOARD //
 Route::get('/dashboard/infkelompok', [DashboardController::class, 'showInflasiKelompok'])->name('dashboard.kelompok');
@@ -37,6 +40,7 @@ Route::get('/dashboard/infbulanan', [DashboardController::class, 'showInflasiBul
 Route::get('/dashboard/infspasial', [DashboardController::class, 'showInflasiSpasial'])->name('dashboard.spasial');
 Route::get('/dashboard/export-excel', [DashboardController::class, 'exportExcel'])->name('dashboard.export-excel');
 Route::get('/dashboard/spasial/komoditas-kabkota-data', [DashboardController::class, 'getInflasiKomoditasKabKotaAjax']);
+Route::post('/dashboard/spasial/tabel-dinamis-data', [DashboardController::class, 'tabelDinamisData'])->name('dashboard.spasial.tabel-dinamis-data');
 
 // ROUTE MANAJEMEN DATA INFLASI YANG BISA DIAKSES SEMUA YANG LOGIN
 Route::middleware(['auth'])->group(function () {

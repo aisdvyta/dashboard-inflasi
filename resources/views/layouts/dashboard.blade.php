@@ -16,6 +16,7 @@
             document.documentElement.classList.remove('dark')
         }
     </script>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     @stack('head')
 </head>
 

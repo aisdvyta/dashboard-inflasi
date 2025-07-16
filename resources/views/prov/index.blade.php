@@ -18,7 +18,7 @@
                 inflasi secara efisien.
             </p>
             <a href="#"
-                class="inline-flex items-center rounded-2xl gap-4 mt-5 pr-2 pl-4 py-1 bg-biru4 text-white font-semibold rounded-lg transition-all hover:bg-biru1 hover:translate-x-2">
+                class="inline-flex items-center gap-4 mt-5 pr-2 pl-4 py-1 bg-biru4 text-white font-semibold rounded-lg transition-all hover:bg-biru1 hover:translate-x-2">
                 Cari tau lebih lanjut
                 <img src="{{ asset('images/landingMain1/arrowRight.svg') }}" alt="panah kanan icon">
                 <span class="text-lg"></span>

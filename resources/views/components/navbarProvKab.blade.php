@@ -13,15 +13,16 @@
             <ul class="flex items-center space-x-6 text-biru1 font-semibold">
                 <li><a href="#main1" class="hover:text-biru4 text-base font-semibold">Beranda</a></li>
                 <li class="relative group">
-                    <a href="#main2" class="hover:text-biru4 text-base font-semibold flex items-center" id="dashboardToggle">
+                    <a href="#main2" class="hover:text-biru4 text-base font-semibold flex items-center"
+                        id="dashboardToggle">
                         Dashboard
-                        <svg class="ml-1 w-4 h-4 transition-transform duration-300 group-hover:text-biru4" id="dashboardArrow"
-                            viewBox="0 0 20 20" fill="currentColor">
+                        <svg class="ml-1 w-4 h-4 transition-transform duration-300 group-hover:text-biru4"
+                            id="dashboardArrow" viewBox="0 0 20 20" fill="currentColor">
                             <path
                                 d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
                         </svg>
                     </a>
-                    <ul class="absolute left-0 p-2 mt-2 w-64 font-[450] font-normal bg-white shadow-lg rounded-b-lg hidden"
+                    <ul class="absolute left-0 p-2 mt-2 w-64 font-normal bg-white shadow-lg rounded-b-lg hidden"
                         id="dashboardMenu">
                         <li><a href="#submenu1"
                                 class="block px-4 py-2 rounded-b-lg hover:bg-biru4 hover:text-white">Dashboard
@@ -38,25 +39,31 @@
                     </ul>
                 </li>
                 <li class="relative group">
-                    <a href="#main3" class="hover:text-biru4 text-base font-semibold flex items-center" id="menuToggle">
+                    <a href="#main3" class="hover:text-biru4 text-base font-semibold flex items-center"
+                        id="menuToggle">
                         Menu
-                        <svg class="ml-1 w-4 h-4 transition-transform duration-300 group-hover:text-biru4" id="menuArrow"
-                            viewBox="0 0 20 20" fill="currentColor">
+                        <svg class="ml-1 w-4 h-4 transition-transform duration-300 group-hover:text-biru4"
+                            id="menuArrow" viewBox="0 0 20 20" fill="currentColor">
                             <path
                                 d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
                         </svg>
                     </a>
                     <ul class="absolute left-0 p-2 mt-2 w-52 font-normal bg-white shadow-lg rounded-b-lg hidden"
                         id="dropdownMenu">
-                        <li><a href="#submenu1"
-                                class="block px-4 py-2 rounded-b-lg hover:bg-biru4 hover:text-white">Manajemen
-                                Akun</a></li>
+                        @auth
+                            @if (Auth::user()->id_role != 2)
+                                <li><a href="#submenu1"
+                                        class="block px-4 py-2 rounded-b-lg hover:bg-biru4 hover:text-white">Manajemen
+                                        Akun</a></li>
+                            @endif
+                        @endauth
                         <li><a href="#submenu2"
                                 class="block px-4 py-2 rounded-b-lg hover:bg-biru4 hover:text-white">Manajemen Data
                                 Inflasi</a></li>
                         <li><a href="#submenu3"
                                 class="block px-4 py-2 rounded-b-lg hover:bg-biru4 hover:text-white">Dashboard Data
                                 Inflasi</a></li>
+
                     </ul>
                 </li>
             </ul>
@@ -64,7 +71,7 @@
                 <button id="userDropdownToggle"
                     class="flex items-center px-3 py-1 bg-biru1 text-white rounded-lg hover:bg-biru4 font-jakarta text-base font-normal">
                     <img src="{{ asset('images/sidebar/puserIcon.svg') }}" alt="user icon" class="w-6 h-6 mr-1">
-                    {{-- {{ Auth::user()->name }} <!-- Menampilkan nama pengguna --> --}}
+                    {{ Auth::user()->nama_kabkot ?? 'Nama Kab/Kota' }}
                 </button>
                 <ul id="userDropdownMenu"
                     class="hidden absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg border border-gray-200">
@@ -171,7 +178,7 @@
         // Close dropdown when clicking outside
         document.addEventListener("click", function(event) {
             if (!userDropdownToggle.contains(event.target) && !userDropdownMenu.contains(event
-                .target)) {
+                    .target)) {
                 userDropdownMenu.classList.add("hidden");
             }
         });

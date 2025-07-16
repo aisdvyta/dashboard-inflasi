@@ -80,4 +80,9 @@ class User extends Authenticatable
     {
         return $this->role ? $this->role->nama_role : 'Unknown';
     }
+
+    public function getNamaKabkotAttribute()
+    {
+        return $this->satker ? $this->satker->nama_satker : null;
+    }
 }

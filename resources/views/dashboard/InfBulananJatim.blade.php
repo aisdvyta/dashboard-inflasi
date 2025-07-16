@@ -87,11 +87,11 @@
                     <span class="menu-text text-white text-[15px] transition duration-100">
                         Export Excel</span>
                 </button>
-                <button id="exportPdf"
+                <button id="exportPNG"
                     class="flex items-end gap-2 pl-2 pr-5 py-2 transition duration-300 shadow-xl rounded-xl bg-merah1 hover:bg-merah1muda hover:-translate-y-1 group">
-                    <img src="{{ asset('images/pdfIcon.svg') }}" alt="Ikon Eksport PDF" class="h-6 w-6 icon">
+                    <img src="{{ asset('images/pdfIcon.svg') }}" alt="Ikon Eksport PNG" class="h-6 w-6 icon">
                     <span class="menu-text text-white text-[15px] transition duration-100">
-                        Export PDF</span>
+                        Export PNG</span>
                 </button>
             </div>
         </div>
@@ -418,7 +418,7 @@
 @endsection
 
 @push('scripts')
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script>
         const topAndilMtM = @json($topAndilMtM);
         const topAndilYtD = @json($topAndilYtD);
@@ -432,9 +432,6 @@
         window.topInflasiMtM = topInflasiMtM;
         window.topInflasiYtD = topInflasiYtD;
         window.topInflasiYoY = topInflasiYoY;
-        console.log("Top Andil MtM:", @json($topAndilMtM));
-        console.log("Top Andil YtD:", @json($topAndilYtD));
-        console.log("Top Andil YoY:", @json($topAndilYoY));
     </script>
     <script src="{{ asset('js/dashboard/infBulananJatim.js') }}"></script>
     <script>
@@ -443,7 +440,12 @@
             const tahunSelect = document.getElementById('tahun');
             const iconBulan = document.getElementById('icon-bulan');
             const iconTahun = document.getElementById('icon-tahun');
-            const exportPdfBtn = document.getElementById('exportPdf');
+            const exportPngBtn = document.getElementById('exportPNG');
+            exportPngBtn.innerHTML = `
+                <img src="{{ asset('images/pdfIcon.svg') }}" alt="Ikon Eksport PNG" class="h-6 w-6 icon">
+                <span class="menu-text text-white text-[15px] transition duration-100">Export PNG</span>
+            `;
+            exportPngBtn.title = 'Export PNG';
             const exportExcelBtn = document.getElementById('exportExcel');
             const jenisDataInflasi = '{{ $jenisDataInflasi }}';
 
@@ -463,7 +465,7 @@
             toggleIcon(tahunSelect, iconTahun);
 
             // JS EXPORT PDF
-            exportPdfBtn.addEventListener('click', async function() {
+            exportPngBtn.addEventListener('click', async function() {
                 const loading = document.createElement('div');
                 loading.style.position = 'fixed';
                 loading.style.top = '40%';
@@ -474,68 +476,39 @@
                 loading.style.padding = '7px';
                 loading.style.borderRadius = '3px';
                 loading.style.zIndex = '9999';
-                loading.textContent = 'Generating PDF...';
+                loading.textContent = 'Generating PNG...';
                 document.body.appendChild(loading);
 
                 try {
                     // Get the main dashboard content
-                    const content = document.querySelector('.bg-white.rounded-b-lg.shadow-md');
-
-                    // Adjust scale for PDF
-                    content.style.transform = 'scale(0.525)'; // Reduced scale to fit portrait
-                    content.style.transformOrigin = 'top left';
-                    content.style.width = '190%'; // Increased width to maintain readability
-                    content.style.height = '50%';
+                    const content = document.querySelector('.bg-white.rounded-b-xl.shadow-md');
+                    if (!content) throw new Error('Dashboard content not found');
 
                     // Wait for charts to render
-                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    await new Promise(resolve => setTimeout(resolve, 1000));
 
-                    const opt = {
-                        margin: [10, 10, 10, 10], // Slightly increased margins
-                        filename: `dashboard-inflasi-${document.getElementById('bulan').value}-${document.getElementById('tahun').value}-${jenisDataInflasi}.pdf`,
-                        image: {
-                            type: 'jpeg',
-                            quality: 1
-                        },
-                        html2canvas: {
-                            scale: 4,
+                    // Use html2canvas to capture screenshot
+                    const canvas = await html2canvas(content, {
                             useCORS: true,
-                            logging: true,
-                            letterRendering: true,
-                            allowTaint: true,
-                            scrollY: 0,
-                            onclone: function(clonedDoc) {
-                                Array.from(clonedDoc.getElementsByTagName('canvas')).forEach(
-                                    canvas => {
-                                        const originalCanvas = document.querySelector(
-                                            `canvas[data-id="${canvas.getAttribute('data-id')}"]`
-                                        );
-                                        if (originalCanvas) {
-                                            const context = canvas.getContext('2d');
-                                            context.drawImage(originalCanvas, 0, 0);
-                                        }
-                                    });
-                            }
-                        },
-                        jsPDF: {
-                            unit: 'mm',
-                            format: 'a4',
-                            orientation: 'landscape' // Set to portrait
-                        },
-                        pagebreak: {
-                            mode: ['avoid-all', 'css', 'legacy']
-                        }
-                    };
-
-                    // Generate PDF
-                    await html2pdf()
-                        .from(content)
-                        .set(opt)
-                        .save();
+                        scale: 2,
+                        backgroundColor: null,
+                        scrollX: 0,
+                        scrollY: 0
+                    });
+                    const image = canvas.toDataURL('image/png');
+                    const bulan = document.getElementById('bulan').value;
+                    const tahun = document.getElementById('tahun').value;
+                    const jenisDataInflasi = '{{ $jenisDataInflasi }}';
+                    const a = document.createElement('a');
+                    a.href = image;
+                    a.download = `dashboard-inflasi-${bulan}-${tahun}-${jenisDataInflasi}.png`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
 
                 } catch (error) {
-                    console.error('Error generating PDF:', error);
-                    alert('Terjadi kesalahan saat menghasilkan PDF. Silakan coba lagi.');
+                    console.error('Error generating PNG:', error);
+                    alert('Terjadi kesalahan saat menghasilkan PNG. Silakan coba lagi.');
                 } finally {
                     document.body.removeChild(loading);
                 }
