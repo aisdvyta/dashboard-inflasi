@@ -20,9 +20,6 @@ dashboard-inflasi/
 ├── resources/        # Resource aplikasi (view, asset, dll)
 ├── routes/           # Definisi routing aplikasi
 ├── storage/          # File hasil upload, cache, log, dll (selain yang di-ignore)
-├── test/             # File dan folder untuk testing aplikasi
-├── data/             # Dataset inflasi dan data pendukung
-├── README.md         # Dokumentasi dan penjelasan project
 ├── package.json      # Konfigurasi dan dependensi project
 ```
 
@@ -35,7 +32,4 @@ dashboard-inflasi/
 - **resources/**: Resource aplikasi seperti view, asset, dan file lokal.
 - **routes/**: Definisi routing aplikasi (web, API, dll).
 - **storage/**: File hasil upload, cache, log, dan file sementara (selain yang di-ignore).
-- **test/**: Berisi file dan folder untuk testing aplikasi.
-- **data/**: Dataset inflasi dan file pendukung analisis.
-- **README.md**: Dokumentasi project.
 - **package.json**: File konfigurasi untuk manajemen dependensi dan script project.
