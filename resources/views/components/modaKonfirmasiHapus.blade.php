@@ -18,21 +18,23 @@
             </p>
             <p class="text-biru1 text-center text-base">{{ $secondWord }} yang dihapus tidak dapat dikembalikan.</p>
         </div>
-        <div class="flex justify-center mt-4">
-            <button
-                class="bg-kuning2 font-normal text-biru1 px-8 py-2 rounded-lg shadow-lg mr-4 transition-all duration-200 hover:-translate-y-1"
-                onclick="closeModal('{{ $id }}')">
-                Batal
-            </button>
-            <form action="{{ $formAction }}" method="POST">
-                @csrf
-                @method('DELETE')
+        <form action="{{ $formAction }}" method="POST">
+            @csrf
+            @method('DELETE')
+            <div class="flex justify-center mt-4">
                 <button
+                    type="button"
+                    class="bg-kuning2 font-normal text-biru1 px-8 py-2 rounded-lg shadow-lg mr-4 transition-all duration-200 hover:-translate-y-1"
+                    onclick="closeModal('{{ $id }}')">
+                    Batal
+                </button>
+                <button
+                    type="submit"
                     class="bg-merah1 font-normal text-white px-8 py-2 rounded-lg shadow-lg transition-all duration-200 hover:-translate-y-1">
                     Hapus
                 </button>
-            </form>
-        </div>
+            </div>
+        </form>
     </div>
 </div>
 

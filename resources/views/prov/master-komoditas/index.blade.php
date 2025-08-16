@@ -55,7 +55,7 @@
                                         class="flex items-center gap-1 bg-biru1 text-white px-5 py-1 rounded-lg shadow-lg hover:-translate-y-1 transition duration-100 text-sm font-normal">
                                         <img src="{{ asset('images/adminProv/editIcon.svg') }}" alt="Edit Icon"
                                             class="h-5 w-5">
-                                        Edit Komoditas
+                                        Edit
                                     </button>
 
                                     <!-- Tombol Hapus -->
@@ -63,8 +63,13 @@
                                         class="flex items-center gap-1 bg-merah1 text-white px-5 py-1 rounded-lg shadow-lg hover:-translate-y-1 transition duration-100 text-sm font-normal">
                                         <img src="{{ asset('images/adminProv/deleteIcon.svg') }}" alt="Delete Icon"
                                             class="h-5 w-5">
-                                        Hapus Komoditas
+                                        Hapus
                                     </button>
+                                    @include('components.modaKonfirmasiHapus', [
+                                        'id' => $komoditasItem->kode_kom,
+                                        'folderName' => 'master-komoditas',
+                                        'formAction' => route('master-komoditas.destroy', $komoditasItem->kode_kom),
+                                    ])
                                 </div>
                             </td>
                         </tr>

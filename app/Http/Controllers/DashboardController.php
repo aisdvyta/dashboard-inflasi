@@ -56,7 +56,70 @@ class DashboardController extends Controller
             $query->orderByDesc($columnAndil); // Teratas
         }
 
-        return $query->take(10)->get();
+        $result = $query->take(10)->get();
+
+        // Debug: Log query dan hasil
+        Log::info('getTopDataSpasial Debug', [
+            'idwill' => $idwill,
+            'periode' => $periode,
+            'jenisDataInflasi' => $jenisDataInflasi,
+            'columnInflasi' => $columnInflasi,
+            'columnAndil' => $columnAndil,
+            'isNegative' => $isNegative,
+            'result_count' => $result->count(),
+            'sql' => $query->toSql(),
+            'bindings' => $query->getBindings()
+        ]);
+
+        // Debug: Check if any data exists for this combination
+        $checkQuery = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
+            ->join('master_komoditas as mk', 'detail_inflasis.id_kom', '=', 'mk.kode_kom')
+            ->where('detail_inflasis.id_flag', 3)
+            ->where('detail_inflasis.id_wil', $idwill)
+            ->where('master_inflasis.periode', $periode)
+            ->where('master_inflasis.jenis_data_inflasi', $jenisDataInflasi);
+
+        $totalRecords = $checkQuery->count();
+        $sampleData = $checkQuery->take(3)->get(['mk.nama_kom', "detail_inflasis.{$columnInflasi} as inflasi", "detail_inflasis.{$columnAndil} as andil"]);
+
+        Log::info('getTopDataSpasial Data Check', [
+            'total_records' => $totalRecords,
+            'sample_data' => $sampleData->toArray(),
+        ]);
+
+        // Debug: Check each condition separately
+        $checkFlag = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
+            ->where('detail_inflasis.id_flag', 3)->count();
+        $checkWil = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
+            ->where('detail_inflasis.id_flag', 3)
+            ->where('detail_inflasis.id_wil', $idwill)->count();
+        $checkPeriode = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
+            ->where('detail_inflasis.id_flag', 3)
+            ->where('detail_inflasis.id_wil', $idwill)
+            ->where('master_inflasis.periode', $periode)->count();
+        $checkJenis = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
+            ->where('detail_inflasis.id_flag', 3)
+            ->where('detail_inflasis.id_wil', $idwill)
+            ->where('master_inflasis.periode', $periode)
+            ->where('master_inflasis.jenis_data_inflasi', $jenisDataInflasi)->count();
+
+        Log::info('getTopDataSpasial Condition Check', [
+            'flag_3_count' => $checkFlag,
+            'with_wil_count' => $checkWil,
+            'with_periode_count' => $checkPeriode,
+            'with_jenis_count' => $checkJenis,
+        ]);
+
+        // Debug: Check if result is empty but data exists
+        if ($result->count() == 0 && $totalRecords > 0) {
+            Log::warning('Query returned empty but data exists!', [
+                'total_records' => $totalRecords,
+                'query_sql' => $query->toSql(),
+                'query_bindings' => $query->getBindings(),
+            ]);
+        }
+
+        return $result;
     }
 
     private function getTopData($periode, $jenisDataInflasi, $columnInflasi, $columnAndil, $isNegative = false, $idWil = 3500)
@@ -286,7 +349,19 @@ class DashboardController extends Controller
         $bulan = $periode->translatedFormat('F');
         $tahun = $periode->format('Y');
 
-        $rankingKabKota = [];
+        // Debug: Log periode processing
+        Log::info('Periode Processing Debug', [
+            'input_bulan' => $request->input('bulan'),
+            'input_tahun' => $request->input('tahun'),
+            'processed_periode' => $periode,
+            'processed_bulan' => $bulan,
+            'processed_tahun' => $tahun,
+            'periode_format' => $periode->format('Y-m-d'),
+            'idWil' => $idWil,
+            'jenisDataInflasi' => $jenisDataInflasi,
+        ]);
+
+        $rankingKabKota = collect();
         if ($komoditasUtama && $periode) {
             $rankingKabKota = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
                 ->join('master_wilayahs as mw', 'detail_inflasis.id_wil', '=', 'mw.kode_wil')
@@ -294,13 +369,14 @@ class DashboardController extends Controller
                 ->where('master_inflasis.periode', $periode)
                 ->where('master_inflasis.jenis_data_inflasi', $jenisDataInflasi)
                 ->where('detail_inflasis.id_flag', 3)
+                ->where('detail_inflasis.id_wil', '!=', 3500) // Exclude provinsi aggregate row
                 ->where('mk.nama_kom', $komoditasUtama)
                 ->orderByDesc('detail_inflasis.andil_mtm')
                 ->select('mw.nama_wil', 'mw.kode_wil', 'detail_inflasis.andil_mtm', 'detail_inflasis.inflasi_mtm')
                 ->get();
         }
 
-        // Ambil data inflasi mtm dari semua komoditas utama pada kota teratas
+        // Ambil data inflasi mtm dari semua komoditas utama pada kota teratas -> skrg ga dipake
         $inflasiKomoditasKotaTeratas = collect();
         if ($rankingKabKota->count() > 0) {
             $kotaTeratas = $rankingKabKota->first();
@@ -317,7 +393,6 @@ class DashboardController extends Controller
                 ->get();
         }
 
-        // Get the highest and lowest contributing commodities
         $komoditasTertinggi = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
             ->join('master_komoditas as mk', 'detail_inflasis.id_kom', '=', 'mk.kode_kom')
             ->where('detail_inflasis.id_flag', 3)
@@ -380,6 +455,86 @@ class DashboardController extends Controller
         $topAndilYtD = $this->getTopDataSpasial($idWil, $periode, $jenisDataInflasi, 'inflasi_ytd', 'andil_ytd', $isYtDNegative);
         $topAndilYoY = $this->getTopDataSpasial($idWil, $periode, $jenisDataInflasi, 'inflasi_yoy', 'andil_yoy', $isYoYNegative);
 
+        // Fallback: Jika data kosong, coba ambil data terbaru
+        if ($topAndilMtM->count() == 0) {
+            Log::info('Data is empty, trying fallback...');
+            $latestData = master_inflasi::where('jenis_data_inflasi', $jenisDataInflasi)
+                ->orderBy('periode', 'desc')
+                ->first();
+            if ($latestData) {
+                $latestPeriode = Carbon::parse($latestData->periode);
+                Log::info('Using fallback period', [
+                    'original_periode' => $periode,
+                    'fallback_periode' => $latestPeriode,
+                    'latest_data_id' => $latestData->id
+                ]);
+                $topAndilMtM = $this->getTopDataSpasial($idWil, $latestPeriode, $jenisDataInflasi, 'inflasi_mtm', 'andil_mtm', $isMtMNegative);
+                $topAndilYtD = $this->getTopDataSpasial($idWil, $latestPeriode, $jenisDataInflasi, 'inflasi_ytd', 'andil_ytd', $isYtDNegative);
+                $topAndilYoY = $this->getTopDataSpasial($idWil, $latestPeriode, $jenisDataInflasi, 'inflasi_yoy', 'andil_yoy', $isYoYNegative);
+
+                Log::info('Fallback data counts', [
+                    'topAndilMtM_count' => $topAndilMtM->count(),
+                    'topAndilYtD_count' => $topAndilYtD->count(),
+                    'topAndilYoY_count' => $topAndilYoY->count(),
+                ]);
+            } else {
+                Log::warning('No fallback data found for jenis_data_inflasi: ' . $jenisDataInflasi);
+            }
+        } else {
+            Log::info('Data is not empty, no fallback needed', [
+                'topAndilMtM_count' => $topAndilMtM->count(),
+                'topAndilYtD_count' => $topAndilYtD->count(),
+                'topAndilYoY_count' => $topAndilYoY->count(),
+            ]);
+        }
+
+        // Debug: Log data untuk memastikan tidak kosong
+        Log::info('Spasial Data Debug', [
+            'idWil' => $idWil,
+            'periode' => $periode,
+            'jenisDataInflasi' => $jenisDataInflasi,
+            'topAndilMtM_count' => $topAndilMtM->count(),
+            'topAndilYtD_count' => $topAndilYtD->count(),
+            'topAndilYoY_count' => $topAndilYoY->count(),
+        ]);
+
+        // Debug: Cek apakah ada data di database untuk periode ini
+        $checkData = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
+            ->where('master_inflasis.periode', $periode)
+            ->where('master_inflasis.jenis_data_inflasi', $jenisDataInflasi)
+            ->count();
+
+        Log::info('Database Check', [
+            'periode' => $periode,
+            'jenisDataInflasi' => $jenisDataInflasi,
+            'total_records' => $checkData,
+            'periode_formatted' => $periode->format('Y-m-d'),
+        ]);
+
+                // Debug: Cek data master_inflasi
+        $masterInflasi = master_inflasi::where('jenis_data_inflasi', $jenisDataInflasi)
+            ->orderBy('periode', 'desc')
+            ->take(5)
+            ->get(['periode', 'jenis_data_inflasi']);
+
+        Log::info('Master Inflasi Data', [
+            'available_periods' => $masterInflasi->pluck('periode')->toArray(),
+        ]);
+
+        // Debug: Check available data in detail_inflasi
+        $detailInflasiCheck = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
+            ->where('master_inflasis.jenis_data_inflasi', $jenisDataInflasi)
+            ->where('detail_inflasis.id_flag', 3)
+            ->select('master_inflasis.periode', 'detail_inflasis.id_wil')
+            ->distinct()
+            ->get();
+
+        Log::info('Detail Inflasi Available Data', [
+            'total_records' => $detailInflasiCheck->count(),
+            'periods' => $detailInflasiCheck->pluck('periode')->unique()->toArray(),
+            'wilayahs' => $detailInflasiCheck->pluck('id_wil')->unique()->toArray(),
+        ]);
+
         // Ambil data wilayah untuk map
         $wilayahs = DB::table('master_wilayahs')->get();
 
@@ -434,6 +589,16 @@ class DashboardController extends Controller
         $isBlackWhite = in_array($jenisDataInflasi, ['ASEM 1', 'ASEM 2', 'ASEM 3']);
         $isAdminProv = $user && $user->id_role == 1;
         $isAsem = in_array($jenisDataInflasi, ['ASEM 1', 'ASEM 2', 'ASEM 3']);
+        // Debug: Log data before sending to view
+        Log::info('Data being sent to view', [
+            'topAndilMtM_count' => $topAndilMtM->count(),
+            'topAndilYtD_count' => $topAndilYtD->count(),
+            'topAndilYoY_count' => $topAndilYoY->count(),
+            'topAndilMtM_sample' => $topAndilMtM->take(3)->toArray(),
+            'topAndilYtD_sample' => $topAndilYtD->take(3)->toArray(),
+            'topAndilYoY_sample' => $topAndilYoY->take(3)->toArray(),
+        ]);
+
         return view('dashboard.infSpasial', compact(
             'bulan',
             'tahun',
@@ -466,15 +631,26 @@ class DashboardController extends Controller
             'rankingDeflasi',
             'inflasiKomoditasKotaTeratas',
             'daftarSemuaKomoditas',
-            'minInflasiMtM', 'maxInflasiMtM',
-            'minInflasiYtD', 'maxInflasiYtD',
-            'minInflasiYoY', 'maxInflasiYoY',
-            'minAndilMtM', 'maxAndilMtM',
-            'minAndilYtD', 'maxAndilYtD',
-            'minAndilYoY', 'maxAndilYoY',
-            'minAndilKab', 'maxAndilKab',
-            'minInflasiKab', 'maxInflasiKab',
-            'isBlackWhite', 'isAdminProv', 'isAsem', 'user'
+            'minInflasiMtM',
+            'maxInflasiMtM',
+            'minInflasiYtD',
+            'maxInflasiYtD',
+            'minInflasiYoY',
+            'maxInflasiYoY',
+            'minAndilMtM',
+            'maxAndilMtM',
+            'minAndilYtD',
+            'maxAndilYtD',
+            'minAndilYoY',
+            'maxAndilYoY',
+            'minAndilKab',
+            'maxAndilKab',
+            'minInflasiKab',
+            'maxInflasiKab',
+            'isBlackWhite',
+            'isAdminProv',
+            'isAsem',
+            'user'
         ));
     }
 
@@ -698,7 +874,7 @@ class DashboardController extends Controller
         // Default tahun: tahun terdekat dengan now dari $tahunList
         if (!$request->filled('tahun')) {
             $nowYear = now()->year;
-            $tahun = collect($tahunList)->sortBy(function($th) use ($nowYear) {
+            $tahun = collect($tahunList)->sortBy(function ($th) use ($nowYear) {
                 return abs($th - $nowYear);
             })->first();
         } else {
@@ -709,12 +885,32 @@ class DashboardController extends Controller
         $filterPeriode = null;
         if ($request->filled('tahun_bulan')) {
             $filterPeriode = collect($request->input('tahun_bulan'))
-                ->map(function($val) {
+                ->map(function ($val) {
                     [$th, $bln] = explode('-', $val, 2);
+                    $bln = trim($bln); // Pastikan tidak ada spasi
                     // Konversi nama bulan ke angka
                     $bulanMap = [
-                        'Januari'=>1,'February'=>2,'Maret'=>3,'April'=>4,'Mei'=>5,'Juni'=>6,'Juli'=>7,'Agustus'=>8,'September'=>9,'Oktober'=>10,'November'=>11,'Desember'=>12,
-                        'January'=>1,'Februari'=>2,'March'=>3,'May'=>5,'June'=>6,'July'=>7,'August'=>8,'October'=>10,'December'=>12
+                        'Januari' => 1,
+                        'February' => 2,
+                        'Maret' => 3,
+                        'April' => 4,
+                        'Mei' => 5,
+                        'Juni' => 6,
+                        'Juli' => 7,
+                        'Agustus' => 8,
+                        'September' => 9,
+                        'Oktober' => 10,
+                        'November' => 11,
+                        'Desember' => 12,
+                        'January' => 1,
+                        'Februari' => 2,
+                        'March' => 3,
+                        'May' => 5,
+                        'June' => 6,
+                        'July' => 7,
+                        'August' => 8,
+                        'October' => 10,
+                        'December' => 12
                     ];
                     $blnNum = $bulanMap[$bln] ?? null;
                     return $blnNum && $th ? [$th, $blnNum] : null;
@@ -727,9 +923,9 @@ class DashboardController extends Controller
                 ->where('detail_inflasis.id_wil', 3500)
                 ->where('master_inflasis.jenis_data_inflasi', $jenisDataInflasi);
             if ($filterPeriode && $filterPeriode->count()) {
-                $query->where(function($q) use ($filterPeriode) {
+                $query->where(function ($q) use ($filterPeriode) {
                     foreach ($filterPeriode as [$th, $blnNum]) {
-                        $q->orWhere(function($sub) use ($th, $blnNum) {
+                        $q->orWhere(function ($sub) use ($th, $blnNum) {
                             $sub->whereYear('master_inflasis.periode', $th)
                                 ->whereMonth('master_inflasis.periode', $blnNum);
                         });
@@ -757,9 +953,9 @@ class DashboardController extends Controller
                 ->where('mk.nama_kom', $komoditas)
                 ->where('master_inflasis.jenis_data_inflasi', $jenisDataInflasi);
             if ($filterPeriode && $filterPeriode->count()) {
-                $query->where(function($q) use ($filterPeriode) {
+                $query->where(function ($q) use ($filterPeriode) {
                     foreach ($filterPeriode as [$th, $blnNum]) {
-                        $q->orWhere(function($sub) use ($th, $blnNum) {
+                        $q->orWhere(function ($sub) use ($th, $blnNum) {
                             $sub->whereYear('master_inflasis.periode', $th)
                                 ->whereMonth('master_inflasis.periode', $blnNum);
                         });
@@ -808,7 +1004,7 @@ class DashboardController extends Controller
         // Default tahun: tahun terdekat dengan now dari $tahunList
         if (!$request->filled('tahun')) {
             $nowYear = now()->year;
-            $tahun = collect($tahunList)->sortBy(function($th) use ($nowYear) {
+            $tahun = collect($tahunList)->sortBy(function ($th) use ($nowYear) {
                 return abs($th - $nowYear);
             })->first();
         } else {
@@ -819,12 +1015,32 @@ class DashboardController extends Controller
         $filterPeriode = null;
         if ($request->filled('tahun_bulan')) {
             $filterPeriode = collect($request->input('tahun_bulan'))
-                ->map(function($val) {
+                ->map(function ($val) {
                     [$th, $bln] = explode('-', $val, 2);
+                    $bln = trim($bln); // Pastikan tidak ada spasi
                     // Konversi nama bulan ke angka
                     $bulanMap = [
-                        'Januari'=>1,'February'=>2,'Maret'=>3,'April'=>4,'Mei'=>5,'Juni'=>6,'Juli'=>7,'Agustus'=>8,'September'=>9,'Oktober'=>10,'November'=>11,'Desember'=>12,
-                        'January'=>1,'Februari'=>2,'March'=>3,'May'=>5,'June'=>6,'July'=>7,'August'=>8,'October'=>10,'December'=>12
+                        'Januari' => 1,
+                        'February' => 2,
+                        'Maret' => 3,
+                        'April' => 4,
+                        'Mei' => 5,
+                        'Juni' => 6,
+                        'Juli' => 7,
+                        'Agustus' => 8,
+                        'September' => 9,
+                        'Oktober' => 10,
+                        'November' => 11,
+                        'Desember' => 12,
+                        'January' => 1,
+                        'Februari' => 2,
+                        'March' => 3,
+                        'May' => 5,
+                        'June' => 6,
+                        'July' => 7,
+                        'August' => 8,
+                        'October' => 10,
+                        'December' => 12
                     ];
                     $blnNum = $bulanMap[$bln] ?? null;
                     return $blnNum && $th ? [$th, $blnNum] : null;
@@ -846,7 +1062,7 @@ class DashboardController extends Controller
             $tahunBulanList[$tahun][] = $bulan;
         }
 
-        return view('dashboard.infseries', compact(
+        return view('dashboard.infSeries', compact(
             'daftarKomoditasUtama',
             'komoditas',
             'jenisDataInflasi',
@@ -1016,29 +1232,73 @@ class DashboardController extends Controller
             return response()->json(['error' => 'Bulan tidak valid'], 400);
         }
 
-        // Prepare a fake request to get the same data as the dashboard
-        $req = new Request([
-            'bulan' => $bulan,
-            'tahun' => $tahun,
-            'jenis_data_inflasi' => $jenisDataInflasi,
-            'komoditas_utama' => $komoditasUtama,
-            'kabkota' => $kabkota,
-        ]);
-        $data = $this->showInflasiSpasial($req)->getData();
+        // Get periode
+        $periode = Carbon::createFromDate($tahun, $bulanAngka, 1)->startOfMonth();
+        $idWil = $kabkota ?: '3500';
+
+        // Get data directly using the same logic as showInflasiSpasial
+        $rankingKabKota = collect();
+        if ($komoditasUtama && $periode) {
+            $rankingKabKota = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
+                ->join('master_wilayahs as mw', 'detail_inflasis.id_wil', '=', 'mw.kode_wil')
+                ->join('master_komoditas as mk', 'detail_inflasis.id_kom', '=', 'mk.kode_kom')
+                ->where('master_inflasis.periode', $periode)
+                ->where('master_inflasis.jenis_data_inflasi', $jenisDataInflasi)
+                ->where('detail_inflasis.id_flag', 3)
+                ->where('detail_inflasis.id_wil', '!=', 3500)
+                ->where('mk.nama_kom', $komoditasUtama)
+                ->orderByDesc('detail_inflasis.andil_mtm')
+                ->select('mw.nama_wil', 'mw.kode_wil', 'detail_inflasis.andil_mtm', 'detail_inflasis.inflasi_mtm')
+                ->get();
+        }
+
+        // Get inflation data for ranking
+        $inflasiKabKota = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
+            ->join('master_wilayahs as mw', 'detail_inflasis.id_wil', '=', 'mw.kode_wil')
+            ->where('master_inflasis.periode', $periode)
+            ->where('master_inflasis.jenis_data_inflasi', $jenisDataInflasi)
+            ->where('detail_inflasis.id_flag', 0)
+            ->where('detail_inflasis.id_wil', '!=', 3500)
+            ->select('mw.kode_wil', 'mw.nama_wil', 'detail_inflasis.inflasi_mtm')
+            ->get();
+
+        // Get inflation values for the selected wilayah
+        $inflasiMtM = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
+            ->where('detail_inflasis.id_flag', 0)
+            ->where('detail_inflasis.id_wil', $idWil)
+            ->where('master_inflasis.periode', $periode)
+            ->where('master_inflasis.jenis_data_inflasi', $jenisDataInflasi)
+            ->value('detail_inflasis.inflasi_mtm');
+
+        $inflasiYtD = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
+            ->where('detail_inflasis.id_flag', 0)
+            ->where('detail_inflasis.id_wil', $idWil)
+            ->where('master_inflasis.periode', $periode)
+            ->where('master_inflasis.jenis_data_inflasi', $jenisDataInflasi)
+            ->value('detail_inflasis.inflasi_ytd');
+
+        $inflasiYoY = detail_inflasi::join('master_inflasis', 'detail_inflasis.id_inflasi', '=', 'master_inflasis.id')
+            ->where('detail_inflasis.id_flag', 0)
+            ->where('detail_inflasis.id_wil', $idWil)
+            ->where('master_inflasis.periode', $periode)
+            ->where('master_inflasis.jenis_data_inflasi', $jenisDataInflasi)
+            ->value('detail_inflasis.inflasi_yoy');
+
+        $isMtMNegative = $inflasiMtM < 0;
+        $isYtDNegative = $inflasiYtD < 0;
+        $isYoYNegative = $inflasiYoY < 0;
+
+        // Get top data
+        $topInflasiMtM = $this->getTopDataSpasial($idWil, $periode, $jenisDataInflasi, 'inflasi_mtm', 'andil_mtm', $isMtMNegative);
+        $topInflasiYtD = $this->getTopDataSpasial($idWil, $periode, $jenisDataInflasi, 'inflasi_ytd', 'andil_ytd', $isYtDNegative);
+        $topInflasiYoY = $this->getTopDataSpasial($idWil, $periode, $jenisDataInflasi, 'inflasi_yoy', 'andil_yoy', $isYoYNegative);
+
+        // Ranking inflasi dan deflasi
+        $rankingInflasi = $inflasiKabKota->where('inflasi_mtm', '>', 0)->sortByDesc('inflasi_mtm')->values();
+        $rankingDeflasi = $inflasiKabKota->where('inflasi_mtm', '<', 0)->sortBy('inflasi_mtm')->values();
 
         // Sheet 1: Combined Inflasi & Deflasi
-        $rankingInflasi = $data['rankingInflasi'];
-        $rankingDeflasi = $data['rankingDeflasi'];
         $maxRows = max(count($rankingInflasi), count($rankingDeflasi));
-
-        // Sheet 2: Peringkat Kab/Kota Menurut Komoditas Utama
-        $rankingKabKota = $data['rankingKabKota'];
-        // Sheet 3: 10 Komoditas Teratas MtM
-        $topInflasiMtM = $data['topInflasiMtM'];
-        // Sheet 4: 10 Komoditas Teratas YtD
-        $topInflasiYtD = $data['topInflasiYtD'];
-        // Sheet 5: 10 Komoditas Teratas YoY
-        $topInflasiYoY = $data['topInflasiYoY'];
 
         $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 
@@ -1057,17 +1317,17 @@ class DashboardController extends Controller
             $row = $i + 2;
             // Inflasi
             if (isset($rankingInflasi[$i])) {
-                $sheet1->setCellValue('A'.$row, $i+1);
-                $sheet1->setCellValue('B'.$row, $rankingInflasi[$i]->nama_wil);
-                $sheet1->setCellValue('C'.$row, $rankingInflasi[$i]->andil_mtm);
-                $sheet1->setCellValue('D'.$row, $rankingInflasi[$i]->inflasi_mtm);
+                $sheet1->setCellValue('A' . $row, $i + 1);
+                $sheet1->setCellValue('B' . $row, $rankingInflasi[$i]->nama_wil);
+                $sheet1->setCellValue('C' . $row, $rankingInflasi[$i]->andil_mtm);
+                $sheet1->setCellValue('D' . $row, $rankingInflasi[$i]->inflasi_mtm);
             }
             // Deflasi
             if (isset($rankingDeflasi[$i])) {
-                $sheet1->setCellValue('E'.$row, $i+1);
-                $sheet1->setCellValue('F'.$row, $rankingDeflasi[$i]->nama_wil);
-                $sheet1->setCellValue('G'.$row, $rankingDeflasi[$i]->andil_mtm);
-                $sheet1->setCellValue('H'.$row, $rankingDeflasi[$i]->inflasi_mtm);
+                $sheet1->setCellValue('E' . $row, $i + 1);
+                $sheet1->setCellValue('F' . $row, $rankingDeflasi[$i]->nama_wil);
+                $sheet1->setCellValue('G' . $row, $rankingDeflasi[$i]->andil_mtm);
+                $sheet1->setCellValue('H' . $row, $rankingDeflasi[$i]->inflasi_mtm);
             }
         }
         // Style
@@ -1075,8 +1335,8 @@ class DashboardController extends Controller
         foreach (range('A', 'H') as $col) {
             $sheet1->getColumnDimension($col)->setAutoSize(true);
         }
-        $sheet1->getStyle('C2:D'.($maxRows+1))->getNumberFormat()->setFormatCode('#,##0.00');
-        $sheet1->getStyle('G2:H'.($maxRows+1))->getNumberFormat()->setFormatCode('#,##0.00');
+        $sheet1->getStyle('C2:D' . ($maxRows + 1))->getNumberFormat()->setFormatCode('#,##0.00');
+        $sheet1->getStyle('G2:H' . ($maxRows + 1))->getNumberFormat()->setFormatCode('#,##0.00');
 
         // Sheet 2: Peringkat Kab/Kota Menurut Komoditas Utama
         $sheet2 = $spreadsheet->createSheet();
@@ -1087,19 +1347,19 @@ class DashboardController extends Controller
         $sheet2->setCellValue('D1', 'Inflasi');
         foreach ($rankingKabKota as $i => $item) {
             $row = $i + 2;
-            $sheet2->setCellValue('A'.$row, $i+1);
-            $sheet2->setCellValue('B'.$row, $item->nama_wil);
-            $sheet2->setCellValue('C'.$row, $item->andil_mtm);
-            $sheet2->setCellValue('D'.$row, $item->inflasi_mtm);
+            $sheet2->setCellValue('A' . $row, $i + 1);
+            $sheet2->setCellValue('B' . $row, $item->nama_wil);
+            $sheet2->setCellValue('C' . $row, $item->andil_mtm);
+            $sheet2->setCellValue('D' . $row, $item->inflasi_mtm);
         }
         $sheet2->getStyle('A1:D1')->getFont()->setBold(true);
         foreach (range('A', 'D') as $col) {
             $sheet2->getColumnDimension($col)->setAutoSize(true);
         }
-        $sheet2->getStyle('C2:D'.(count($rankingKabKota)+1))->getNumberFormat()->setFormatCode('#,##0.00');
+        $sheet2->getStyle('C2:D' . (count($rankingKabKota) + 1))->getNumberFormat()->setFormatCode('#,##0.00');
 
         // Helper for komoditas sheets
-        $makeKomoditasSheet = function($sheet, $title, $data) {
+        $makeKomoditasSheet = function ($sheet, $title, $data) {
             $sheet->setTitle($title);
             $sheet->setCellValue('A1', 'No');
             $sheet->setCellValue('B1', 'Komoditas');
@@ -1107,16 +1367,16 @@ class DashboardController extends Controller
             $sheet->setCellValue('D1', 'Inflasi');
             foreach ($data as $i => $item) {
                 $row = $i + 2;
-                $sheet->setCellValue('A'.$row, $i+1);
-                $sheet->setCellValue('B'.$row, $item->nama_kom);
-                $sheet->setCellValue('C'.$row, $item->andil);
-                $sheet->setCellValue('D'.$row, $item->inflasi);
+                $sheet->setCellValue('A' . $row, $i + 1);
+                $sheet->setCellValue('B' . $row, $item->nama_kom);
+                $sheet->setCellValue('C' . $row, $item->andil);
+                $sheet->setCellValue('D' . $row, $item->inflasi);
             }
             $sheet->getStyle('A1:D1')->getFont()->setBold(true);
             foreach (range('A', 'D') as $col) {
                 $sheet->getColumnDimension($col)->setAutoSize(true);
             }
-            $sheet->getStyle('C2:D'.(count($data)+1))->getNumberFormat()->setFormatCode('#,##0.00');
+            $sheet->getStyle('C2:D' . (count($data) + 1))->getNumberFormat()->setFormatCode('#,##0.00');
         };
         // Sheet 3: MtM
         $sheet3 = $spreadsheet->createSheet();
@@ -1168,16 +1428,16 @@ class DashboardController extends Controller
         $sheet1->setCellValue('D1', 'Inflasi');
         foreach ($data['topKelompokMtM'] as $i => $item) {
             $row = $i + 2;
-            $sheet1->setCellValue('A'.$row, $i+1);
-            $sheet1->setCellValue('B'.$row, $item->nama_kelompok);
-            $sheet1->setCellValue('C'.$row, $item->andil);
-            $sheet1->setCellValue('D'.$row, $item->inflasi);
+            $sheet1->setCellValue('A' . $row, $i + 1);
+            $sheet1->setCellValue('B' . $row, $item->nama_kelompok);
+            $sheet1->setCellValue('C' . $row, $item->andil);
+            $sheet1->setCellValue('D' . $row, $item->inflasi);
         }
         $sheet1->getStyle('A1:D1')->getFont()->setBold(true);
         foreach (range('A', 'D') as $col) {
             $sheet1->getColumnDimension($col)->setAutoSize(true);
         }
-        $sheet1->getStyle('C2:D'.(count($data['topKelompokMtM'])+1))->getNumberFormat()->setFormatCode('#,##0.00');
+        $sheet1->getStyle('C2:D' . (count($data['topKelompokMtM']) + 1))->getNumberFormat()->setFormatCode('#,##0.00');
         // Sheet 2: Tabel Inflasi Bulanan Menurut Kelompok Pengeluaran
         $sheet2 = $spreadsheet->createSheet();
         $sheet2->setTitle('Tabel Kelompok');
@@ -1191,20 +1451,20 @@ class DashboardController extends Controller
         $sheet2->setCellValue('H1', 'Andil YoY');
         foreach ($data['tabelKelompok'] as $i => $item) {
             $row = $i + 2;
-            $sheet2->setCellValue('A'.$row, $i+1);
-            $sheet2->setCellValue('B'.$row, $item->nama_kom);
-            $sheet2->setCellValue('C'.$row, $item->inflasi_mtm);
-            $sheet2->setCellValue('D'.$row, $item->andil_mtm);
-            $sheet2->setCellValue('E'.$row, $item->inflasi_ytd);
-            $sheet2->setCellValue('F'.$row, $item->andil_ytd);
-            $sheet2->setCellValue('G'.$row, $item->inflasi_yoy);
-            $sheet2->setCellValue('H'.$row, $item->andil_yoy);
+            $sheet2->setCellValue('A' . $row, $i + 1);
+            $sheet2->setCellValue('B' . $row, $item->nama_kom);
+            $sheet2->setCellValue('C' . $row, $item->inflasi_mtm);
+            $sheet2->setCellValue('D' . $row, $item->andil_mtm);
+            $sheet2->setCellValue('E' . $row, $item->inflasi_ytd);
+            $sheet2->setCellValue('F' . $row, $item->andil_ytd);
+            $sheet2->setCellValue('G' . $row, $item->inflasi_yoy);
+            $sheet2->setCellValue('H' . $row, $item->andil_yoy);
         }
         $sheet2->getStyle('A1:H1')->getFont()->setBold(true);
         foreach (range('A', 'H') as $col) {
             $sheet2->getColumnDimension($col)->setAutoSize(true);
         }
-        $sheet2->getStyle('C2:H'.(count($data['tabelKelompok'])+1))->getNumberFormat()->setFormatCode('#,##0.00');
+        $sheet2->getStyle('C2:H' . (count($data['tabelKelompok']) + 1))->getNumberFormat()->setFormatCode('#,##0.00');
         // Sheet 3: 5 Komoditas Teratas per Kelompok
         $sheet3 = $spreadsheet->createSheet();
         $sheet3->setTitle('Top Komoditas Kelompok');
@@ -1216,11 +1476,11 @@ class DashboardController extends Controller
         $row = 2;
         foreach ($data['top5KomoditasPerKelompok'] as $kelompokNama => $komoditasList) {
             foreach ($komoditasList as $i => $kom) {
-                $sheet3->setCellValue('A'.$row, $kelompokNama);
-                $sheet3->setCellValue('B'.$row, $i+1);
-                $sheet3->setCellValue('C'.$row, $kom->nama_kom);
-                $sheet3->setCellValue('D'.$row, $kom->andil_mtm);
-                $sheet3->setCellValue('E'.$row, $kom->inflasi_mtm);
+                $sheet3->setCellValue('A' . $row, $kelompokNama);
+                $sheet3->setCellValue('B' . $row, $i + 1);
+                $sheet3->setCellValue('C' . $row, $kom->nama_kom);
+                $sheet3->setCellValue('D' . $row, $kom->andil_mtm);
+                $sheet3->setCellValue('E' . $row, $kom->inflasi_mtm);
                 $row++;
             }
         }
@@ -1228,7 +1488,7 @@ class DashboardController extends Controller
         foreach (range('A', 'E') as $col) {
             $sheet3->getColumnDimension($col)->setAutoSize(true);
         }
-        $sheet3->getStyle('D2:E'.($row-1))->getNumberFormat()->setFormatCode('#,##0.00');
+        $sheet3->getStyle('D2:E' . ($row - 1))->getNumberFormat()->setFormatCode('#,##0.00');
         // File name
         $filename = "Dashboard-Kelompok-{$bulan}-{$tahun}-{$jenisDataInflasi}.xlsx";
         $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
@@ -1259,22 +1519,22 @@ class DashboardController extends Controller
         $data = $this->showSeriesInflasi($req)->getData();
         $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
         // Helper for each sheet
-        $makeSheet = function($sheet, $title, $periodeArr, $andilArr, $inflasiArr) {
+        $makeSheet = function ($sheet, $title, $periodeArr, $andilArr, $inflasiArr) {
             $sheet->setTitle($title);
             $sheet->setCellValue('A1', 'Periode Data');
             $sheet->setCellValue('B1', 'Andil');
             $sheet->setCellValue('C1', 'Inflasi');
             foreach ($periodeArr as $i => $periode) {
                 $row = $i + 2;
-                $sheet->setCellValue('A'.$row, $periode);
-                $sheet->setCellValue('B'.$row, $andilArr[$i]);
-                $sheet->setCellValue('C'.$row, $inflasiArr[$i]);
+                $sheet->setCellValue('A' . $row, $periode);
+                $sheet->setCellValue('B' . $row, $andilArr[$i]);
+                $sheet->setCellValue('C' . $row, $inflasiArr[$i]);
             }
             $sheet->getStyle('A1:C1')->getFont()->setBold(true);
             foreach (range('A', 'C') as $col) {
                 $sheet->getColumnDimension($col)->setAutoSize(true);
             }
-            $sheet->getStyle('B2:C'.(count($periodeArr)+1))->getNumberFormat()->setFormatCode('#,##0.00');
+            $sheet->getStyle('B2:C' . (count($periodeArr) + 1))->getNumberFormat()->setFormatCode('#,##0.00');
         };
         // Sheet 1: MtM
         $sheet1 = $spreadsheet->getActiveSheet();
@@ -1357,7 +1617,26 @@ class DashboardController extends Controller
         // Parse periode ke date
         [$bulan, $tahun] = explode(' ', $periode);
         $bulanMap = [
-            'Januari' => 1, 'February' => 2, 'Februari' => 2, 'Maret' => 3, 'March' => 3, 'April' => 4, 'Mei' => 5, 'May' => 5, 'Juni' => 6, 'June' => 6, 'Juli' => 7, 'July' => 7, 'Agustus' => 8, 'August' => 8, 'September' => 9, 'Oktober' => 10, 'October' => 10, 'November' => 11, 'Desember' => 12, 'December' => 12
+            'Januari' => 1,
+            'February' => 2,
+            'Februari' => 2,
+            'Maret' => 3,
+            'March' => 3,
+            'April' => 4,
+            'Mei' => 5,
+            'May' => 5,
+            'Juni' => 6,
+            'June' => 6,
+            'Juli' => 7,
+            'July' => 7,
+            'Agustus' => 8,
+            'August' => 8,
+            'September' => 9,
+            'Oktober' => 10,
+            'October' => 10,
+            'November' => 11,
+            'Desember' => 12,
+            'December' => 12
         ];
         $bulanAngka = $bulanMap[$bulan] ?? null;
         if (!$bulanAngka) return response()->json([]);
@@ -1368,10 +1647,26 @@ class DashboardController extends Controller
         // Ambil id_wil dari kode_wil
         $wilayahRows = \App\Models\master_wilayah::whereIn('kode_wil', $wilayah)->pluck('kode_wil');
 
+        // Return error jika mapping kosong
+        if ($komoditasRows->isEmpty() || $wilayahRows->isEmpty()) {
+            return response()->json(['error' => 'Data wilayah/komoditas tidak ditemukan'], 400);
+        }
+
         // Ambil id_inflasi dari master_inflasis
         $masterInflasi = \App\Models\master_inflasi::where('periode', $periodeDate)->first();
-        if (!$masterInflasi) return response()->json([]);
+        if (!$masterInflasi) return response()->json(['error' => 'Periode tidak ditemukan'], 400);
         $idInflasi = $masterInflasi->id;
+
+        // Debug: cek mapping
+        Log::info('ExportTabelDinamis', [
+            'periodeDate' => $periodeDate,
+            'idInflasi' => $idInflasi,
+            'wilayah' => $wilayah,
+            'wilayahRows' => $wilayahRows,
+            'komoditas' => $komoditas,
+            'komoditasRows' => $komoditasRows,
+            'dbValue' => $dbValue,
+        ]);
 
         // Query detail_inflasis
         $data = \App\Models\detail_inflasi::where('id_inflasi', $idInflasi)
@@ -1387,7 +1682,7 @@ class DashboardController extends Controller
         foreach ($wilayahRows as $wil) {
             $result[$wil] = [];
             foreach ($komoditasRows as $namakom => $kom) {
-                $item = $data->first(function($row) use ($wil, $kom) {
+                $item = $data->first(function ($row) use ($wil, $kom) {
                     return $row->id_wil == $wil && $row->id_kom == $kom;
                 });
                 $result[$wil][$namakom] = $item ? $item->{$dbValue} : null;
@@ -1396,5 +1691,129 @@ class DashboardController extends Controller
 
         // Hapus semua debug log sebelum return
         return response()->json($result);
+    }
+
+    /**
+     * Export Excel untuk Tabel Dinamis (khusus admin prov + ASEM, 1 sheet saja)
+     */
+    public function exportTabelDinamis(Request $request)
+    {
+        $wilayah = $request->input('wilayah', []); // array kode_wil
+        $komoditas = $request->input('komoditas', []); // array nama_kom
+        $periode = $request->input('periode'); // format: 'Januari 2025'
+        $value = $request->input('value');
+
+        // Mapping value ke kolom DB
+        $valueMap = [
+            'inf_mtm' => 'inflasi_MtM',
+            'inf_ytd' => 'inflasi_YtD',
+            'inf_yoy' => 'inflasi_YoY',
+            'andil_mtm' => 'andil_MtM',
+            'andil_ytd' => 'andil_YtD',
+            'andil_yoy' => 'andil_YoY',
+        ];
+        $dbValue = $valueMap[$value] ?? null;
+        if (!$dbValue) return response()->json(['error' => 'Kolom tidak valid'], 400);
+
+        // Parse periode ke date
+        [$bulan, $tahun] = explode(' ', $periode);
+        $bulanMap = [
+            'Januari' => 1,
+            'February' => 2,
+            'Februari' => 2,
+            'Maret' => 3,
+            'March' => 3,
+            'April' => 4,
+            'Mei' => 5,
+            'May' => 5,
+            'Juni' => 6,
+            'June' => 6,
+            'Juli' => 7,
+            'July' => 7,
+            'Agustus' => 8,
+            'August' => 8,
+            'September' => 9,
+            'Oktober' => 10,
+            'October' => 10,
+            'November' => 11,
+            'Desember' => 12,
+            'December' => 12
+        ];
+        $bulanAngka = $bulanMap[$bulan] ?? null;
+        if (!$bulanAngka) return response()->json(['error' => 'Bulan tidak valid'], 400);
+        $periodeDate = sprintf('%04d-%02d-01', $tahun, $bulanAngka);
+
+        // Ambil kode komoditas dari nama_kom
+        $komoditasRows = collect();
+        foreach ($komoditas as $kom) {
+            $row = \App\Models\master_komoditas::whereRaw('LOWER(TRIM(nama_kom)) = ?', [strtolower(trim($kom))])->first();
+            if ($row) {
+                $komoditasRows[$kom] = $row->kode_kom;
+            }
+        }
+        // Ambil kode wilayah dari kode_wil (pastikan string)
+        $wilayahRows = collect();
+        foreach ($wilayah as $wil) {
+            $row = \App\Models\master_wilayah::where('kode_wil', (string)$wil)->first();
+            if ($row) {
+                $wilayahRows[] = (string)$row->kode_wil;
+            }
+        }
+        if ($komoditasRows->isEmpty() || $wilayahRows->isEmpty()) {
+            return response()->json(['error' => 'Data wilayah/komoditas tidak ditemukan'], 400);
+        }
+        // Ambil id_inflasi dari master_inflasis
+        $masterInflasi = \App\Models\master_inflasi::where('periode', $periodeDate)->first();
+        if (!$masterInflasi) return response()->json(['error' => 'Periode tidak ditemukan'], 400);
+        $idInflasi = $masterInflasi->id;
+        // Query detail_inflasis
+        $data = \App\Models\detail_inflasi::where('id_inflasi', $idInflasi)
+            ->whereIn('id_wil', $wilayahRows)
+            ->whereIn('id_kom', $komoditasRows)
+            ->get();
+        // Buat spreadsheet
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Tabel Dinamis');
+        // Header: baris 1 wilayah, kolom A komoditas
+        $sheet->setCellValue('A1', 'Komoditas');
+        $col = 'B';
+        // Ambil mapping kode_wil -> nama_wil
+        $namaWilayah = \App\Models\master_wilayah::whereIn('kode_wil', $wilayahRows)->pluck('nama_wil', 'kode_wil');
+        foreach ($wilayah as $wil) {
+            $sheet->setCellValue($col . '1', $namaWilayah[$wil] ?? $wil);
+            $col++;
+        }
+        // Data: komoditas ke bawah, wilayah ke kanan
+        $rowNum = 2;
+        foreach ($komoditas as $kom) {
+            $sheet->setCellValue('A' . $rowNum, $kom);
+            $col = 'B';
+            $kodeKom = $komoditasRows[$kom] ?? null;
+            foreach ($wilayah as $wil) {
+                $kodeWil = $wilayahRows->contains($wil) ? $wil : null;
+                $item = $data->first(function ($row) use ($kodeWil, $kodeKom) {
+                    return (string)$row->id_wil === (string)$kodeWil && (string)$row->id_kom === (string)$kodeKom;
+                });
+                $sheet->setCellValue($col . $rowNum, $item ? $item->{$dbValue} : 0);
+                $col++;
+            }
+            $rowNum++;
+        }
+        // Style
+        $sheet->getStyle('A1:' . $sheet->getHighestColumn() . '1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:A' . $sheet->getHighestRow())->getFont()->setBold(true);
+        foreach (range('A', $sheet->getHighestColumn()) as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+        $sheet->getStyle('B2:' . $sheet->getHighestColumn() . $sheet->getHighestRow())->getNumberFormat()->setFormatCode('#,##0.00');
+        // File name
+        $filename = 'Tabel-Dinamis-' . $periode . '-' . $value . '.xlsx';
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+        $writer->save('php://output');
+        exit;
     }
 }

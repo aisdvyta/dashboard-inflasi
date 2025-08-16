@@ -24,16 +24,16 @@
                     </a>
                     <ul class="absolute left-0 p-2 mt-2 w-64 font-normal bg-white shadow-lg rounded-b-lg hidden"
                         id="dashboardMenu">
-                        <li><a href="#submenu1"
+                        {{-- <li><a href="{{ route('manajemen-akun.index') }}"
                                 class="block px-4 py-2 rounded-b-lg hover:bg-biru4 hover:text-white">Dashboard
-                                Inflasi Bulanan</a></li>
-                        <li><a href="#submenu2"
+                                Inflasi Bulanan</a></li> --}}
+                        <li><a href="{{ route('dashboard.spasial') }}"
                                 class="block px-4 py-2 rounded-b-lg hover:bg-biru4 hover:text-white">Dashboard
                                 Inflasi Spasial</a></li>
-                        <li><a href="#submenu3"
+                        <li><a href="{{ route('dashboard.kelompok') }}"
                                 class="block px-4 py-2 rounded-b-lg hover:bg-biru4 hover:text-white">Dashboard
                                 Inflasi Menurut Kelompok Pengeluaran</a></li>
-                        <li><a href="#submenu4"
+                        <li><a href="{{ route('dashboard.series') }}"
                                 class="block px-4 py-2 rounded-b-lg hover:bg-biru4 hover:text-white">Dashboard Series
                                 Inflasi</a></li>
                     </ul>
@@ -52,15 +52,15 @@
                         id="dropdownMenu">
                         @auth
                             @if (Auth::user()->id_role != 2)
-                                <li><a href="#submenu1"
+                                <li><a href="{{ route('manajemen-akun.index') }}"
                                         class="block px-4 py-2 rounded-b-lg hover:bg-biru4 hover:text-white">Manajemen
                                         Akun</a></li>
                             @endif
                         @endauth
-                        <li><a href="#submenu2"
+                        <li><a href="{{ route('manajemen-data-inflasi.index') }}"
                                 class="block px-4 py-2 rounded-b-lg hover:bg-biru4 hover:text-white">Manajemen Data
                                 Inflasi</a></li>
-                        <li><a href="#submenu3"
+                        <li><a href="{{ route('dashboard.spasial') }}"
                                 class="block px-4 py-2 rounded-b-lg hover:bg-biru4 hover:text-white">Dashboard Data
                                 Inflasi</a></li>
 

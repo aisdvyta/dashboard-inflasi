@@ -236,6 +236,13 @@
             @if ($isAdminProv && $isAsem)
                 <div class="px-6 w-full mx-auto max-w-7xl {{ $isBlackWhite ? 'grayscale' : '' }} py-10">
                     <div class="bg-white rounded-xl shadow-lg p-8">
+                        <div class="flex justify-end mb-4">
+                            <button id="exportExcelTabelDinamis"
+                                class="flex items-center gap-2 px-4 py-2 rounded-xl shadow-xl bg-hijau hover:bg-hijau2 text-white text-sm font-medium">
+                                <img src="{{ asset('images/excelIcon.svg') }}" alt="Excel" class="h-5 w-5">Export
+                                Excel Tabel Dinamis
+                            </button>
+                        </div>
                         <h2 class="text-2xl font-bold text-biru1 mb-6">Tabel Dinamis</h2>
                         <form id="form-tabel-dinamis">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
@@ -308,9 +315,9 @@
                     <div class="relative p-8 overflow-hidden bg-gray-100 shadow-lg rounded-xl">
                         <div class="flex flex-row items-center justify-between w-full mb-6">
                             <div>
-                                <h1 class="text-lg font-bold text-biru1 lg:text-xl">Tabel Peringkat Kabupaten/Kota</h1>
-                                <h1 class="text-lg font-bold text-biru1 lg:text-xl">Menurut Komoditas Utama</h1>
-                                <p class="text-base font-bold text-biru1">{{ $komoditasUtama }}</p>
+                                <h1 class="text-3xl font-bold text-biru1 lg:text-3xl">Tabel Peringkat Kabupaten/Kota</h1>
+                                <h1 class="text-3xl font-bold text-biru1 lg:text-3xl">Menurut Komoditas Utama</h1>
+                                <h1 class="text-3xl font-bold text-biru4">{{ $komoditasUtama }}</h1>
                             </div>
                             <form method="GET" action="{{ route('dashboard.spasial') }}" class="flex items-end">
                                 <input type="hidden" name="jenis_data_inflasi" value="{{ $jenisDataInflasi }}">
@@ -443,10 +450,9 @@
                                                 $user = Auth::user();
                                                 $isKabkot = $user && $user->id_role == 2;
                                                 $isAsem = in_array($jenisDataInflasi, ['ASEM 1', 'ASEM 2', 'ASEM 3']);
-                                                $shouldRestrict = $isKabkot && $isAsem;
                                             @endphp
 
-                                            @if ($shouldRestrict && $daftarKabKota->count() == 1)
+                                            @if ($isKabkot && $daftarKabKota->count() == 1)
                                                 {{-- Show as text when only one option --}}
                                                 <div
                                                     class="w-full px-6 py-2 font-semibold text-white rounded-full shadow-md bg-biru4">
@@ -458,7 +464,7 @@
                                                 <select id="kabkota" name="kabkota"
                                                     class="w-full px-6 py-2 pr-10 font-semibold text-white rounded-full shadow-md appearance-none bg-biru4 focus:outline-none focus:ring-2 focus:ring-blue-400"
                                                     onchange="this.form.submit()">
-                                                    @if (!$shouldRestrict)
+                                                    @if (!$isKabkot)
                                                         <option value="">Pilih Kab/Kota</option>
                                                         <option value="3500"
                                                             {{ ($kabkota ?? '') == '3500' ? 'selected' : '' }}>
@@ -680,8 +686,8 @@
                                         <tr>
                                             <th scope="col" class="px-2 py-2 text-left"> </th>
                                             <th scope="col" class="px-2 py-2 text-left">Nama Komoditas</th>
-                                            <th scope="col" class="px-2 py-2 text-right">Inflasi MtM</th>
                                             <th scope="col" class="px-2 py-2 text-right">Andil MtM</th>
+                                            <th scope="col" class="px-2 py-2 text-right">Inflasi MtM</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -690,16 +696,16 @@
                                                 <td class="px-2 py-2 text-left">{{ $index + 1 }}</td>
                                                 <td class="px-2 py-2 font-normal text-left">{{ $item->nama_kom }}</td>
                                                 <td
-                                                    class="px-2 py-2 text-right {{ \App\Helpers\InfSpasialHelper::getHeatClass($item->inflasi, $minInflasiMtM, $maxInflasiMtM, $inflasiMtM) }}">
-                                                    {{-- === TABEL ANGKA UTAMA === --}}
-                                                    <span
-                                                        class="angka-screenshot">{{ number_format($item->inflasi, 2, ',', '.') }}</span>
-                                                </td>
-                                                <td
                                                     class="px-2 py-2 text-right {{ \App\Helpers\InfSpasialHelper::getHeatClass($item->andil, $minAndilMtM, $maxAndilMtM, $inflasiMtM) }}">
                                                     {{-- === TABEL ANGKA UTAMA === --}}
                                                     <span
                                                         class="angka-screenshot">{{ number_format($item->andil, 2, ',', '.') }}</span>
+                                                </td>
+                                                <td
+                                                    class="px-2 py-2 text-right {{ \App\Helpers\InfSpasialHelper::getHeatClass($item->inflasi, $minInflasiMtM, $maxInflasiMtM, $inflasiMtM) }}">
+                                                    {{-- === TABEL ANGKA UTAMA === --}}
+                                                    <span
+                                                        class="angka-screenshot">{{ number_format($item->inflasi, 2, ',', '.') }}</span>
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -719,8 +725,9 @@
                                         <tr>
                                             <th scope="col" class="px-2 py-2 text-left"> </th>
                                             <th scope="col" class="px-2 py-2 text-left">Nama Komoditas</th>
-                                            <th scope="col" class="px-2 py-2 text-right">Inflasi YtD</th>
                                             <th scope="col" class="px-2 py-2 text-right">Andil YtD</th>
+                                            <th scope="col" class="px-2 py-2 text-right">Inflasi YtD</th>
+
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -729,17 +736,18 @@
                                                 <td class="px-2 py-2 text-left">{{ $index + 1 }}</td>
                                                 <td class="px-2 py-2 font-normal text-left">{{ $item->nama_kom }}</td>
                                                 <td
-                                                    class="px-2 py-2 text-right {{ \App\Helpers\InfSpasialHelper::getHeatClass($item->inflasi, $minInflasiYtD, $maxInflasiYtD, $inflasiYtD) }}">
-                                                    {{-- === TABEL ANGKA UTAMA === --}}
-                                                    <span
-                                                        class="angka-screenshot">{{ number_format($item->inflasi, 2, ',', '.') }}</span>
-                                                </td>
-                                                <td
                                                     class="px-2 py-2 text-right {{ \App\Helpers\InfSpasialHelper::getHeatClass($item->andil, $minAndilYtD, $maxAndilYtD, $inflasiYtD) }}">
                                                     {{-- === TABEL ANGKA UTAMA === --}}
                                                     <span
                                                         class="angka-screenshot">{{ number_format($item->andil, 2, ',', '.') }}</span>
                                                 </td>
+                                                <td
+                                                    class="px-2 py-2 text-right {{ \App\Helpers\InfSpasialHelper::getHeatClass($item->inflasi, $minInflasiYtD, $maxInflasiYtD, $inflasiYtD) }}">
+                                                    {{-- === TABEL ANGKA UTAMA === --}}
+                                                    <span
+                                                        class="angka-screenshot">{{ number_format($item->inflasi, 2, ',', '.') }}</span>
+                                                </td>
+
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -758,8 +766,9 @@
                                         <tr>
                                             <th scope="col" class="px-2 py-2 text-left"> </th>
                                             <th scope="col" class="px-2 py-2 text-left">Nama Komoditas</th>
-                                            <th scope="col" class="px-2 py-2 text-right">Inflasi YoY</th>
                                             <th scope="col" class="px-2 py-2 text-right">Andil YoY</th>
+                                            <th scope="col" class="px-2 py-2 text-right">Inflasi YoY</th>
+
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -768,16 +777,16 @@
                                                 <td class="px-2 py-2 text-left">{{ $index + 1 }}</td>
                                                 <td class="px-2 py-2 font-normal text-left">{{ $item->nama_kom }}</td>
                                                 <td
-                                                    class="px-2 py-2 text-right {{ \App\Helpers\InfSpasialHelper::getHeatClass($item->inflasi, $minInflasiYoY, $maxInflasiYoY, $inflasiYoY) }}">
-                                                    {{-- === TABEL ANGKA UTAMA === --}}
-                                                    <span
-                                                        class="angka-screenshot">{{ number_format($item->inflasi, 2, ',', '.') }}</span>
-                                                </td>
-                                                <td
                                                     class="px-2 py-2 text-right {{ \App\Helpers\InfSpasialHelper::getHeatClass($item->andil, $minAndilYoY, $maxAndilYoY, $inflasiYoY) }}">
                                                     {{-- === TABEL ANGKA UTAMA === --}}
                                                     <span
                                                         class="angka-screenshot">{{ number_format($item->andil, 2, ',', '.') }}</span>
+                                                </td>
+                                                <td
+                                                    class="px-2 py-2 text-right {{ \App\Helpers\InfSpasialHelper::getHeatClass($item->inflasi, $minInflasiYoY, $maxInflasiYoY, $inflasiYoY) }}">
+                                                    {{-- === TABEL ANGKA UTAMA === --}}
+                                                    <span
+                                                        class="angka-screenshot">{{ number_format($item->inflasi, 2, ',', '.') }}</span>
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -814,18 +823,55 @@
         window.topAndilMtM = @json($topAndilMtM ?? []);
         window.topAndilYtD = @json($topAndilYtD ?? []);
         window.topAndilYoY = @json($topAndilYoY ?? []);
+
+        // Debug: Check raw data from PHP
+        console.log('Raw data from PHP:', {
+            topAndilMtM_raw: @json($topAndilMtM ?? []),
+            topAndilYtD_raw: @json($topAndilYtD ?? []),
+            topAndilYoY_raw: @json($topAndilYoY ?? []),
+        });
+
+        // Debug: Log data untuk memastikan tidak kosong
+        console.log('Debug Data from Blade:', {
+            topAndilMtM: window.topAndilMtM,
+            topAndilYtD: window.topAndilYtD,
+            topAndilYoY: window.topAndilYoY,
+            periodeBarchart: window.periodeBarchart,
+            jenisDataInflasiBarchart: window.jenisDataInflasiBarchart
+        });
+
+        // Debug: Check if data is actually empty or just not loaded yet
+        console.log('Data lengths:', {
+            topAndilMtM_length: window.topAndilMtM ? window.topAndilMtM.length : 'undefined',
+            topAndilYtD_length: window.topAndilYtD ? window.topAndilYtD.length : 'undefined',
+            topAndilYoY_length: window.topAndilYoY ? window.topAndilYoY.length : 'undefined',
+        });
+
+        // Debug: Check if data exists at all
+        console.log('Data exists check:', {
+            topAndilMtM_exists: !!window.topAndilMtM,
+            topAndilYtD_exists: !!window.topAndilYtD,
+            topAndilYoY_exists: !!window.topAndilYoY,
+        });
+
+        // Debug: Check first few items if data exists
+        if (window.topAndilMtM && window.topAndilMtM.length > 0) {
+            console.log('Sample topAndilMtM data:', window.topAndilMtM.slice(0, 3));
+        }
+        if (window.topAndilYtD && window.topAndilYtD.length > 0) {
+            console.log('Sample topAndilYtD data:', window.topAndilYtD.slice(0, 3));
+        }
+        if (window.topAndilYoY && window.topAndilYoY.length > 0) {
+            console.log('Sample topAndilYoY data:', window.topAndilYoY.slice(0, 3));
+        }
         // Data bulan per tahun untuk filter periode
-        window.bulanPerTahun = @json(
-            $daftarPeriode->groupBy('tahun')->map->pluck('bulan')->toArray()
-        );
+        window.bulanPerTahun = @json($daftarPeriode->groupBy('tahun')->map->pluck('bulan')->toArray());
         // Tambahan agar JS exportExcel bisa akses variabel blade
         window.komoditasUtama = '{{ $komoditasUtama }}';
         window.kabkota = '{{ $kabkota }}';
     </script>
-    <script src="{{ asset('js/dashboard/infspasial/andilkomoditas.js') }}"></script>
     <script src="{{ asset('js/dashboard/infspasial/tabeldinamis.js') }}"></script>
     <script src="{{ asset('js/dashboard/infspasial/leafletmap.js') }}"></script>
-    <script src="{{ asset('js/dashboard/infspasial/echarts.js') }}"></script>
     <script src="{{ asset('js/dashboard/export-png.js') }}"></script>
-    <script src="{{ asset('js/dashboard/infspasial/infspasial-page.js') }}"></script>
+    <script src="{{ asset('js/dashboard/infspasial/infspasial-consolidated.js') }}"></script>
 @endpush

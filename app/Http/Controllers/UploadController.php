@@ -95,7 +95,7 @@ class UploadController extends Controller
                 'message' => 'Periode tidak valid.',
             ], 422);
         }
-
+        // Format periode menjadi YYYY-MM-DD
         $periode = Carbon::createFromDate($tahun, $bulan, 1)->toDateString();
 
         $jenisDataInflasi = $request->jenis_data_inflasi;
@@ -259,12 +259,12 @@ class UploadController extends Controller
 
                     // --- Validasi master wilayah ---
                     if (!master_wilayah::where('kode_wil', $kodeKota)->exists()) {
-                        $errorRows[] = "Baris ke-" . ($rowIndex + 2) . ": kode kota $kodeKota tidak ditemukan di master wilayah.";
+                        $errorRows[] = "Baris ke-" . ($rowIndex + 2) . ": kode wilayah '$kodeKota' tidak ditemukan di master wilayah. Pastikan kode wilayah sudah terdaftar di sistem.";
                         return null;
                     }
                     // --- Validasi master komoditas ---
                     if (!\App\Models\master_komoditas::where('kode_kom', $kodeKomoditas)->exists()) {
-                        $errorRows[] = "Baris ke-" . ($rowIndex + 2) . ": kode komoditas $kodeKomoditas tidak ditemukan di master komoditas.";
+                        $errorRows[] = "Baris ke-" . ($rowIndex + 2) . ": kode komoditas '$kodeKomoditas' tidak ditemukan di master komoditas. Pastikan kode komoditas sudah terdaftar di sistem.";
                         return null;
                     }
 
@@ -301,21 +301,45 @@ class UploadController extends Controller
                 })
                 ->filter()
                 ->toArray();
-                            Log::info('Data to insert:', $dataToInsert);
-                if (!empty($errorRows)) {
-                    return redirect()->back()
-                        ->withInput()
-                        ->withErrors(['file' => 'Beberapa baris gagal diimport: ' . implode(', ', $errorRows)]);
-                }
+            Log::info('Data to insert:', $dataToInsert);
 
-                            try {
-                    detail_inflasi::insert($dataToInsert);
-                } catch (\Exception $e) {
-                    Log::error('Insert error: ' . $e->getMessage());
-                    return redirect()->back()
-                        ->withInput()
-                        ->withErrors(['file' => 'Gagal menyimpan ke database. Kemungkinan ada data yang tidak valid, duplikat, atau melanggar aturan database.']);
+            // --- VALIDASI DATA GANDA ---
+            $duplicateErrors = [];
+            $seenCombinations = [];
+
+            foreach ($dataToInsert as $index => $data) {
+                $combination = $data['id_wil'] . '-' . $data['id_kom'];
+                if (in_array($combination, $seenCombinations)) {
+                    // Get the row number (index + 2 because we removed header and arrays are 0-indexed)
+                    $rowNumber = $index + 2;
+                    $duplicateErrors[] = "Baris ke-{$rowNumber}: kombinasi kode wilayah {$data['id_wil']} dan kode komoditas {$data['id_kom']} sudah ada dalam data yang sama.";
+                } else {
+                    $seenCombinations[] = $combination;
                 }
+            }
+
+            if (!empty($duplicateErrors)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Data berisi kombinasi wilayah dan komoditas yang duplikat.',
+                    'errors' => $duplicateErrors,
+                ], 422);
+            }
+
+            if (!empty($errorRows)) {
+                return redirect()->back()
+                    ->withInput()
+                    ->withErrors(['file' => 'Beberapa baris gagal diimport: ' . implode(', ', $errorRows)]);
+            }
+
+            try {
+                detail_inflasi::insert($dataToInsert);
+            } catch (\Exception $e) {
+                Log::error('Insert error: ' . $e->getMessage());
+                return redirect()->back()
+                    ->withInput()
+                    ->withErrors(['file' => 'Gagal menyimpan ke database. Kemungkinan ada data yang tidak valid, duplikat, atau melanggar aturan database.']);
+            }
 
             DB::commit();
 
@@ -341,6 +365,13 @@ class UploadController extends Controller
         return view('prov.manajemen-data-inflasi.edit', compact('upload'));
     }
 
+    public function update(Request $request, $id)
+    {
+        // Method ini untuk kompatibilitas dengan route yang sudah ada
+        // Gunakan updateInflasiAjax untuk fungsionalitas yang lebih lengkap
+        return $this->updateInflasiAjax($request, $id);
+    }
+
     public function updateInflasiAjax(Request $request, $id)
     {
         ini_set('memory_limit', '512M');
@@ -356,28 +387,33 @@ class UploadController extends Controller
         $rawPeriode = trim($request->periode);
         [$tahun, $bulan] = explode('-', $rawPeriode);
 
+        // validasi periode valid ato tidak
         if (!checkdate($bulan, 1, $tahun)) {
-            return redirect()->back()
-                ->withInput()
-                ->withErrors(['periode' => 'Periode tidak valid.']);
+            return response()->json([
+                'success' => false,
+                'message' => 'Periode tidak valid.',
+                'errors' => ['periode' => 'Periode tidak valid.']
+            ], 422);
         }
 
         $periode = Carbon::createFromDate($tahun, $bulan, 1)->toDateString();
         $jenisDataInflasi = $request->jenis_data_inflasi;
 
-        // Cek apakah ada data lain dengan periode dan jenis yang sama (kecuali data yang sedang diupdate)
+        // validasi periode dan jenis tidak bole sama (unique)
         $existingData = master_inflasi::where('periode', $periode)
             ->where('jenis_data_inflasi', $jenisDataInflasi)
             ->where('id', '!=', $id)
             ->exists();
 
         if ($existingData) {
-            return redirect()->back()
-                ->withInput()
-                ->withErrors(['periode' => 'Data untuk periode dan jenis data inflasi terpilih sudah ada. Silakan pilih data lain.']);
+            return response()->json([
+                'success' => false,
+                'message' => 'Data untuk periode dan jenis data inflasi terpilih sudah ada. Silakan pilih data lain.',
+                'errors' => ['periode' => 'Data untuk periode dan jenis data inflasi terpilih sudah ada.']
+            ], 422);
         }
 
-                $carbonPeriode = Carbon::parse($request->periode . '-01', 'Asia/Jakarta')
+        $carbonPeriode = Carbon::parse($request->periode . '-01', 'Asia/Jakarta')
             ->startOfMonth();
 
         $nama = 'Data Inflasi ' . $jenisDataInflasi . ' ' .
@@ -385,6 +421,7 @@ class UploadController extends Controller
             ->locale('id')
             ->translatedFormat('F Y');
 
+        // proses masukin ke master_inflasi
         DB::beginTransaction();
         try {
             // Update master_inflasi
@@ -448,8 +485,18 @@ class UploadController extends Controller
                         'andil_YtD' => $indexes[12], // ANDIL(YTD)
                         'andil_YoY' => $indexes[13], // ANDIL(YOY)
                     ];
-                } else { // ATAP
-                    $requiredColumns = ['Kode Kota', 'Kode Komoditas', 'Flag', 'Inflasi MtM', 'Inflasi YtD', 'Inflasi YoY', 'Andil MtM', 'Andil YtD', 'Andil YoY'];
+                } else {
+                    $requiredColumns = [
+                        'Kode Kota',
+                        'Kode Komoditas',
+                        'Flag',
+                        'Inflasi MtM',
+                        'Inflasi YtD',
+                        'Inflasi YoY',
+                        'Andil MtM',
+                        'Andil YtD',
+                        'Andil YoY'
+                    ];
                     $indexes = array_map(fn($col) => array_search($col, $header), $requiredColumns);
                     $map = [
                         'kode_kota' => $indexes[0],
@@ -471,10 +518,13 @@ class UploadController extends Controller
                             $missingColumns[] = $col;
                         }
                     }
+                    // validasi jika ada kolom yang kurang
                     $msg = 'Format file tidak sesuai. Kolom berikut kurang: ' . implode(', ', $missingColumns) . '. Pastikan file memiliki semua kolom yang diperlukan.';
-                    return redirect()->back()
-                        ->withInput()
-                        ->withErrors(['file' => $msg]);
+                    return response()->json([
+                        'success' => false,
+                        'message' => $msg,
+                        'errors' => ['file' => $msg]
+                    ], 422);
                 }
 
                 Log::info('Header:', $header);
@@ -486,7 +536,7 @@ class UploadController extends Controller
                 $rowCount = count($rows);
                 $dataToInsert = collect($rows)
                     ->map(function ($row, $rowIndex) use ($upload, $map, $rows, $rowCount, $header, $jenisDataInflasi, &$errorRows) {
-                        // Skip baris kosong di tengah data (hanya error jika setelahnya masih ada data)
+                        // Skip baris kosong di tengah data
                         if (!array_filter($row)) {
                             if (($rowIndex + 1 < $rowCount) && array_filter($rows[$rowIndex + 1])) {
                                 $errorRows[] = "Baris ke-" . ($rowIndex + 2) . ": baris kosong.";
@@ -523,16 +573,16 @@ class UploadController extends Controller
 
                         // --- Validasi master wilayah ---
                         if (!master_wilayah::where('kode_wil', $kodeKota)->exists()) {
-                            $errorRows[] = "Baris ke-" . ($rowIndex + 2) . ": kode kota $kodeKota tidak ditemukan di master wilayah.";
+                            $errorRows[] = "Baris ke-" . ($rowIndex + 2) . ": kode wilayah '$kodeKota' tidak ditemukan di master wilayah. Pastikan kode wilayah sudah terdaftar di sistem.";
                             return null;
                         }
                         // --- Validasi master komoditas ---
                         if (!\App\Models\master_komoditas::where('kode_kom', $kodeKomoditas)->exists()) {
-                            $errorRows[] = "Baris ke-" . ($rowIndex + 2) . ": kode komoditas $kodeKomoditas tidak ditemukan di master komoditas.";
+                            $errorRows[] = "Baris ke-" . ($rowIndex + 2) . ": kode komoditas '$kodeKomoditas' tidak ditemukan di master komoditas. Pastikan kode komoditas sudah terdaftar di sistem.";
                             return null;
                         }
 
-                        // --- Validasi kolom wajib ---
+                        // --- Validasi cell data ---
                         foreach ($map as $key => $idx) {
                             if (!isset($row[$idx]) || $row[$idx] === '' || $row[$idx] === null) {
                                 $errorRows[] = "Baris ke-" . ($rowIndex + 2) . ": kolom $key (" . ($header[$idx] ?? $key) . ") kosong.";
@@ -550,7 +600,7 @@ class UploadController extends Controller
 
                         // --- Return data siap insert ---
                         return [
-                    'id_inflasi' => $upload->id,
+                            'id_inflasi' => $upload->id,
                             'id_wil' => $kodeKota,
                             'id_kom' => $kodeKomoditas,
                             'id_flag' => $flagKomoditas,
@@ -560,20 +610,44 @@ class UploadController extends Controller
                             'andil_MtM' => $this->processInflasiValue($row[$map['andil_MtM']] ?? null),
                             'andil_YtD' => $this->processInflasiValue($row[$map['andil_YtD']] ?? null),
                             'andil_YoY' => $this->processInflasiValue($row[$map['andil_YoY']] ?? null),
-                    'created_at' => now(),
+                            'created_at' => now(),
                         ];
                     })
                     ->filter()
                     ->toArray();
 
                 Log::info('Data to insert:', $dataToInsert);
+
+                // --- VALIDASI DATA GANDA ---
+                $duplicateErrors = [];
+                $seenCombinations = [];
+
+                foreach ($dataToInsert as $index => $data) {
+                    $combination = $data['id_wil'] . '-' . $data['id_kom'];
+                    if (in_array($combination, $seenCombinations)) {
+                        // Get the row number (index + 2 because we removed header and arrays are 0-indexed)
+                        $rowNumber = $index + 2;
+                        $duplicateErrors[] = "Baris ke-{$rowNumber}: kombinasi kode wilayah {$data['id_wil']} dan kode komoditas {$data['id_kom']} sudah ada dalam data yang sama.";
+                    } else {
+                        $seenCombinations[] = $combination;
+                    }
+                }
+
+                if (!empty($duplicateErrors)) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Data berisi kombinasi wilayah dan komoditas yang duplikat.',
+                        'errors' => $duplicateErrors,
+                    ], 422);
+                }
+
                 if (!empty($errorRows)) {
                     return response()->json([
                         'success' => false,
                         'message' => 'Beberapa baris gagal diimport.',
                         'errors' => $errorRows,
                     ], 422);
-            }
+                }
 
                 try {
                     detail_inflasi::insert($dataToInsert);
@@ -591,37 +665,39 @@ class UploadController extends Controller
             DB::commit();
 
             // Jika berhasil, redirect ke index dengan status success
-            return redirect()->route('manajemen-data-inflasi.index')
-                ->with('status', 'success')
-                ->with('message', 'Data berhasil diperbarui.');
+            return response()->json([
+                'success' => true,
+                'message' => 'Data berhasil diperbarui.',
+                'redirect_url' => route('manajemen-data-inflasi.index')
+            ]);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Update error: ' . $e->getMessage());
 
             // Jika gagal, kembali ke halaman edit dengan error
-            return redirect()->back()
-                ->withInput()
-                ->withErrors(['error' => 'Terjadi kesalahan saat memproses data: ' . $e->getMessage()]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat memproses data: ' . $e->getMessage(),
+                'errors' => ['error' => 'Terjadi kesalahan saat memproses data: ' . $e->getMessage()]
+            ], 500);
         }
-    }
-
-    public function update(Request $request, $id)
-    {
-        // Method ini untuk kompatibilitas dengan route yang sudah ada
-        // Gunakan updateInflasiAjax untuk fungsionalitas yang lebih lengkap
-        return $this->updateInflasiAjax($request, $id);
     }
 
     public function show(Request $request, $data_name)
     {
-        // Cari data berdasarkan nama file
         $upload = master_inflasi::where('nama', $data_name)->firstOrFail();
-
         $search = $request->input('search');
+        $user = Auth::user();
 
-        // Ambil data detail_inflasi yang terkait dengan master_inflasi
-        $details = detail_inflasi::with(['satker', 'komoditas', 'flag'])
-            ->where('id_inflasi', $upload->id)
+        $detailsQuery = detail_inflasi::with(['satker', 'komoditas', 'flag'])
+            ->where('id_inflasi', $upload->id);
+
+        // Filter khusus untuk admin kabkot (id_role == 2)
+        if ($user->id_role == 2) {
+            $detailsQuery->where('id_wil', $user->id_satker);
+        }
+
+        $details = $detailsQuery
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->orWhereHas('satker', function ($sq) use ($search) {

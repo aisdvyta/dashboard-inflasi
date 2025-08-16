@@ -52,7 +52,7 @@
                 <tbody>
                     @forelse ($satkers as $index => $satker)
                         <tr>
-                            <td class="px-4 py-2 text-center">{{ $index + 1 }}</td>
+                            <td class="px-4 py-2 text-center">{{ $loop->iteration + ($satkers->currentPage() - 1) * $satkers->perPage() }}</td>
                             <td class="px-4 py-2 text-center">{{ $satker->kode_satker }}</td>
                             <td class="px-4 py-2 text-left">{{ $satker->nama_satker }}</td>
                             <td class="px-4 py-2">

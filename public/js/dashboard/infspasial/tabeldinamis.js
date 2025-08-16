@@ -107,6 +107,14 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(res => res.json())
             .then(data => {
+                // Simpan data terakhir ke window
+                window.lastTabelDinamisData = {
+                    komoditas: komoditas,
+                    wilayah: wilayah,
+                    periode: periode,
+                    value: value,
+                    data: data
+                };
                 // Build table: header = wilayah, baris = komoditas
                 let table = `<div class='overflow-x-auto'><table class='min-w-full border border-gray-300 rounded-lg bg-white tabel-dinamis-mini text-xs'>`;
                 // Header
@@ -131,6 +139,51 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(() => {
                 hasilDiv.innerHTML = `<div class='bg-red-100 text-red-700 px-4 py-2 rounded mb-4'>Gagal memuat data!</div>`;
+            });
+        });
+    }
+    // EXPORT EXCEL TABEL DINAMIS
+    const btnExportExcel = document.getElementById('exportExcelTabelDinamis');
+    if (btnExportExcel && form) {
+        btnExportExcel.addEventListener('click', function(e) {
+            e.preventDefault();
+            // Cek apakah sudah tampilkan
+            if (!window.lastTabelDinamisData) {
+                showAlert('Silakan tekan tombol Tampilkan terlebih dahulu!');
+                return;
+            }
+            const { komoditas, wilayah, periode, value } = window.lastTabelDinamisData;
+            // Kirim AJAX POST ke backend untuk export
+            fetch('/dashboard/export-tabel-dinamis', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').getAttribute('content') : '',
+                },
+                body: JSON.stringify({
+                    komoditas: komoditas,
+                    wilayah: wilayah,
+                    periode: periode,
+                    value: value
+                })
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Gagal export file');
+                return response.blob();
+            })
+            .then(blob => {
+                // Download file
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'Tabel-Dinamis.xlsx';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
+            })
+            .catch(() => {
+                showAlert('Gagal export file!');
             });
         });
     }

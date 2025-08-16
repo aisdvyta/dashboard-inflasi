@@ -14,6 +14,6 @@ class master_inflasi extends Model
 
     public function pengguna()
     {
-        return $this->belongsTo(user::class, 'id_pengguna');
+        return $this->belongsTo(User::class, 'id_pengguna');
     }
 }

@@ -49,7 +49,7 @@ class MasterKomoditasController extends Controller
             'parent_id' => $request->parent_id ?? null,
         ]);
 
-        return redirect()->route('prov.master-komoditas.index')->with('success', 'Komoditas berhasil ditambahkan.');
+        return redirect()->route('master-komoditas.index')->with('success', 'Komoditas berhasil ditambahkan.');
     }
 
 
@@ -91,8 +91,9 @@ class MasterKomoditasController extends Controller
     }
 
 
-    public function destroy(master_komoditas $komoditas)
+    public function destroy($kode_kom)
     {
+        $komoditas = master_komoditas::where('kode_kom', $kode_kom)->firstOrFail();
         $komoditas->delete();
         return redirect()->route('master-komoditas.index')->with('success', 'Komoditas berhasil dihapus.');
     }

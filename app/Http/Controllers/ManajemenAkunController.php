@@ -54,16 +54,18 @@ class ManajemenAkunController extends Controller
             'id_satker' => 'required|exists:master_satkers,kode_satker',
             'password' => 'required|string|min:6',
         ]);
-
+    
+        $id_role = $request->id_satker === '3500' ? 1 : 2;
+    
         User::create([
             'id' => Str::uuid(),
             'nama' => $request->nama,
             'email' => $request->email,
             'id_satker' => $request->id_satker,
-            'id_role' => 2,
+            'id_role' => $id_role,
             'password' => bcrypt($request->password),
         ]);
-
+    
         return redirect()->route('manajemen-akun.index')->with('success', 'Akun berhasil ditambahkan.');
     }
 

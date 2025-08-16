@@ -21,6 +21,8 @@
     $minInflasi = $tabelKelompok->min('inflasi_mtm');
 
     $isBlackWhite = in_array($jenisDataInflasi, ['ASEM 1', 'ASEM 2', 'ASEM 3']);
+    $user = Auth::user();
+    $isKabkot = $user && $user->id_role == 2;
 @endphp
 
 @section('body')
@@ -69,14 +71,7 @@
                         <input type="hidden" name="jenis_data_inflasi" value="{{ $jenisDataInflasi }}">
                         <div class="flex relative mb-2 w-full">
                             <div class="relative w-full">
-                                @php
-                                    $user = Auth::user();
-                                    $isKabkot = $user && $user->id_role == 2;
-                                    $isAsem = in_array($jenisDataInflasi, ['ASEM 1', 'ASEM 2', 'ASEM 3']);
-                                    $shouldRestrict = $isKabkot && $isAsem;
-                                @endphp
-
-                                @if($shouldRestrict && $daftarKabKota->count() == 1)
+                                @if($isKabkot && $daftarKabKota->count() == 1)
                                     {{-- Show as text when only one option --}}
                                     <div class="px-6 py-2 w-full font-semibold text-white rounded-full shadow bg-biru4">
                                         {{ $daftarKabKota->first()->nama_wil }}
@@ -86,11 +81,9 @@
                                     <select id="kabkota" name="kabkota"
                                         class="px-6 py-2 w-full font-semibold text-white rounded-full shadow appearance-none bg-biru4 focus:outline-none focus:ring-2 focus:ring-blue-400"
                                         onchange="this.form.submit()">
-                                        @if(!$shouldRestrict)
-                                            <option value="">Pilih Kabupaten/Kota</option>
-                                            <option value="3500" {{ ($kabkota ?? '') == '3500' ? 'selected' : '' }}>Provinsi
-                                                Jawa Timur</option>
-                                        @endif
+                                        <option value="">Pilih Kabupaten/Kota</option>
+                                        <option value="3500" {{ ($kabkota ?? '') == '3500' ? 'selected' : '' }}>Provinsi
+                                            Jawa Timur</option>
                                         @foreach ($daftarKabKota as $kabkotaOption)
                                             <option value="{{ $kabkotaOption->kode_wil }}"
                                                 {{ ($kabkota ?? '') == $kabkotaOption->kode_wil ? 'selected' : '' }}>

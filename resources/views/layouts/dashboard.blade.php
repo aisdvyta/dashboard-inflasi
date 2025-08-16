@@ -58,16 +58,16 @@
                 if (sidebar.classList.contains('w-64')) {
                     // Mengecilkan sidebar di layouts.dashboard
                     sidebar.classList.remove('w-64');
-                    sidebar.classList.add('w-24');
+                    sidebar.classList.add('w-16');
 
                     // Mengecilkan sidebar utama di components.sidebar
                     if (sidebarComponent) {
                         sidebarComponent.classList.remove('w-64');
-                        sidebarComponent.classList.add('w-24');
+                        sidebarComponent.classList.add('w-16');
                     }
 
                     mainContent.classList.remove('ml-64');
-                    mainContent.classList.add('ml-24'); // Hilangkan margin kiri
+                    mainContent.classList.add('ml-16'); // Sesuaikan margin kiri
 
                     // Fade-out dashboardText sebelum disembunyikan
                     dashboardText.style.opacity = "0";
@@ -77,16 +77,16 @@
                     }, 50);
                 } else {
                     // Membesarkan sidebar di layouts.dashboard
-                    sidebar.classList.remove('w-24');
+                    sidebar.classList.remove('w-16');
                     sidebar.classList.add('w-64');
 
                     // Membesarkan sidebar utama di components.sidebar
                     if (sidebarComponent) {
-                        sidebarComponent.classList.remove('w-24');
+                        sidebarComponent.classList.remove('w-16');
                         sidebarComponent.classList.add('w-64');
                     }
 
-                    mainContent.classList.remove('ml-24'); // Kembalikan margin kiri ke ml-64
+                    mainContent.classList.remove('ml-16'); // Kembalikan margin kiri ke ml-64
                     mainContent.classList.add('ml-64');
 
                     // Tampilkan teks dengan transisi smooth

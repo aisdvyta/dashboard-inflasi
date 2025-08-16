@@ -22,7 +22,7 @@ class KabkotMiddleware
         }
 
         // Cek apakah user memiliki role Admin Kabkot (id_role = 2)
-        if (Auth::user()->id_role !== 2) {
+        if (Auth::user()->id_role != 2) {
             return redirect()->back()->withErrors(['access' => 'Anda tidak memiliki akses ke halaman ini!']);
         }
 

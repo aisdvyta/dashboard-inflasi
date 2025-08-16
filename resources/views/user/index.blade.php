@@ -63,7 +63,7 @@
     </div>
 
     <!-- Ini Main 4 -->
-    <div id="main4" class="bg-white py-16 px-5 min-h-[93vh]">
+    <div id="main4" class="bg-white mb-12 py-4 px-5 min-h-[93vh]">
         <div class="max-w-7xl mx-auto h-fit bg-gray-100 rounded-3xl shadow-lg p-8 relative">
             <!-- Elemen Batik -->
             <div class="absolute top-10 left-10">

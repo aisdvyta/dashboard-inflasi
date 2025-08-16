@@ -30,38 +30,38 @@
             </div>
         </div>
 
-        <div class="bg-white shadow-md rounded-xl p-4 z-10">
-            <table class="w-full">
+        <div class="bg-white shadow-md rounded-xl p-4 z-10 overflow-x-auto">
+            <table class="w-full text-sm">
                 <thead class="w-5/6 mx-auto border-b border-abubiru mb-10 mt-10">
                     <tr class="text-biru1">
-                        <th class="px-4 py-2 text-left">No.</th>
-                        <th class="px-4 py-2 text-left">Nama Data</th>
-                        <th class="px-4 py-2 text-center">Kategori</th>
-                        <th class="px-4 py-2 text-center">Tanggal Upload</th>
-                        <th class="px-4 py-2 text-center">Username Upload</th>
+                        <th class="px-2 py-1 text-left">No.</th>
+                        <th class="px-2 py-1 text-left">Nama Data</th>
+                        <th class="px-2 py-1 text-center">Kategori</th>
+                        <th class="px-2 py-1 text-center">Tanggal Upload</th>
+                        <th class="px-2 py-1 text-center">Username Upload</th>
                         @if(Auth::user()->id_role == 1)
-                        <th class="px-4 py-2 text-center">Aksi</th>
+                        <th class="px-2 py-1 text-center">Aksi</th>
                         @endif
                     </tr>
                 </thead>
                 <tbody>
                     @forelse ($uploads as $index => $upload)
                         <tr>
-                            <td class="px-4 py-4 text-center">{{ $index + 1 }}</td>
-                            <td class="px-4 py-2 hover:underline hover:text-biru4">
+                            <td class="px-2 py-1 text-center">{{ $loop->iteration + ($uploads->currentPage() - 1) * $uploads->perPage() }}</td>
+                            <td class="px-2 py-1 hover:underline hover:text-biru4">
                                 <a href="{{ route('manajemen-data-inflasi.show', $upload->nama) }}">
                                     {{ $upload->nama }}
                                 </a>
                             </td>
-                            <td class="px-6 py-2 text-center font-semibold">
+                            <td class="px-2 py-1 text-center font-semibold">
                                 <span
-                                    class="px-6 py-1 rounded-full text-biru1 {{ $upload->jenis_data_inflasi == 'ATAP' ? 'bg-kuning2' : 'bg-hijau2' }}">
+                                    class="px-4 py-1 rounded-full text-biru1 {{ $upload->jenis_data_inflasi == 'ATAP' ? 'bg-kuning2' : 'bg-hijau2' }}">
                                     {{ $upload->jenis_data_inflasi }}
                                 </span>
                             </td>
-                            <td class="px-4 py-2 text-center">
+                            <td class="px-2 py-1 text-center">
                                 {{ \Carbon\Carbon::parse($upload->upload_at)->format('d/m/Y') }}</td>
-                            <td class="px-4 py-2 text-center">
+                            <td class="px-2 py-1 text-center">
                                 <div
                                     class="inline-flex items-center gap-0.5 bg-gray-200 text-biru1 px-3 py-1 rounded-full w-fit mx-auto">
                                     <img src="{{ asset('images/adminProv/manajemenData/usernameIcon.svg') }}"
@@ -71,7 +71,7 @@
                                 </div>
                             </td>
                             @if(Auth::user()->id_role == 1)
-                            <td class="px-4 py-2">
+                            <td class="px-2 py-1">
                                 <div class="flex place-content-center gap-3">
                                     <!-- Tombol Edit -->
                                     <a href="{{ route('manajemen-data-inflasi.edit', $upload->id) }}"

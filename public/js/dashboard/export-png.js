@@ -59,3 +59,42 @@ window.exportDashboardToPNG = async function({targetSelector, filename = 'dashbo
         document.body.removeChild(loading);
     }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    // const exportPngBtn = document.getElementById('exportPNG');
+    // if (exportPngBtn) {
+    //     exportPngBtn.addEventListener('click', function() {
+    //         // kode export PNG, misal:
+    //         html2canvas(document.getElementById('main-dashboard-content')).then(function(canvas) {
+    //             var link = document.createElement('a');
+    //             link.download = 'dashboard-series.png';
+    //             link.href = canvas.toDataURL();
+    //             link.click();
+    //         });
+    //     });
+    // }
+
+    const exportExcelBtn = document.getElementById('exportExcelSeries');
+    if (exportExcelBtn) {
+        exportExcelBtn.addEventListener('click', function() {
+            // Build the correct export URL with all relevant parameters
+            let url = '/dashboard/export-excel?series=1'
+                + '&komoditas=' + encodeURIComponent(window.komoditas)
+                + '&jenis_data_inflasi=' + encodeURIComponent(window.jenisDataInflasi)
+                + '&tahun=' + encodeURIComponent(window.tahun);
+            // Add tahun_check[]
+            if (Array.isArray(window.tahunCheck)) {
+                window.tahunCheck.forEach(function(val) {
+                    url += '&tahun_check[]=' + encodeURIComponent(val);
+                });
+            }
+            // Add tahun_bulan[]
+            if (Array.isArray(window.tahunBulan)) {
+                window.tahunBulan.forEach(function(val) {
+                    url += '&tahun_bulan[]=' + encodeURIComponent(val);
+                });
+            }
+            window.location.href = url;
+        });
+    }
+});

@@ -31,7 +31,7 @@ class LoginController extends Controller
 
             if ($user->id_role == 1) {
                 // Admin Provinsi
-                return redirect()->intended('/AdminProv');
+                return redirect()->intended('/Prov');
             } elseif ($user->id_role == 2) {
                 // Admin Kabkot
                 return redirect()->intended('/Kabkot');

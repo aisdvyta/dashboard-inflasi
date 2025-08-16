@@ -50,9 +50,10 @@
                 <div class="flex space-x-2">
                     <input type="text" id="kode_prefix" disabled
                         class="w-1/3 p-2 rounded-2xl border border-biru3 bg-gray-100 text-gray-700">
-                    <input type="text" id="kode_suffix" name="kode" required maxlength="7"
+                    <input type="text" id="kode_suffix" required maxlength="7"
                         class="w-2/3 p-2 rounded-2xl border border-biru5 focus:ring-biru5"
                         placeholder="Masukkan kode sesuai aturan flag">
+                    <input type="hidden" id="kode_lengkap" name="kode" required>
                 </div>
                 @error('kode')
                     <small class="text-red-500 italic">{{ $message }}</small>
@@ -87,6 +88,7 @@
             const subKelompokSelect = document.getElementById('sub_kelompok');
             const kodePrefix = document.getElementById('kode_prefix');
             const kodeSuffix = document.getElementById('kode_suffix');
+            const kodeLengkap = document.getElementById('kode_lengkap');
 
             const allKelompokOptions = [...kelompokSelect.options];
             const allSubKelompokOptions = [...subKelompokSelect.options];
@@ -100,6 +102,7 @@
 
                 kodePrefix.value = '';
                 kodeSuffix.value = '';
+                kodeLengkap.value = '';
                 kodeSuffix.maxLength = 7;
 
                 kelompokWrapper.style.display = 'none';
@@ -108,25 +111,29 @@
                 resetDropdown(subKelompokSelect, '-- Pilih Subkelompok --');
 
                 if (flag === '1') {
-                    // Kelompok
+                    // Kelompok: kode 2 digit
                     kodePrefix.value = '';
                     kodeSuffix.maxLength = 2;
+                    kodeSuffix.placeholder = 'Masukkan 2 digit kode kelompok';
+                    updateKodeLengkap();
                 }
 
                 if (flag === '2') {
-                    // Sub Kelompok
+                    // Sub Kelompok: 2 digit kelompok + 1 digit sub
                     kelompokWrapper.style.display = 'block';
                     kodeSuffix.maxLength = 1;
+                    kodeSuffix.placeholder = 'Masukkan 1 digit kode sub kelompok';
                     allKelompokOptions.forEach(opt => {
                         if (opt.value !== '') kelompokSelect.appendChild(opt.cloneNode(true));
                     });
                 }
 
                 if (flag === '3') {
-                    // Barang
+                    // Barang: 3 digit sub kelompok + 4 digit barang
                     kelompokWrapper.style.display = 'block';
                     subKelompokWrapper.style.display = 'block';
                     kodeSuffix.maxLength = 4;
+                    kodeSuffix.placeholder = 'Masukkan 4 digit kode barang';
                     allKelompokOptions.forEach(opt => {
                         if (opt.value !== '') kelompokSelect.appendChild(opt.cloneNode(true));
                     });
@@ -138,13 +145,15 @@
                 const flag = flagSelect.value;
 
                 if (flag === '2') {
-                    // Sub Kelompok
+                    // Sub Kelompok: prefix = kode kelompok (2 digit)
                     kodePrefix.value = selectedKelompok;
+                    updateKodeLengkap();
                 }
 
                 if (flag === '3') {
-                    // Barang
+                    // Barang: prefix sementara = kode kelompok, akan diupdate saat sub kelompok dipilih
                     kodePrefix.value = selectedKelompok;
+                    updateKodeLengkap();
                     resetDropdown(subKelompokSelect, '-- Pilih Subkelompok --');
                     allSubKelompokOptions.forEach(opt => {
                         if (opt.getAttribute('data-parent') === selectedKelompok) {
@@ -159,15 +168,59 @@
                 const flag = flagSelect.value;
 
                 if (flag === '3') {
+                    // Barang: prefix = kode sub kelompok (3 digit)
                     kodePrefix.value = selectedSub;
+                    updateKodeLengkap();
                 }
             });
+
+            // Validasi input kode suffix hanya angka dan update kode lengkap
+            kodeSuffix.addEventListener('input', function() {
+                this.value = this.value.replace(/[^0-9]/g, '');
+                updateKodeLengkap();
+            });
+
+            // Fungsi untuk update kode lengkap
+            function updateKodeLengkap() {
+                const prefix = kodePrefix.value || '';
+                const suffix = kodeSuffix.value || '';
+                kodeLengkap.value = prefix + suffix;
+            }
 
             // Gabungkan kode prefix + suffix sebelum submit
             const form = document.querySelector('form');
             form.addEventListener('submit', function(e) {
-                const fullKode = kodePrefix.value + kodeSuffix.value;
-                kodeSuffix.value = fullKode;
+                const fullKode = kodeLengkap.value || '';
+
+                // Validasi panjang kode sesuai flag
+                const flag = flagSelect.value;
+                let expectedLength = 0;
+
+                if (flag === '1') {
+                    expectedLength = 2; // Kelompok: 2 digit
+                } else if (flag === '2') {
+                    expectedLength = 3; // Sub Kelompok: 2 digit kelompok + 1 digit sub
+                } else if (flag === '3') {
+                    expectedLength = 7; // Barang: 3 digit sub kelompok + 4 digit barang
+                }
+
+                if (fullKode.length !== expectedLength) {
+                    e.preventDefault();
+                    alert(
+                        `Kode komoditas harus ${expectedLength} digit untuk tingkat ${flag === '1' ? 'Kelompok' : flag === '2' ? 'Sub Kelompok' : 'Barang'}`
+                    );
+                    return;
+                }
+
+                // Validasi bahwa kode hanya berisi angka
+                if (!/^\d+$/.test(fullKode)) {
+                    e.preventDefault();
+                    alert('Kode komoditas hanya boleh berisi angka');
+                    return;
+                }
+
+                // Set nilai kode lengkap ke input hidden
+                kodeLengkap.value = fullKode;
             });
         });
     </script>

@@ -56,12 +56,12 @@
                             <td class="px-8 py-2 text-center">
                                 <div class="flex place-content-center gap-3">
                                     <!-- Tombol Edit -->
-                                    <button type="button" onclick="openModalEditKomUtama('{{ $item->kode_kom }}')"
-                                        class="flex items-center gap-1 bg-biru1 text-white px-5 py-1 rounded-lg shadow-lg hover:-translate-y-1 transition duration-100 text-sm font-normal">
-                                        <img src="{{ asset('images/adminProv/editIcon.svg') }}" alt="Edit Icon"
-                                            class="h-5 w-5">
-                                        Edit
-                                    </button>
+                                    <!--<button type="button" onclick="openModalEditKomUtama('{{ $item->kode_kom }}')"-->
+                                    <!--    class="flex items-center gap-1 bg-biru1 text-white px-5 py-1 rounded-lg shadow-lg hover:-translate-y-1 transition duration-100 text-sm font-normal">-->
+                                    <!--    <img src="{{ asset('images/adminProv/editIcon.svg') }}" alt="Edit Icon"-->
+                                    <!--        class="h-5 w-5">-->
+                                    <!--    Edit-->
+                                    <!--</button>-->
                                     <!-- Tombol Hapus -->
                                     <button type="button" onclick="openModalHapusKomUtama('{{ $item->kode_kom }}', '{{ $item->nama_kom }}')"
                                         class="flex items-center gap-1 bg-merah1 text-white px-5 py-1 rounded-lg shadow-lg hover:-translate-y-1 transition duration-100 text-sm font-normal">

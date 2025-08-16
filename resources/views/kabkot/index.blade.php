@@ -9,8 +9,7 @@
         <div
             class="relative rounded-[3rem] p-8 max-w-3xl mx-auto flex flex-col items-center text-center bg-white bg-opacity-65 shadow-xl backdrop-blur-md md:p-10 md:items-start md:text-left">
             <h1 class="text-4xl md:text-5xl font-bold text-biru1">
-                Selamat Datang,
-                <span class="text-kuning1">Admin</span>
+                Selamat Datang
                 <br><span class="text-biru4 text-2xl pt-5">di Manajemen Dashboard Inflasi BPS Kab/Kot Jawa Timur</span>
             </h1>
             <p class="text-gray-700 text-base mt-5">
@@ -69,7 +68,7 @@
                 <h2 class="text-biru1 text-lg font-semibold">Dashboard Inflasi</h2>
                 <p class="text-biru1 text-sm mt-2 flex-grow">Melihat tampilan visualisasi data inflasi di dashboard Provinsi
                     Jawa Timur</p>
-                <a href="{{ route('dashboard.bulanan') }}"
+                <a href="{{ route('dashboard.spasial') }}"
                     class="text-biru4 mt-3 transition-transform duration-200 hover:translate-x-2 inline-block">Lakukan →</a>
             </div>
         </div>

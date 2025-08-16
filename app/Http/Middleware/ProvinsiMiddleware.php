@@ -22,7 +22,7 @@ class ProvinsiMiddleware
         }
 
         // Cek apakah user memiliki role Admin Provinsi (id_role = 1)
-        if (Auth::user()->id_role !== 1) {
+        if (Auth::user()->id_role != 1) {
             return redirect()->back()->withErrors(['access' => 'Anda tidak memiliki akses ke halaman ini!']);
         }
 

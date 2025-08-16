@@ -6,7 +6,8 @@
         untuk menambahkan Data!
     </h2>
 
-    <div class="max-w-lg p-6 ml-24 bg-white rounded-lg shadow-md">
+    <div class="flex flex-col lg:flex-row gap-6 ml-24 mr-12 ">
+        <div class="flex-1 p-6 bg-white rounded-lg shadow-md">
         <form id="uploadForm" enctype="multipart/form-data" class="space-y-4">
             @csrf
 
@@ -53,10 +54,12 @@
             </div>
 
             <div class="mb-4">
-                <label class="block mb-1 font-medium text-biru1">Upload Data</label>
-                <input type="file" name="file" accept=".xlsx" required
-                    class="w-full p-2 mt-1 border rounded-2xl border-biru5">
-                <label class="block mt-1 text-xs text-biru1">Pastikan file memiliki format excel (.xlsx)</label>
+                <div class="flex-1">
+                    <label class="block mb-1 font-medium text-biru1">Upload Data</label>
+                    <input type="file" name="file" accept=".xlsx" required
+                        class="w-full p-2 mt-1 border rounded-2xl border-biru5">
+                    <label class="block mt-1 text-xs text-biru1">Pastikan file memiliki format excel (.xlsx)</label>
+                </div>
             </div>
 
             <button type="submit" id="submitBtn"
@@ -64,6 +67,25 @@
                 Submit
             </button>
         </form>
+    </div>
+
+    <!-- Kolom kanan: panduan menyiapkan file ASEM -->
+    <div class="p-4 text-sm text-gray-700 bg-blue-50 rounded-lg flex-1 lg:max-w-md" id="asemFileRequirements">
+        <p class="mb-2 font-semibold text-biru1">Panduan menyiapkan file ASEM:</p>
+        <ol class="pl-5 mt-2 list-decimal space-y-1">
+            <li>Pilih <span class="font-semibold">sheet</span> yang berisikan <span class="font-semibold">semua data ASEM</span>.</li>
+            <li>Filter data sehingga hanya menyisakan data <span class="font-semibold"> kab/kot IHK pada provinsi Jawa&nbsp;Timur</span> (pada kolom <code>Kd.Kota</code> pilih kode yang diawali <code>35</code>).</li>
+            <li>Salin (copy-paste) data hasil filter tersebut ke <span class="font-semibold">template Excel</span> yang telah disediakan.</li>
+            <li>Pastikan hasil akhirnya tampak seperti gambar di bawah ini.</li>
+        </ol>
+
+        <img src="{{ asset('images/contohexcel.svg') }}" alt="Contoh tampilan Excel" class="w-full my-4 border rounded shadow">
+
+        <a href="{{ asset('templates/template_asem.xlsx') }}" download
+           class="inline-block px-4 py-2 mt-2 text-white transition-colors bg-biru1 rounded-lg hover:bg-biru4">
+            Silahkan download template
+        </a>
+    </div>
     </div>
 
     <!-- Spinner Overlay -->

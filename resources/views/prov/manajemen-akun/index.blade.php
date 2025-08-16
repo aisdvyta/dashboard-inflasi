@@ -54,7 +54,7 @@
                 <tbody>
                     @forelse ($users as $index => $user)
                         <tr>
-                            <td class="px-4 py-4 text-center">{{ $index + 1 }}</td>
+                            <td class="px-4 py-4 text-center">{{ $loop->iteration + ($users->currentPage() - 1) * $users->perPage() }}</td>
                             <td class="px-4 py-2">{{ $user->username }}</td>
                             <td class="px-4 py-2 text-center">{{ $user->satker->kode_satker ?? '-' }}</td>
                             <td class="px-4 py-2">{{ $user->satker->nama_satker ?? '-' }}</td>
@@ -69,19 +69,21 @@
                                         Edit Akun
                                     </a>
 
-                                    <!-- Tombol Hapus -->
-                                    <button type="button" onclick="openModal('{{ $user->id }}')"
-                                        class="flex items-center gap-1 bg-merah1 text-white px-3 py-1 rounded-lg shadow-lg hover:-translate-y-1 transition duration-100 text-sm font-normal">
-                                        <img src="{{ asset('images/adminProv/deleteIcon.svg') }}" alt="Delete Icon"
-                                            class="h-5 w-5">
-                                        Hapus Akun
-                                    </button>
-
-                                    @include('components.modaKonfirmasiHapus', [
-                                        'id' => $user->id,
-                                        'folderName' => 'manajemen-akun',
-                                        'formAction' => route('manajemen-akun.destroy', $user->id),
-                                    ])
+                                    @if (auth()->user()->id !== $user->id)
+                                        <!-- Tombol Hapus -->
+                                        <button type="button" onclick="openModal('{{ $user->id }}')"
+                                            class="flex items-center gap-1 bg-merah1 text-white px-3 py-1 rounded-lg shadow-lg hover:-translate-y-1 transition duration-100 text-sm font-normal">
+                                            <img src="{{ asset('images/adminProv/deleteIcon.svg') }}" alt="Delete Icon"
+                                                class="h-5 w-5">
+                                            Hapus Akun
+                                        </button>
+                                    
+                                        @include('components.modaKonfirmasiHapus', [
+                                            'id' => $user->id,
+                                            'folderName' => 'manajemen-akun',
+                                            'formAction' => route('manajemen-akun.destroy', $user->id),
+                                        ])
+                                    @endif
                                 </div>
                             </td>
                         </tr>
