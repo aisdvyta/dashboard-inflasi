@@ -1,7 +1,7 @@
 # Sistem Informasi Dashboard Visualisasi Data Inflasi Berbasis Web
 
 **NIM:** 222111869  
-**Nama:** Aisyah Devyta Maharani
+**Nama:** Aisyah Devyta Maharani  
 **Judul Skripsi:** Pembangunan Sistem Informasi Dashboard Visualisasi Data Inflasi Berbasis Web (Studi Kasus BPS Provinsi Jawa Timur)  
 **Dosen Pembimbing:** Yunarso Anang, Ph.D.
 
